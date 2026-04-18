@@ -20,7 +20,7 @@
   #endif
   using namespace std;
 
-OutDef<ItemPrinter,TextFmt,PrintItem,ConsoleOut> out;
+OutDef<ItemPrinter<PrintItem>,TextFmt,ConsoleOut> out;
 
 int power=55;
 

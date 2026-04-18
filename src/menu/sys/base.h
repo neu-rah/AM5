@@ -11,29 +11,21 @@
 
 #pragma once
 
+#include "menu/sys/enums.h"
 #include <hapi.h>
 #include <typedef.h>
+#include <cassert>
 
 using Sz=int;
 using Depth=char;
 using Key=int;
 
 struct Nil{};
+
+struct XY{Sz x;Sz y;};
+using Pos=XY;
+using Area=XY;
  
-enum class Edge {start,stop};
-
-enum class Fmt {
-  View,Menu,Title,Body,Item,
-  Cursor,Accel,EditMode,EditCursor,
-  Label,Field,Unit,Data
-};
-
-enum class Cmd {
-  Esc,Enter,
-  Up,Down,Left,Right,
-  Key, Go
-};
-
 struct CKE {
   Cmd cmd;
   Key key;
@@ -41,9 +33,12 @@ struct CKE {
 };
 
 struct Path {
-  TypeDef<int>::Value len;
-  TypeDef<Sz*>::Value path;
-  Path next() {return Path{len-1,&path[1]};}
+  TypeDef<Depth>::Value len;
+  TypeDef<Sz*>::Value data;
+  operator bool() const {return len==0;}
+  Path focus(Depth l) const {assert(l<=len);return {l,(Sz*)&data[0]};}
+  Path next() const {return Path{len-1,&data[1]};}
+  Sz sel() const {assert(len>0);return data[0];}
 };
 
 template<Depth depth>
@@ -61,6 +56,16 @@ struct PathData {
 
 struct Ctx {
   Path path;
-  Sz idx;
+  NavMode mode;
+  Sz printAt{path.len};
+  Sz prevSel{0};
+  Sz* tops{0};/// out device scroll pos (if used),
+  Sz idx{0};
+  bool enabled{true};
+  Sz sel() const {return path.sel();}
+  Sz len() const {return path.len;}
+  Sz top() const {return tops?tops[0]:0;}
+  void top(Sz i){tops[0]=i;}
+  operator bool() const {return idx==path.data[0];}
 };
 

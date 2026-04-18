@@ -16,11 +16,29 @@
 template<typename Def>
 struct ItemAPI:Def {
   static constexpr Sz depth() {return 1;}
-  template<typename Out> static constexpr void printMenu(Out& out,Ctx& ctx) {}
-  template<typename Out> static constexpr void printBody(Out& out,Ctx& ctx) {}
-  template<typename Out> static constexpr void printItem(Out& out,Ctx& ctx) {}
-  template<typename Out> static constexpr void print(Out& out) {}
+  static constexpr bool enabled() {return true;}
+  static constexpr void enable(bool=true) {}
+  static constexpr bool changed() {return false;}
+  static constexpr void sync() {}
+  template<typename Out> static constexpr void printMenu(Out&,Ctx&) {}
+  template<typename Out> static constexpr void printBody(Out&,Ctx&) {}
+  template<typename Out> static constexpr void printItem(Out&,Ctx&) {}
+  template<typename Out> static constexpr void print(Out&) {}
   static constexpr void nav(CKE cke,Path) {}
+  
+  template <typename Out>
+  static constexpr bool printMenu(Out& out,Ctx& ctx) {return false;}
+  
+  // template<typename Out>
+  // static constexpr bool printBody(Out& out,Ctx&) {return false;}
+
+  template<typename Out> 
+  static constexpr void print(Out& out,Ctx& ctx) {}
+
+  template<bool kbd,typename Nav> 
+  static constexpr bool nav(Nav& n,const CKE& cke,const Path p) 
+    {return false;}
+
 };
 
 template<typename... OO>
@@ -61,9 +79,10 @@ struct Data {
   };
 };
 
-using Text=Data<TypeDef<const char*>::Value>;
-using Int=Data<TypeDef<int>::Value>;
-using Float=Data<TypeDef<double>::Value>;
+using Text=Data<typename TypeDef<const char*>::Value>;
+using Int=Data<typename TypeDef<int>::Value>;
+template<int& o> using IntRef=Data<typename TypeDef<int>::template Ref<o>>;
+// using Float=Data<TypeDef<double>::Value>;
 
 using ActionFunc=void(*)(int);
 
@@ -73,7 +92,7 @@ struct Action {
   struct Part:O {
     using Base=O;
     static constexpr void nav(CKE cke,Path path) {
-      if(cke.cmd==Cmd::Enter) action(path.path[0]);
+      if(cke.cmd==Cmd::Enter) action(path.sel());
       Base::nav(cke,path);
     }
   };

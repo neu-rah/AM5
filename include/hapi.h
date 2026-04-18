@@ -28,9 +28,22 @@ struct Chain<O>:O {
 template<typename O>
 struct CRTP {
   using Obj=O;
-  constexpr Obj& obj() const {return *this;}
+  constexpr Obj& obj() {return *(O*)this;}
+  constexpr const Obj& obj() const {return *this;}
 };
 
-template<typename API,typename... OO>
-using APIOf=typename Chain<OO...>::template Term<API>;
+template<typename API,typename... OO> struct APIOf;
+
+template<typename API,typename O,typename... OO>
+struct APIOf<API,O,OO... >:Chain<O,OO...>::template Term<API> {
+  using Base=typename Chain<O,OO...>::template Term<API>;
+  using Base::Base;
+};
+
+template<typename API>
+struct APIOf<API>:API {
+  using Base=API;
+  using Base::Base;
+};
+
 

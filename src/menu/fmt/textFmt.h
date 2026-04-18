@@ -19,11 +19,11 @@ struct TextFmt {
     using Base=O;
     using Base::fmtStart;
     using Base::fmtStop;
-    template<Edge edge,Fmt tag> void fmt(const Ctx& ctx) {edge==Edge::start?fmtStart(tag,ctx):fmtStop(tag,ctx);}
+    template<Edge edge,Fmt tag> static void fmt(const Ctx& ctx) {edge==Edge::start?fmtStart(tag,ctx):fmtStop(tag,ctx);}
     // void fmtStart(Fmt tag,const Ctx& ctx) {
     //   Base::fmtStart(tag,ctx);
     // }
-    void fmtStop(Fmt tag,const Ctx& ctx) {
+    static void fmtStop(Fmt tag,const Ctx& ctx) {
       switch(tag) {
         case Fmt::Menu:
         case Fmt::Item:

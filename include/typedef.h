@@ -71,11 +71,11 @@ struct TypeDef {
     constexpr Value():data{}{}
     constexpr Value(Def o):data{o}{}
     template<Type l,Type h> using StaticNumRange=TypeDef::StaticNumRange<Value,l,h>;
-    constexpr Type& get() {return data;}
-    constexpr Type& get() const {return data;}
+    constexpr Def get() {return data;}
+    constexpr Def get() const {return data;}
     constexpr void set(const Type& o) {data=o;}
-    constexpr operator Type&() {return get();}
-    constexpr operator Type&() const {return get();}
+    constexpr operator Def() {return get();}
+    constexpr operator Def() const {return get();}
     static constexpr void up() {}
     static constexpr void down() {}
   };
