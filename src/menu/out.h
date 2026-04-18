@@ -11,18 +11,15 @@
 
 #pragma once
 
-template<typename Def>
-struct OutAPI {
-  template<typename O>
-  struct Part:O {
-    using Base=O;
-    template<typename T> static constexpr void put(const T&) {}
-    template<Edge edge,Fmt tag> static constexpr void fmt() {}
-  };
+template<typename Cfg=Nil>
+struct OutAPI:Cfg {
+  using Config=Cfg;
+  template<typename T> static constexpr void put(const T&) {}
+  template<Edge edge,Fmt tag> static constexpr void fmt() {}
 };
 
 template<typename... OO>
-struct OutDef:APIOf<OutAPI<Nil>,OO...> {};
+struct OutDef:APIOf<OutAPI<>,OO...> {};
 
 template<typename Dev,Dev& dev>
 struct StreamOut {

@@ -24,11 +24,13 @@ OutDef<ConsoleOut> out;
 int power=55;
 
 TypeDef<int>
-  // ::Data//hold data internally or use
-  ::Ref<power>//as a static reference to external data
+  // ::Value//hold data internally (functions get/set) or use
+  ::Ref<power>//as a static reference to external data, functions get/set
   ::template StaticNumRange<0,100>//valid range info
-  ::Step<Wrap::yes> //step the value (assuming valid)
+  ::Step<Wrap::yes> //step the value (assuming valid), functions up/down
   n;
+
+ItemDef<Data<TypeDef<int>::Value>> item1{1967};
 
 void run() {
   n.valid();
@@ -37,6 +39,8 @@ void run() {
   cout<<n<<endl;
   n.up(50);
   cout<<n<<endl;
+  item1.print(out);
+  cout<<endl;
 }
 
 void setup(){

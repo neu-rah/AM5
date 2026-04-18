@@ -57,10 +57,11 @@ struct TypeDef {
     static constexpr void set(const Type& o) {data=o;}
     constexpr operator Type&() {return get();}
   };
-  struct Data {
+  struct Value {
     Def data;
-    Data(Def o):data{o}{}
-    template<Type l,Type h> using StaticNumRange=TypeDef::StaticNumRange<Data,l,h>;
+    constexpr Value():data{}{}
+    constexpr Value(Def o):data{o}{}
+    template<Type l,Type h> using StaticNumRange=TypeDef::StaticNumRange<Value,l,h>;
     constexpr Type& get() {return data;}
     constexpr Type& get() const {return data;}
     constexpr void set(const Type& o) {data=o;}

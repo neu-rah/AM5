@@ -12,13 +12,15 @@
 #pragma once
 
 template<typename O,typename... OO>
-struct Chain {
+struct Chain:O {
+  using O::O;
   template<typename T>
   using Term=typename O::template Part<typename Chain<OO...>::template Term<T>>;
 };
 
 template<typename O>
-struct Chain<O> {
+struct Chain<O>:O {
+  using O::O;
   template<typename T>
   using Term=typename O::template Part<T>;
 };
