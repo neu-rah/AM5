@@ -1,5 +1,5 @@
 /**
- * @file saticBody.h
+ * @file staticBody.h
  * @author Rui Azevedo (neu-rah) (ruihfazevedo@gmail.com)
  * @brief 
  * @version 5
@@ -25,9 +25,6 @@ struct StaticBody {
   StaticBody(const Item& i,const II&... ii):m_item{i},m_body{ii...}{}
   static constexpr Sz depth() {return std::max(Item::depth(),Body::depth());}
   static constexpr Sz size() {return 1+Body::size();}
-
-  // template<typename Out> void printMenu(Out& out,Ctx& ctx,Sz i)
-  //   {return i?m_body.printMenu(out,ctx,i-1):m_item.printMenu(out,ctx);}
 
   template<typename Out> void printBody(Out& out,Ctx& ctx) {
     out.printItem(m_item,ctx);

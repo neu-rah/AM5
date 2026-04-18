@@ -61,3 +61,24 @@ struct Data {
   };
 };
 
+using Text=Data<TypeDef<const char*>::Value>;
+using Int=Data<TypeDef<int>::Value>;
+using Float=Data<TypeDef<double>::Value>;
+
+using ActionFunc=void(*)(int);
+
+template<ActionFunc action>
+struct Action {
+  template<typename O>
+  struct Part:O {
+    using Base=O;
+    static constexpr void nav(CKE cke,Path path) {
+      if(cke.cmd==Cmd::Enter) action(path.path[0]);
+      Base::nav(cke,path);
+    }
+  };
+};
+
+
+
+
