@@ -25,7 +25,7 @@ struct ItemAPI:Def {
   template<typename Out> static constexpr void printItem(Out&,Ctx&) {}
   template<typename Out> static constexpr void print(Out&) {}
   static constexpr void nav(CKE cke,Path) {}
-  
+
   template <typename Out>
   static constexpr bool printMenu(Out& out,Ctx& ctx) {return false;}
   
@@ -51,6 +51,60 @@ struct ItemDef:APIOf<ItemAPI<Nil>,OO...> {
   void enter(Path path) {nav({Cmd::Enter},path);}
 };
 
+struct IItem {
+  // virtual Depth depth() const {return 0;}
+  virtual bool printMenu(IOut& out,Ctx& ctx) {return false;}
+  virtual bool printBody(IOut& out,Ctx&) {return false;}
+  virtual void print(IOut& out,Ctx& ctx) {}
+  virtual bool enabled() const {return true;}
+  virtual void enable(bool=true) {}
+  virtual bool changed() const {return false;}
+  virtual bool changed(IOut& out) const {return false;}
+  virtual void sync() const {}
+  virtual void sync(IOut& out) {}
+  virtual bool up() const {return false;}
+  virtual bool down() const {return false;}
+  virtual bool nav(bool kbd,INav& n,const CKE& cke,const Path p) {return false;}
+
+  template <typename Out>
+  static constexpr bool printMenu(Out& out,Ctx& ctx) 
+    {return printMenu(out,ctx);}
+
+  template<bool kbd>
+  bool nav(INav& n,const CKE& cke,const Path p) {
+    return kbd?
+      nav(true,n,cke,p):
+      nav(false,n,cke,p);
+  }
+};
+
+template<typename... II>
+struct IItemDef:IItem, ItemDef<II...> {
+  using Base=ItemDef<II...>;
+  using Base::Base;
+
+  // virtual Depth depth() const override {return Base::depth();}
+  virtual bool changed() const override {return Base::changed();}
+  virtual void sync() const override {Base::sync();}
+  virtual bool printMenu(IOut& out,Ctx& ctx) override {return Base::printMenu(out,ctx);}
+  virtual bool printBody(IOut& out,Ctx& ctx) override {return Base::printBody(out,ctx);}
+  virtual void print(IOut& out,Ctx& ctx) override {Base::print(out,ctx);}
+  template <typename Out> static constexpr bool printMenu(Out& out,Ctx& ctx) {return Base::printMenu(out,ctx);}
+  template<typename Out> static constexpr void print(Out& out,Ctx& ctx) {return Base::print(out,ctx);}
+
+  template<bool kbd>
+  bool nav(INav& n,const CKE& cke,const Path p) {
+    return kbd?
+      nav(true,n,cke,p):
+      nav(false,n,cke,p);
+  }
+  //Id--
+  static constexpr int getId() {return -1;}
+  template<int> using HasId=std::false_type;
+  template<int> using WithId=ItemAPI<CRTP<ItemAPI<Nil>>>;
+};
+
+//---------------------------------------------------------------------------------------------
 template<typename T>
 struct Data {
   template<typename O>

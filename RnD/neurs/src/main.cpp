@@ -20,7 +20,16 @@
   #endif
   using namespace std;
 
-OutDef<ItemPrinter<PrintItem>,TextFmt,ConsoleOut> out;
+OutDef<
+  ViewPrinter,
+  MenuPrinter<
+    TitlePrinter,
+    BodyPrinter,
+    ItemPrinter<PrintItem>
+  >,
+  TextFmt,
+  ConsoleOut
+> out;
 
 int power=55;
 
@@ -51,7 +60,7 @@ Body body{"op1","op2","op3"};
 PathData<Body::depth()> pathData{0};
 
 void run() {
-  Ctx ctx{pathData.path(0,0)};
+  Ctx ctx{pathData.path(0,0),NavMode::Nav,0};
   body.printBody(out,ctx);
   body.nav({Cmd::Enter},pathData,0);
   cout<<endl;

@@ -16,6 +16,8 @@ struct Chain:O {
   using O::O;
   template<typename T>
   using Term=typename O::template Part<typename Chain<OO...>::template Term<T>>;
+  template<typename... XX> using Ins=typename ::Chain<XX...,O,OO...>;
+  template<typename... XX> using App=typename ::Chain<O,OO...,XX...>;
 };
 
 template<typename O>
@@ -23,6 +25,8 @@ struct Chain<O>:O {
   using O::O;
   template<typename T>
   using Term=typename O::template Part<T>;
+  template<typename... XX> using Ins=typename ::Chain<XX...,O>;
+  template<typename... XX> using App=typename ::Chain<O,XX...>;
 };
 
 template<typename O>

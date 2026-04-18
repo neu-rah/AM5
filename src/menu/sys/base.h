@@ -22,6 +22,10 @@ using Key=int;
 
 struct Nil{};
 
+struct IItem;
+struct IOut;
+struct INav;
+
 struct XY{Sz x;Sz y;};
 using Pos=XY;
 using Area=XY;
@@ -55,8 +59,8 @@ struct PathData {
 };
 
 struct Ctx {
-  Path path;
-  NavMode mode;
+  Path path{};
+  NavMode mode{NavMode::Nav};
   Sz printAt{path.len};
   Sz prevSel{0};
   Sz* tops{0};/// out device scroll pos (if used),
@@ -65,7 +69,9 @@ struct Ctx {
   Sz sel() const {return path.sel();}
   Sz len() const {return path.len;}
   Sz top() const {return tops?tops[0]:0;}
-  void top(Sz i){tops[0]=i;}
+  void top(Sz i){if(tops) tops[0]=i;}
+  Ctx next() const {return Ctx{path.next(),mode,printAt-1,0,&tops[1]};}
+  // Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr):path{p},mode{nm},printAt{pl},prevSel{ps},tops{t}{}
   operator bool() const {return idx==path.data[0];}
 };
 
