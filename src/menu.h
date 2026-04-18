@@ -11,5 +11,7 @@
 #pragma once
 
 #include "menu/sys/base.h"
+#include "menu/sys/staticBody.h"
 #include "menu/out.h"
 #include "menu/item.h"
+#include "menu/menu.h"

@@ -15,7 +15,9 @@ template<typename Cfg=Nil>
 struct OutAPI:Cfg {
   using Config=Cfg;
   template<typename T> static constexpr void put(const T&) {}
-  template<Edge edge,Fmt tag> static constexpr void fmt() {}
+  template<Edge edge,Fmt tag> static constexpr void fmt(const Ctx&) {}
+  static constexpr void fmtStart(Fmt tag,const Ctx& ctx) {}
+  static constexpr void fmtStop(Fmt tag,const Ctx& ctx) {}
 };
 
 template<typename... OO>
@@ -26,6 +28,7 @@ struct StreamOut {
   template<typename O>
   struct Part:O {
     using Base=O;
+    static constexpr void nl() {endl(dev);}
     template<typename T> static constexpr void put(const T& o) {dev<<o;}
   };
 };
@@ -34,3 +37,27 @@ struct StreamOut {
   #include <iostream>
   using ConsoleOut=StreamOut<decltype(std::cout),std::cout>;
 #endif
+
+struct ItemPrinter {
+  template<typename O>
+  struct Part:O {
+    using Base=O;
+    template<typename I>
+    void printItem(I& item,Ctx& ctx) {
+      Base::template fmt<Edge::start,Fmt::Item>(ctx);
+      Base::printItem(item,ctx);
+      Base::template fmt<Edge::stop,Fmt::Item>(ctx);
+    }
+  };
+};
+
+struct PrintItem {
+  template<typename O>
+  struct Part:O {
+    using Base=O;
+    template<typename I>
+    void printItem(I& item,Ctx& ctx) {
+      item.print(*this);
+    }
+  };
+};

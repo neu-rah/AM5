@@ -26,6 +26,8 @@ struct TypeDef {
     using O::high;
     using O::low;
     using O::O;
+    using Def=typename TypeDef::Def;
+    using Type=typename TypeDef::Type;
     void up(Type o) {high()-get()>o?set(get()+o):set(w==Wrap::yes?low():high());}
     void down(Type o) {get()-low()>o?set(get()-o):set(w==Wrap::yes?high():low());}
   };
@@ -34,6 +36,8 @@ struct TypeDef {
   struct StaticNumRange:O {
     template<Wrap w=Wrap::no>
     using Step=TypeDef::RangeStep<StaticNumRange,w>;
+    using Def=typename TypeDef::Def;
+    using Type=typename TypeDef::Type;
     using O::O;
     static constexpr Def low() {return l;}
     static constexpr Def high() {return h;}
@@ -45,18 +49,24 @@ struct TypeDef {
 
   template<Type data>
   struct Static {
+    using Def=typename TypeDef::Def;
+    using Type=typename TypeDef::Type;
     template<Def l,Def h> using StaticNumRange=TypeDef::StaticNumRange<Static,l,h>;
     static Type get() {return data;}
     operator Type() {return get();}
   };
   template<Type& data>
   struct Ref {
+    using Def=typename TypeDef::Def;
+    using Type=typename TypeDef::Type;
     template<Def l,Def h> using StaticNumRange=TypeDef::StaticNumRange<Ref,l,h>;
     static constexpr Type& get() {return data;}
     static constexpr void set(const Type& o) {data=o;}
     constexpr operator Type&() {return get();}
   };
   struct Value {
+    using Def=typename TypeDef::Def;
+    using Type=typename TypeDef::Type;
     Def data;
     constexpr Value():data{}{}
     constexpr Value(Def o):data{o}{}
@@ -66,5 +76,7 @@ struct TypeDef {
     constexpr void set(const Type& o) {data=o;}
     constexpr operator Type&() {return get();}
     constexpr operator Type&() const {return get();}
+    static constexpr void up() {}
+    static constexpr void down() {}
   };
 };

@@ -43,16 +43,24 @@ struct CKE {
 struct Path {
   TypeDef<int>::Value len;
   TypeDef<Sz*>::Value path;
+  Path next() {return Path{len-1,&path[1]};}
 };
 
-template<Depth n>
-using PathType
-  = typename TypeDef<Sz>
-  ::Value
-  ::template StaticNumRange<0,n>
-  ::template Step<Wrap::no>;
-
-template<Depth n>
-struct PathData:PathType<n> {
-  auto path(Depth from,Depth len) {return {len,&PathType<n>::get()[from]};}
+template<Depth depth>
+struct PathData {
+  Sz data[depth]{0};
+  Path path(Depth from=0) {return Path{depth-from,&data[from]};}
+  const Path path(Depth from=0) const {return Path{depth-from,&data[from]};}
+  Path path(Depth from,Depth len) {return Path{len,&data[from]};}
+  const Path path(Depth from,Depth len) const {return Path{len,&data[from]};}
+  operator Path() {return path();}
+  operator const Path() const {return path();}
+  Sz operator[](Depth i) const {return data[i];}
+  Sz& operator[](Depth i) {return data[i];}
 };
+
+struct Ctx {
+  Path path;
+  Sz idx;
+};
+
