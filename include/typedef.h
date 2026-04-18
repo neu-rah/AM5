@@ -37,11 +37,10 @@ struct TypeDef {
     using O::O;
     static constexpr Def low() {return l;}
     static constexpr Def high() {return h;}
-    bool chk() const {return l<=O::get()&&O::get()<=h;}
-    void valid(){
-      if(O::get()<=l) O::set(l);
-      else if(O::get()>=h) O::set(h);
-    }
+    static constexpr bool chk(const Def& o) {return l<=o&&o<=h;}
+    static constexpr Def validate(const Def& o) {return o<=l?l:o>=h?h:o;}
+    constexpr bool chk() const {return chk(O::get());}
+    constexpr void valid() {O::set(validate(O::get()));}
   };
 
   template<Type data>

@@ -30,6 +30,7 @@ struct Data {
   template<typename O>
   struct Part:Def,O {
     using Base=O;
+    using Base::Base;
     template<typename... OO>
     Part(const Def& def,OO&&... oo):Def{def},Base{oo...}{}
     template<typename Out>
@@ -37,6 +38,7 @@ struct Data {
       Out::template fmt<Edge::start,Fmt::Data>();
       out.put(Def::get());
       Out::template fmt<Edge::stop,Fmt::Data>();
+      Base::print(out);
     }
     template<typename Nav> 
     static constexpr void nav(Nav& n,CKE cke,Path path) {

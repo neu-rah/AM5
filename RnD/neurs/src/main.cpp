@@ -23,14 +23,19 @@ OutDef<ConsoleOut> out;
 
 int power=55;
 
+//define data we can iteract with
 TypeDef<int>
   // ::Value//hold data internally (functions get/set) or use
-  ::Ref<power>//as a static reference to external data, functions get/set
+  ::Ref<power>//as a static compile time reference to external data, functions get/set
   ::template StaticNumRange<0,100>//valid range info
   ::Step<Wrap::yes> //step the value (assuming valid), functions up/down
-  n;
+n;
 
-ItemDef<Data<TypeDef<int>::Value>> item1{1967};
+//define an Item using some data
+ItemDef<
+  Data<TypeDef<const char*>::Value>,
+  Data<TypeDef<int>::Value>
+> item1{"year: ",1967};
 
 void run() {
   n.valid();
