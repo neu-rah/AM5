@@ -20,36 +20,6 @@
   #endif
   using namespace std;
 
-OutDef<
-  ViewPrinter,
-  MenuPrinter<
-    TitlePrinter,
-    BodyPrinter,
-    ItemPrinter<PrintItem>
-  >,
-  TextFmt,
-  ConsoleOut
-> out;
-
-int power=55;
-
-void op1(Sz i) {cout<<"option 1 called!"<<endl;}
-
-using MainMenu=ItemDef<
-  Menu<
-    Title<Text>,
-    StaticBody<
-      ItemDef<Text,Action<op1>>,
-      ItemDef<Text>,
-      ItemDef<Text>
-    >
-  >
->;
-
-MainMenu menu{"Main menu",{"op1","op2","op3"}};
-
-// NavDef<TreeNav,Root<>> nav;
-
 void run() {
   cout<<endl;
 }
