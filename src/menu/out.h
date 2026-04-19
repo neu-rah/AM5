@@ -21,8 +21,8 @@ struct OutAPI:Cfg {
   static constexpr LockMode mode() {return LockMode::None;}
   static constexpr void mode(LockMode) {}
   template<Edge edge,Fmt tag> static constexpr void fmt(const Ctx&) {}
-  static constexpr void fmtStart(Fmt tag,const Ctx& ctx) {}
-  static constexpr void fmtStop(Fmt tag,const Ctx& ctx) {}
+  template<Fmt tag> static constexpr void fmtStart(const Ctx& ctx) {}
+  template<Fmt tag> static constexpr void fmtStop(const Ctx& ctx) {}
   template<typename Item> static constexpr bool printItem(Item& item,Ctx& ctx) {return false;}
   template<typename Item> static constexpr bool printMenu(Item& item,Ctx& ctx) {return false;}
 };
@@ -155,10 +155,10 @@ struct MenuPrinter {
     template<typename I>
     bool printMenu(I& i,Ctx& ctx) {
       ctx.idx=0;
-      fmtStart(Fmt::Menu,ctx);
+      Base::template fmtStart<Fmt::Menu>(ctx);
       // i.printTo(Base::obj());
       bool r=Base::printMenu(i,ctx);
-      fmtStop(Fmt::Menu,ctx);
+      Base::template fmtStop<Fmt::Menu>(ctx);
       return r;
     }
   };
@@ -172,9 +172,9 @@ struct TitlePrinter {
     using Base=O;
     template<typename I>
     bool printMenu(I& i,Ctx& ctx) {
-      O::fmtStart(Fmt::Title,ctx);
+      O::template fmtStart<Fmt::Title>(ctx);
       i.print(O::obj());//,ctx);//title
-      O::fmtStop(Fmt::Title,ctx);
+      O::template fmtStop<Fmt::Title>(ctx);
       return O::printMenu(i,ctx);
     }
   };
@@ -189,9 +189,9 @@ struct BodyPrinter {
     using Base::obj;
     template<typename I>
     bool printMenu(I& i,Ctx& ctx) {
-      Base::fmtStart(Fmt::Body,ctx);
+      Base::template fmtStart<Fmt::Body>(ctx);
       bool r=i.printBody(O::obj(),ctx);
-      Base::fmtStop(Fmt::Body,ctx);
+      Base::template fmtStop<Fmt::Body>(ctx);
       return r;
     }
   };
@@ -262,9 +262,9 @@ struct ItemPrinter {
         setPos({posX(),posY()});
       }
       ctx.enabled=i.enabled();
-      fmtStart(Fmt::Item,ctx);
+      Base::template fmtStart<Fmt::Item>(ctx);
       Base::printItem(i,ctx);
-      fmtStop(Fmt::Item,ctx);
+      Base::template fmtStop<Fmt::Item>(ctx);
       ctx.idx++;
       if(mode()==LockMode::Sync) i.sync();
     }

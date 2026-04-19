@@ -97,7 +97,12 @@ struct Data {
     constexpr void set(const Type& o) {data=o;}
     operator Type&() {return get();}
     operator Type&() const {return get();}
-    template<typename Out> void print(Out& out) const {out.put(get());}
+    template<typename Out> void print(Out& out) const {
+      Ctx ctx{};
+      out.template fmtStart<Fmt::Data>(ctx);
+      out.put(get());
+      out.template fmtStop<Fmt::Data>(ctx);
+    }
   };
 };
 

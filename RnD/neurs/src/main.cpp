@@ -49,10 +49,10 @@ MainMenu menu{"Main menu",{"op1","op2","op3"}};
 NavDef<TreeNav,Root<MainMenu,menu>> nav;
 
 void run() {
-  // nav.navPrint(out);
-  menu.print(out);
-  Ctx ctx{};
-  menu.body().printBody(out,ctx);
+  nav.navPrint(out);
+  // menu.print(out);
+  // Ctx ctx{};
+  // menu.body().printBody(out,ctx);
   cout<<endl;
 }
 
