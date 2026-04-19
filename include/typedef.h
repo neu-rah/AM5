@@ -1,7 +1,7 @@
 /**
  * @file typedef.h
  * @author Rui Azevedo (ruihfazevedo@gmail.com)
- * @brief 
+ * @brief abandoned alternative data description, problematic composition,we will be using the existing Chain/Pat/Term for composition
  * @version 5
  * @date 2026-04-17
  * 

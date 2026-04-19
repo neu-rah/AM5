@@ -44,16 +44,14 @@ template<typename API,typename O,typename... OO>
 struct APIOf<API,O,OO... >:Chain<O,OO...>::template Term<API> {
   using Base=typename Chain<O,OO...>::template Term<API>;
   using Base::Base;
-  template<template<typename> class M>
-  using Map=::APIOf<API,M<O>,M<OO>...>;
+  template<template<typename> class M> using Map=::APIOf<API,M<O>,M<OO>...>;
 };
 
 template<typename API>
 struct APIOf<API>:API {
   using Base=API;
   using Base::Base;
-  template<template<typename> class M>
-  using Map=M<API>;
+  template<template<typename> class M> using Map=M<API>;
 };
 
 
