@@ -1,5 +1,6 @@
 #pragma once
 
+enum {no=false,yes=true};
 enum class Edge {start,stop};
 enum class Wraps:bool {no=false,yes=true};
 

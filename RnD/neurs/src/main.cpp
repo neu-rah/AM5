@@ -48,9 +48,10 @@ using MainMenu=ItemDef<
 
 MainMenu menu{"Main menu",{"op1","op2","op3"}};
 
-// NavDef<TreeNav,Root<>> nav;
+NavDef<TreeNav,Root<MainMenu,menu>> nav;
 
 void run() {
+  nav.navPrint(out);
   cout<<endl;
 }
 

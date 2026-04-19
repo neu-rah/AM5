@@ -173,7 +173,7 @@ struct TitlePrinter {
     template<typename I>
     bool printMenu(I& i,Ctx& ctx) {
       O::fmtStart(Fmt::Title,ctx);
-      i.print(O::obj(),ctx);//title
+      i.print(O::obj());//,ctx);//title
       O::fmtStop(Fmt::Title,ctx);
       return O::printMenu(i,ctx);
     }

@@ -13,7 +13,6 @@
 
 #include "menu/sys/enums.h"
 #include <hapi.h>
-#include <typedef.h>
 #include <cassert>
 
 using Sz=int;
@@ -37,17 +36,18 @@ struct CKE {
 };
 
 struct Path {
-  TypeDef<Depth>::Value len;
-  TypeDef<Sz*>::Value data;
+  Depth len;
+  Sz* data;
   operator bool() const {return len==0;}
   Path focus(Depth l) const {assert(l<=len);return {l,(Sz*)&data[0]};}
-  Path next() const {return Path{len-1,&data[1]};}
+  Path next() const {return Path{(Depth)(len-1),&data[1]};}
   Sz sel() const {assert(len>0);return data[0];}
 };
 
 template<Depth depth>
 struct PathData {
   Sz data[depth]{0};
+  Path focus(Depth o) {return {o,data};}
   Path path(Depth from=0) {return Path{depth-from,&data[from]};}
   const Path path(Depth from=0) const {return Path{depth-from,&data[from]};}
   Path path(Depth from,Depth len) {return Path{len,&data[from]};}

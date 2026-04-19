@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "menu/sys/data.h"
+
 template<typename N> struct NavAPI:N {};
 
 template <typename API,typename... NN>
@@ -115,7 +117,7 @@ struct TreeNav {
     }
 
     bool doNav(CKE cke,Sz len,Wraps w) {
-      DataDef<NumRange,Data<Sz&>> at{0l,len-1,w,m_path.m_pathData[level()]};
+      DataDef<NumRange<Sz>,Data<Sz&>> at{0l,len-1,w,m_path.m_pathData[level()]};
       switch(cke.cmd) {
         case Cmd::Up: at.up();break;
         case Cmd::Down: at.down();break;
