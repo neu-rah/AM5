@@ -23,7 +23,7 @@ struct ItemAPI:Def {
   template<typename Out> static constexpr bool printMenu(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr bool printBody(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr bool printItem(Out&,Ctx&) {return false;}
-  template<typename Out> static constexpr void print(Out&) {}
+  // template<typename Out> static constexpr void print(Out&) {}
   static constexpr void nav(CKE cke,Path) {}
 
   // template <typename Out>
@@ -49,6 +49,8 @@ struct ItemDef:APIOf<ItemAPI<Nil>,OO...> {
   using Base::nav;
   template<typename Out> void printMenu(Out& out,Ctx&& ctx) {Base::printMenu(out,ctx);}
   void enter(Path path) {nav({Cmd::Enter},path);}
+  template<typename... XX> using Ins=::ItemDef<XX...,OO...>;
+  template<typename... XX> using App=::ItemDef<OO...,XX...>;
 };
 
 struct IItem {
@@ -105,39 +107,6 @@ struct IItemDef:IItem, ItemDef<II...> {
 };
 
 //---------------------------------------------------------------------------------------------
-// template<typename T>
-// struct Data {
-//   template<typename O>
-//   struct Part:T,O {
-//     using Base=O;
-//     using Base::Base;
-//     using Def=typename T::Def;
-//     using Type=typename T::Type;
-//     auto get() {return T::get();}
-//     template<typename... OO>
-//     Part(const Def& def,OO&&... oo):T{def},Base{std::forward<OO>(oo)...}{}
-//     template<typename Out>
-//     void print(Out& out) {
-//       Out::fmtStart(Fmt::Data,{});
-//       out.put(get());
-//       Out::fmtStop(Fmt::Data,{});
-//       Base::print(out);
-//     }
-//     static constexpr void nav(CKE cke,Path path) {
-//       switch(cke.cmd) {
-//         case Cmd::Up: T::up();break;
-//         case Cmd::Down: T::down();break;
-//       }
-//       Base::nav(cke,path);
-//     }
-//   };
-// };
-
-// using Text=Data<typename TypeDef<const char*>::Value>;
-// using Int=Data<typename TypeDef<int>::Value>;
-// template<int& o> using IntRef=Data<typename TypeDef<int>::template Ref<o>>;
-// // using Float=Data<TypeDef<double>::Value>;
-
 using ActionFunc=void(*)(int);
 
 template<ActionFunc action>
@@ -151,7 +120,4 @@ struct Action {
     }
   };
 };
-
-
-
 

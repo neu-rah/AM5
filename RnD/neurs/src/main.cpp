@@ -35,15 +35,13 @@ int power=55;
 
 void op1(Sz i) {cout<<"option 1 called!"<<endl;}
 
-using MainMenu=ItemDef<
-  Menu<
-    Title<Text>,
-    StaticBody<
-      ItemDef<Text,Action<op1>>,
-      ItemDef<Text>,
-      ItemDef<Text>
-    >
-  >
+using MainMenu=MenuDef<
+  Title<Text>,
+  StaticBody<
+    ItemDef<Text,Action<op1>>,
+    ItemDef<Text>,
+    ItemDef<Text>
+  >//::Map<InsDataPrint>
 >;
 
 MainMenu menu{"Main menu",{"op1","op2","op3"}};
@@ -51,7 +49,10 @@ MainMenu menu{"Main menu",{"op1","op2","op3"}};
 NavDef<TreeNav,Root<MainMenu,menu>> nav;
 
 void run() {
-  nav.navPrint(out);
+  // nav.navPrint(out);
+  menu.print(out);
+  Ctx ctx{};
+  menu.body().printBody(out,ctx);
   cout<<endl;
 }
 

@@ -14,6 +14,7 @@
 #include "menu/sys/enums.h"
 #include <hapi.h>
 #include <cassert>
+#include <type_traits>
 
 using Sz=int;
 using Depth=char;

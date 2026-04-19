@@ -22,20 +22,34 @@ struct DataAPI:O {
   // template<typename Out> static void printTo(Out& out,Ctx& ctx) {}
 };
 
-template<typename N>
-struct Link:N {
-  template<typename O>
-  struct Part:N::Part<O> {
-    using Base=typename N::template Part<O>;
-    using Base::Base;
-    constexpr bool changed() {return Base::changed()||O::changed();}
-  };
-};
+// template<typename N>
+// struct Link:N {
+//   template<typename O>
+//   struct Part:N::Part<O> {
+//     using Base=typename N::template Part<O>;
+//     using Base::Base;
+//     constexpr bool changed() {return Base::changed()||O::changed();}
+//   };
+// };
+
+// template<typename... OO>
+// struct DataDef:APIOf<DataAPI<>,OO...>::template Map<Link> {
+//   using Base=typename APIOf<DataAPI<>,OO...>::template Map<Link>;
+// };
 
 template<typename... OO>
-struct DataDef:APIOf<DataAPI<>,OO...>::template Map<Link> {
-  using Base=typename APIOf<DataAPI<>,OO...>::template Map<Link>;
+struct DataDef:APIOf<DataAPI<>,OO...> {
+  using Base=APIOf<DataAPI<>,OO...>;
+    // struct DataPrint {
+    //   template<typename O>
+    //   struct Part:O {
+    //     using Base=O;
+    //     using Base::Base;
+    //   };
+    // };
 };
+
+
 
 //compile-time data --
 template<typename T,T data>
@@ -49,6 +63,7 @@ struct StaticData {
     static constexpr void set(const Type& o) {data=o;}
     constexpr operator Type&() {return get();}
     constexpr operator Type&() const {return get();}
+    template<typename Out> void print(Out& out) const {out.put(get());}
   };
 };
 
@@ -64,6 +79,7 @@ struct StaticRef {
     static constexpr void set(const Type& o) {data=o;}
     operator Type&() {return get();}
     operator Type&() const {return get();}
+    template<typename Out> void print(Out& out) const {out.put(get());}
   };
 };
 
@@ -77,10 +93,11 @@ struct Data {
     Type data;
     template<typename... OO> Part(const Type& o,OO&... oo):data{o},Base{oo...}{}
     constexpr Type& get() {return data;} 
-    constexpr Type& get() const {return data;} 
+    constexpr const Type& get() const {return data;} 
     constexpr void set(const Type& o) {data=o;}
     operator Type&() {return get();}
     operator Type&() const {return get();}
+    template<typename Out> void print(Out& out) const {out.put(get());}
   };
 };
 
@@ -141,3 +158,4 @@ struct NumRange {
     void down(N s=1) {get()=stepDown(s,get(),m_wraps);}
   };
 };
+

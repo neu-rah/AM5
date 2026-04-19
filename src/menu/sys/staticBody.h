@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "menu/sys/base.h"
+#include "menu/item.h"
 #include <cassert>
 #include <algorithm>
 
@@ -19,6 +19,8 @@ template<typename O,typename... OO>
 struct StaticBody {
   using Item=O;
   using Body=StaticBody<OO...>;
+  template<template<typename> class M>
+  using Map=StaticBody<M<O>,M<OO>...>;
   Item m_item;
   Body m_body;
   template<typename... II>
@@ -46,6 +48,7 @@ struct StaticBody {
 template<typename O>
 struct StaticBody<O> {
   using Item=O;
+  template<template<typename> class M> using Map=StaticBody<M<O>>;
   Item m_item;
   static constexpr Sz depth() {return Item::depth();}
   static constexpr Sz size() {return 1;}
