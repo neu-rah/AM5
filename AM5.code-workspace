@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "data",
+			"path": "RnD/data"
+		}
+	],
+	"settings": {}
+}

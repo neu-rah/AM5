@@ -1,0 +1,60 @@
+#include <iostream>
+using namespace std;
+
+struct Nil {};
+
+template<typename O=Nil>
+struct API:O {
+  static constexpr void print() {cout<<".";}
+};
+
+template<typename O,typename T>
+struct App:O::Part<T> {
+  static constexpr void print() {
+    O::print();
+    T::print();
+  }
+};
+
+template<typename O,typename... OO>
+struct Link {
+  template<typename T>
+  using Part=App<O,typename Link<OO...>::template Part<T>>;
+  // static constexpr void print() {
+  //   O::print();
+  //   Link<OO...>::print();
+  // }
+};
+
+template<typename O> struct Link<O>:O {
+  // static constexpr void print() {
+  //   O::print();
+  // }
+};
+
+template<typename T,T data>
+struct Data {
+  template<typename O>
+  struct Part {
+    using Type=T;
+    static constexpr T get() {return data;}
+  };
+};
+
+struct DataPrint {
+  template<typename O>
+  struct Part {
+    static constexpr void print() {cout<<O::get();}
+  };
+};
+
+Link<
+  DataPrint,
+  Data<int,42>
+>::Part<API<>> var;
+
+int main() {
+  // Link<DataPrint,Data<int,42>>::template Part<API<>>::f();
+  cout<<var.get()<<endl;
+  return 0;
+}

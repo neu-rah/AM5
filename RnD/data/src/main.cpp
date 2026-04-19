@@ -1,38 +1,37 @@
-// includes --
-  #include <menu.h>
-  #include <menu/fmt/textFmt.h>
-  #include <tinyTimeUtils.h>
+#include <iostream>
+using namespace std;
 
-  #ifdef ARDUINO
-    #include <Arduino.h>
-  #endif
+struct Nil {};
 
-  #ifdef __AVR__
-    #include <avr_std.h>
-    #include <streamFlow.h>
-    using namespace StreamFlow;
-    #define cout Serial
-  #else
-    #include <iostream>
-    #include <type_traits>
-    #include <cstring>
-    using namespace std;
-  #endif
-  using namespace std;
+template<typename Cfg=Nil>
+struct API:Cfg {
+  static constexpr void print() {}
+};
 
-void run() {
+template<typename O,typename T>
+struct App:O::Part<T> {};
+
+template<typename R>
+struct Link {
+  template<typename O>
+  struct Part:R {
+    static void print() {
+      R::print();
+      O::print();
+    }
+  };
+};
+
+struct A:Link<A> {
+  static void print() {cout<<"A";}
+};
+
+struct B:Link<B> {
+  static void print() {cout<<"B";}
+};
+
+int main() {
+  A::Part<B::Part<API<Nil>>>::print();
   cout<<endl;
+  return 0;
 }
-
-void setup(){
-  #ifdef ARDUINO
-    Serial.begin(115200);
-    while(!Serial);
-  #endif
-}
-
-#ifdef ARDUINO
-  void loop() {run();}
-#else
-  int main() {setup();run();}
-#endif
