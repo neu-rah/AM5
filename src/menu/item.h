@@ -38,27 +38,26 @@ struct ItemAPI:Def {
   template<int> using WithId=ItemAPI<CRTP<ItemAPI<Nil>>>;
 };
 
-template<typename N>
-struct ItemLink:N {
-  template<typename O>
-  struct Part:N::template Part<O> {
-    using Base=typename N::template Part<O>;
-    using Base::Base;
-    // constexpr void sync() {Base::sync();O::sync();}
-    // constexpr bool changed() const {return Base::changed()||O::changed();}
-    //API chain calls for nav function
-    template<typename Nav>
-    bool nav(Nav& n,const CKE& cke,const Path p) 
-      {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
-  };
-};
+// template<typename N>
+// struct ItemLink:N {
+//   template<typename O>
+//   struct Part:N::template Part<O> {
+//     using Base=typename N::template Part<O>;
+//     using Base::Base;
+//     // constexpr void sync() {Base::sync();O::sync();}
+//     // constexpr bool changed() const {return Base::changed()||O::changed();}
+//     //API chain calls for nav function
+//     template<typename Nav>
+//     bool nav(Nav& n,const CKE& cke,const Path p) 
+//       {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
+//   };
+// };
 
 template<typename... OO>
-struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<ItemLink> {
-  using Base=typename APIOf<ItemAPI<>,OO...>::template Map<ItemLink>;
+struct ItemDef:APIOf<ItemAPI<>,OO...> {//::template Map<ItemLink> {
+  using Base=APIOf<ItemAPI<>,OO...>;//::template Map<ItemLink>;
   using Base::Base;
   using Base::printMenu;
-  // using Base::nav;
   using Base::enabled;
   using Base::print;
   template<typename Out> void printMenu(Out& out,Ctx&& ctx) {Base::printMenu(out,ctx);}
@@ -85,7 +84,6 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<ItemLink> {
 };
 
 struct IItem {
-  // virtual Depth depth() const {return 0;}
   virtual bool printMenu(IOut& out,Ctx& ctx)=0;
   virtual bool printBody(IOut& out,Ctx&)=0;
   virtual void print(IOut& out,Ctx&)=0;
@@ -348,6 +346,7 @@ struct ItemRef {
     static constexpr bool enabled() {return ref.enable(); }
     static constexpr void enable(bool o=true) {ref.enable(o);}
     static constexpr bool changed() {return ref.changed();}
+    template<typename Out> static constexpr bool changed(Out& out) {return ref.changed(out);}
     static constexpr void sync() {ref.sync();}
     static constexpr bool up() {return ref.up();}
     static constexpr bool down() {return ref.down();}

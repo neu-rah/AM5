@@ -4,11 +4,7 @@
 
 template<typename T,T data[],Sz _sz>
 struct CArrayBody {
-  static constexpr Depth depth() {
-    // Sz o{0};
-    // for(Sz i=0;i<_sz;i++) if(data[i].depth()>o) o=data[i].depth();
-    return 1;
-  }
+  static constexpr Depth depth() {return 1;}
   static constexpr const Sz size() {return _sz;}
   static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i];}
 
@@ -32,11 +28,7 @@ struct CArrayBody {
 
 template<typename T,T* data[],Sz _sz>
 struct CPtrArrayBody {
-  static constexpr Depth depth() {
-    // Sz o{0};
-    // for(Sz i=0;i<_sz;i++) if(data[i].depth()>o) o=data[i].depth();
-    return 1;
-  }
+  static constexpr Depth depth() {return 1;}
   static constexpr const Sz size() {return _sz;}
   static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i]->size();}
 

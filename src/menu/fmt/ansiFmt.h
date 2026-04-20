@@ -76,7 +76,7 @@ struct ANSIFmt {
           break;
         default:break;
       }
-      // Base::template fmtStop<tag>(ctx);
+      Base::template fmtStop<tag>(ctx);
     }
   };
 };

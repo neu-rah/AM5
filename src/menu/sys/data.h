@@ -21,7 +21,6 @@ struct DataAPI:O {
   using Base::Base;
   static constexpr bool changed() {return false;}
   static constexpr void sync() {}
-  // template<typename Out> static void printTo(Out& out,Ctx& ctx) {}
 };
 
 template<typename... OO>
@@ -104,7 +103,7 @@ struct Watch {
     using Base::get;
     using Base::Base;
     std::remove_reference_t<Type> watched;
-    constexpr bool changed() const {return get()!=watched;}
+    constexpr bool changed() const {return get()!=watched||Base::changed();}
     constexpr void sync() {watched=get();}
   };
 };
@@ -145,7 +144,6 @@ struct NumRange {
     constexpr N clamp(N o) const {return o<m_low?m_low:o>m_high?m_high:o;}
     constexpr N stepUp(N o,N s,Wraps w) {return m_high-o>=s?o+s:w==Wraps::yes?m_low:m_high;}
     constexpr N stepDown(N s,N o,Wraps w) {return o-m_low>=s?o-s:w==Wraps::yes?m_high:m_low;}
-    // static constexpr N step(N s,N o,Wraps w) {return s<0?stepDown(-s,o,w):stepUp(s,o,w);}
     void up(N s=1) {get()=stepUp(s,get(),m_wraps);}
     void down(N s=1) {get()=stepDown(s,get(),m_wraps);}
   };

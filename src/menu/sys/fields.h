@@ -16,12 +16,9 @@ struct ToggleBehave {
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       if(cke.cmd==Cmd::Enter) {
         n.open();
-        // n.doNav({Cmd::Enter},Base::len(),Wraps::yes);
         n.go(Base::m_sel);
         n.doNav({Cmd::Up},Base::size(),Wraps::yes);
         Base::m_sel=n.sel();
-        // n.doNav({Cmd::Enter},Base::len(),Wraps::yes);
-        // n.close();
         return Base::nav(n,cke,path);
       }
       bool r=Base::nav(n,cke,path);

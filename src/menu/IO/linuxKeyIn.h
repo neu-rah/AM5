@@ -17,12 +17,6 @@
 #include <termios.h>
 #include "menu/in.h"
 
-// extern struct termios orig_termios;
-// static void reset_terminal_mode();
-// static void set_conio_terminal_mode();
-// static int kbhit();
-// static int getch();
-
 static struct termios orig_termios;
 
 static void reset_terminal_mode() {tcsetattr(0, TCSANOW, &orig_termios);}

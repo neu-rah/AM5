@@ -29,7 +29,7 @@ struct XmlFmt {
       }
     }
     template<Fmt tag>
-    void fmtStart(Ctx& ctx) {
+    void fmtStart(const Ctx& ctx) {
       if(tag!=Fmt::Data) {
         put('<');
         putTag<tag>();
@@ -45,7 +45,7 @@ struct XmlFmt {
       Base::template fmtStart<tag>(ctx);
     }
     template<Fmt tag>
-    void fmtStop(Ctx& ctx) {
+    void fmtStop(const Ctx& ctx) {
       Base::template fmtStop<tag>(ctx);
       switch(tag) {
         case Fmt::EditCursor:

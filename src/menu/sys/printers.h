@@ -24,16 +24,10 @@ struct FmtPrinter {
 };
 
 using ViewPrinter=FmtPrinter<Fmt::View>;
-// using MenuPrinter=FmtPrinter<Fmt::Menu>;
-// using TitlePrinter=FmtPrinter<Fmt::Title>;
-// using BodyPrinter=FmtPrinter<Fmt::Body>;
-// using ItemPrinter=FmtPrinter<Fmt::Item>;
-// using IndexPrinter=FmtPrinter<Fmt::Index>;
 using AccelPrinter=FmtPrinter<Fmt::Accel>;
 using LabelPrinter=FmtPrinter<Fmt::Label>;
 using FieldPrinter=FmtPrinter<Fmt::Field>;
 using UnitPrinter=FmtPrinter<Fmt::Unit>;
-// using NavCursorPrinter=FmtPrinter<Fmt::NavCursor>;
 using EditModePrinter=FmtPrinter<Fmt::EditMode>;
 using TextEditCursorPrinter=FmtPrinter<Fmt::EditCursor>;
 

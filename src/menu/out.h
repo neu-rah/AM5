@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "menu/sys/base.h"
+
 template<typename Cfg=Nil>
 struct OutAPI:Cfg {
   using Config=Cfg;
