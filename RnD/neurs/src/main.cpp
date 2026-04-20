@@ -197,71 +197,71 @@ template<typename... OO> using Desc=OnFocus<typename Put<OO...>::template ToOut<
 using Back=ItemDef<CloseOnSelect,AsLabel<StaticText<text::back>>,Desc<StaticText<desc::back>>>;
 using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>,Desc<StaticText<desc::quit>>>>;
 
-// using CItem=ItemDef<Text>;
+using CItem=ItemDef<Text>;
 
-// CItem cBody[]{
-//   "..",
-//   ".pio/",
-//   "src/",
-//   "all of the same type.txt",
-//   "platformio.ini",
-//   "README.md"
-// };
+CItem cBody[]{
+  "..",
+  ".pio/",
+  "src/",
+  "all of the same type.txt",
+  "platformio.ini",
+  "README.md"
+};
 
-// IItem* iBody[]{
-//   new IItemDef<StaticText<text::op1>>{},
-//   new IItemDef<StaticText<text::op2>>{},
-//   new IItemDef<StaticText<text::op3>>{},
-//   new IItemDef<Text>{"what else..."},
-//   new IItemDef<Text>{"IItem*"},
-//   new IItemDef<StaticText<text::back>>{}
-//   // new Back::As<IItemDef>{}
-// };
+IItem* iBody[]{
+  new IItemDef<StaticText<text::op1>>{},
+  new IItemDef<StaticText<text::op2>>{},
+  new IItemDef<StaticText<text::op3>>{},
+  new IItemDef<Text>{"what else..."},
+  new IItemDef<Text>{"IItem*"},
+  new IItemDef<StaticText<text::back>>{}
+  // new Back::As<IItemDef>{}
+};
 
-// using ChooseDemo=ChooseFieldDef<
-//   Title<
-//     StaticText<text::choose_demo>,
-//     AsEditMode<>,//edit mode indicator
-//     BodyAction<action::subIdx>
-//   >,
-//   StaticBody<//sub menu static body
-//     ItemDef<AsField<StaticText<text::sub1>>>,
-//     ItemDef<AsField<StaticText<text::sub2>>>,
-//     ItemDef<AsField<StaticText<text::sub3>>>,
-//     ItemDef<AsField<StaticText<text::sub4>>>,
-//     ItemDef<AsField<StaticText<text::sub5>>>
-//     //,Back <--//TODO: extend the enter nav to this level and respect the handling (same as esc)
-//   >,
-//   Wraps::yes
-// >;
+using ChooseDemo=ChooseFieldDef<
+  Title<
+    StaticText<text::choose_demo>,
+    AsEditMode<>,//edit mode indicator
+    BodyAction<action::subIdx>
+  >,
+  StaticBody<//sub menu static body
+    ItemDef<AsField<StaticText<text::sub1>>>,
+    ItemDef<AsField<StaticText<text::sub2>>>,
+    ItemDef<AsField<StaticText<text::sub3>>>,
+    ItemDef<AsField<StaticText<text::sub4>>>,
+    ItemDef<AsField<StaticText<text::sub5>>>
+    //,Back <--//TODO: extend the enter nav to this level and respect the handling (same as esc)
+  >,
+  Wraps::yes
+>;
 
-// using SelectDemo=SelectFieldDef<
-//   Title<
-//     AsLabel<StaticText<text::select_demo>>,
-//     AsEditMode<>,//edit mode indicator
-//     BodyAction<action::subIdx>
-//   >,
-//   StaticBody<//sub menu static body
-//     ItemDef<AsField<StaticText<text::sub1>>>,
-//     ItemDef<AsField<StaticText<text::sub2>>>,
-//     ItemDef<AsField<StaticText<text::sub3>>>,
-//     ItemDef<AsField<StaticText<text::sub4>>>,
-//     ItemDef<AsField<StaticText<text::sub5>>>
-//   >,
-//   Wraps::yes
-// >;
+using SelectDemo=SelectFieldDef<
+  Title<
+    AsLabel<StaticText<text::select_demo>>,
+    AsEditMode<>,//edit mode indicator
+    BodyAction<action::subIdx>
+  >,
+  StaticBody<//sub menu static body
+    ItemDef<AsField<StaticText<text::sub1>>>,
+    ItemDef<AsField<StaticText<text::sub2>>>,
+    ItemDef<AsField<StaticText<text::sub3>>>,
+    ItemDef<AsField<StaticText<text::sub4>>>,
+    ItemDef<AsField<StaticText<text::sub5>>>
+  >,
+  Wraps::yes
+>;
 
-// using ToggleDemo=ToggleFieldDef<
-//   Title<
-//     AsLabel<StaticText<text::toggle_demo>>,
-//     AsEditMode<>,//edit mode indicator
-//     BodyAction<action::subIdx>
-//   >,
-//   StaticBody<//sub menu static body
-//     ItemDef<CloseOnSelect,AsField<StaticText<text::no>>>,
-//     ItemDef<CloseOnSelect,AsField<StaticText<text::yes>>>
-//   >
-// >;
+using ToggleDemo=ToggleFieldDef<
+  Title<
+    AsLabel<StaticText<text::toggle_demo>>,
+    AsEditMode<>,//edit mode indicator
+    BodyAction<action::subIdx>
+  >,
+  StaticBody<//sub menu static body
+    ItemDef<CloseOnSelect,AsField<StaticText<text::no>>>,
+    ItemDef<CloseOnSelect,AsField<StaticText<text::yes>>>
+  >
+>;
 
 using Power=NumFieldDef<
   Title<
@@ -286,24 +286,24 @@ using MainMenu=MenuDef<
       Title<ItemNav<Wraps::yes>,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>,
       StaticBody<
         Power,
-        // ToggleDemo,
-        // SelectDemo,
-        // ChooseDemo,
+        ToggleDemo,
+        SelectDemo,
+        ChooseDemo,
         Back
       >
     >,
-    // // MenuDef<//sub menu with C array body (all items of the type)
-    // //   Title<BodyAction<action::subIdx>,ItemNav<Wraps::no>,StaticText<text::array_sub_menu>,Desc<StaticText<desc::array_sub_menu>>>,
-    // //   CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
-    // // >,
-    // // MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
-    // //   Title<BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
-    // //   CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>
-    // // >,
-    // // MenuDef<
-    // //   Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
-    // //   StdBody<vector<IItem*>>
-    // // >,
+    MenuDef<//sub menu with C array body (all items of the type)
+      Title<BodyAction<action::subIdx>,ItemNav<Wraps::no>,StaticText<text::array_sub_menu>,Desc<StaticText<desc::array_sub_menu>>>,
+      CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
+    >,
+    MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
+      Title<BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
+      CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>
+    >,
+    MenuDef<
+      Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
+      StdBody<vector<IItem*>>
+    >,
     Quit
   >
 >;
@@ -345,8 +345,16 @@ void setup(){
   footer.setColors(BLUE,BLACK);
   footer.clear();
   footer.put("footer");
+  msg.mode(LockMode::None);
+  msg.setColors(GREEN,BLACK);
+  msg.clear();
+  msg.put(".·•<::(log)::>•·.");
   out.mode(LockMode::None);
   nav.navPrint(out);
+  //populate std container menu
+  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
+  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
+  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
 }
 
 #ifdef ARDUINO

@@ -4,12 +4,12 @@ template<typename T>
 struct StdBody:T {
   // T data;
   static constexpr Depth depth() {return 1;}
-  constexpr Sz len() const {return T::size();}
-  constexpr Sz len(Sz i) const {return T::operator[](i).len();}
+  constexpr Sz size() const {return T::size();}
+  constexpr Sz size(Sz i) const {return T::operator[](i).size();}
 
-  template<bool kbd,typename Nav> 
+  template<typename Nav> 
   bool nav(Nav& n,CKE cke,Path path,Sz i) 
-    {return T::operator[](i)->template nav<kbd>(n,cke,path);}
+    {return T::operator[](i)->nav(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
     for(auto i=T::begin();i<T::end()&&out.freeY();i++) out.printItem(**i,ctx);

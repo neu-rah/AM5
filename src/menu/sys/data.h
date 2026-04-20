@@ -101,7 +101,7 @@ struct Watch {
     using Base::get;
     using Base::Base;
     std::remove_reference_t<Type> watched;
-    constexpr bool changed() {return get()!=watched;}
+    constexpr bool changed() const {return get()!=watched;}
     constexpr void sync() {watched=get();}
   };
 };

@@ -37,8 +37,8 @@ struct StaticBody {
     return m_body.printBody(out,ctx)||m_item.changed();
   }
 
-  template<typename Out> void printItem(Out& out,Ctx& ctx,Sz i)
-    {return i?m_body.printItem(out,ctx,i-1):m_item.print(out);}
+  template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
+    {return i?m_body.printItem(out,ctx,i-1):(m_item.print(out,ctx),m_item.changed());}
 
   template<typename Nav>
   bool nav(Nav& n,CKE cke,Path path,Sz i)

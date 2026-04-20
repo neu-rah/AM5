@@ -9,12 +9,12 @@ struct CArrayBody {
     // for(Sz i=0;i<_sz;i++) if(data[i].depth()>o) o=data[i].depth();
     return 1;
   }
-  static constexpr const Sz len() {return _sz;}
-  static constexpr const Sz len(Sz i) {assert(i<_sz);return data[i];}
+  static constexpr const Sz size() {return _sz;}
+  static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i];}
 
-  template<bool kbd,typename Nav> 
+  template<typename Nav> 
   bool nav(Nav& n,CKE cke,Path path,Sz i) 
-    {return data[i].template nav<kbd>(n,cke,path);}
+    {return data[i].nav(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
     for(Sz i=0;i<_sz&&out.freeY();i++) out.printItem(data[ctx.idx],ctx);
@@ -37,12 +37,12 @@ struct CPtrArrayBody {
     // for(Sz i=0;i<_sz;i++) if(data[i].depth()>o) o=data[i].depth();
     return 1;
   }
-  static constexpr const Sz len() {return _sz;}
-  static constexpr const Sz len(Sz i) {assert(i<_sz);return data[i]->len();}
+  static constexpr const Sz size() {return _sz;}
+  static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i]->size();}
 
-  template<bool kbd,typename Nav> 
+  template<typename Nav> 
   bool nav(Nav& n,CKE cke,Path path,Sz i) 
-    {return data[i]->template nav<kbd>(n,cke,path);}
+    {return data[i]->nav(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
     for(Sz i=0;i<_sz&&out.freeY();i++) out.printItem(*data[ctx.idx],ctx);

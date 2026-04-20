@@ -11,20 +11,20 @@ struct ToggleBehave {
   template<typename I>
   struct Part:RecallNavPos::Part<I> {
     using Base=typename RecallNavPos::template Part<I>;
-    static constexpr const Wraps s_wraps{Wraps::yes};
-    template<bool kbd,typename Nav>
+    static constexpr const Wraps wraps{Wraps::yes};
+    template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       if(cke.cmd==Cmd::Enter) {
         n.open();
         // n.doNav({Cmd::Enter},Base::len(),Wraps::yes);
         n.go(Base::m_sel);
-        n.doNav({Cmd::Up},Base::len(),Wraps::yes);
+        n.doNav({Cmd::Up},Base::size(),Wraps::yes);
         Base::m_sel=n.sel();
         // n.doNav({Cmd::Enter},Base::len(),Wraps::yes);
         // n.close();
-        return Base::template nav<kbd>(n,cke,path);
+        return Base::nav(n,cke,path);
       }
-      bool r=Base::template nav<kbd>(n,cke,path);
+      bool r=Base::nav(n,cke,path);
       return r;
     }
   };

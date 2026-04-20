@@ -15,9 +15,10 @@
 
 template<typename Def=Nil>
 struct ItemAPI:Def {
+  static constexpr const Wraps wraps{Wraps::no};
   template<typename> using Requires=std::false_type;
   template<typename> using Excludes=std::true_type;
-  static constexpr Depth depth() {return 0;}
+  static constexpr Depth depth() {return 1;}
   static constexpr bool enabled() {return true;}
   static constexpr void enable(bool=true) {}
   static constexpr bool changed() {return false;}
@@ -40,7 +41,7 @@ struct ItemLink:N {
     using Base=typename N::template Part<O>;
     using Base::Base;
     constexpr void sync() {Base::sync();O::sync();}
-    constexpr bool changed() {return Base::changed()||O::changed();}
+    constexpr bool changed() const {return Base::changed()||O::changed();}
     //API chain calls for nav function
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path p) {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
@@ -63,12 +64,12 @@ struct IItem {
   // virtual Depth depth() const {return 0;}
   virtual bool printMenu(IOut& out,Ctx& ctx) {return false;}
   virtual bool printBody(IOut& out,Ctx&) {return false;}
-  virtual void print(IOut& out) {}
+  virtual void print(IOut& out,Ctx&) {}
   virtual bool enabled() const {return true;}
   virtual void enable(bool=true) {}
   virtual bool changed() const {return false;}
   virtual bool changed(IOut& out) const {return false;}
-  virtual void sync() const {}
+  virtual void sync() {}
   virtual void sync(IOut& out) {}
   virtual bool up() const {return false;}
   virtual bool down() const {return false;}
@@ -87,10 +88,10 @@ struct IItemDef:IItem, ItemDef<II...> {
 
   // virtual Depth depth() const override {return Base::depth();}
   virtual bool changed() const override {return Base::changed();}
-  virtual void sync() const override {Base::sync();}
+  virtual void sync() override {Base::sync();}
   virtual bool printMenu(IOut& out,Ctx& ctx) override {return Base::printMenu(out,ctx);}
   virtual bool printBody(IOut& out,Ctx& ctx) override {return Base::printBody(out,ctx);}
-  virtual void print(IOut& out) override {Base::print(out);}
+  virtual void print(IOut& out,Ctx& ctx) override {Base::print(out,ctx);}
   template <typename Out> static constexpr bool printMenu(Out& out,Ctx& ctx) {return Base::printMenu(out,ctx);}
   template<typename Out> static constexpr void print(Out& out,Ctx& ctx) {return Base::print(out,ctx);}
 
@@ -256,7 +257,7 @@ struct ParentDraw {
 };
 
 /// @brief put nav focus on this item on Cmd::Enter
-template<Wraps wraps>
+template<Wraps w>
 struct ItemNav {
   template<typename I>
   struct Part:I {
@@ -264,7 +265,7 @@ struct ItemNav {
     using Base::Base;
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ItemNav<>");
     static_assert(I::template Excludes<Class<ParentDraw>>::value,"ParentDraw must preseed ItemNav<>");
-    static constexpr const Wraps s_wraps{wraps};
+    static constexpr const Wraps wraps{w};
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       // bool r=Base::nav(n,cke,path);
