@@ -10,7 +10,10 @@
  */
 #pragma once
 
+#include "menu/sys/enums.h"
 #include "menu/sys/base.h"
+#include "menu/sys/data.h"
+#include "menu/sys/printers.h"
 #include "menu/sys/staticBody.h"
 #include "menu/out.h"
 #include "menu/item.h"

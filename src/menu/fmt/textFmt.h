@@ -27,6 +27,7 @@ struct TextFmt {
     static void fmtStop(const Ctx& ctx) {
       switch(tag) {
         case Fmt::Menu:
+        case Fmt::Title:
         case Fmt::Item:
           Base::nl();
           break;

@@ -15,6 +15,9 @@
 #include <hapi.h>
 #include <cassert>
 #include <type_traits>
+#include <utility>
+#include <cstdlib>
+#include <limits>
 
 using Sz=int;
 using Depth=char;

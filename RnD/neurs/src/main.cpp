@@ -25,7 +25,11 @@ OutDef<
   MenuPrinter<
     TitlePrinter,
     BodyPrinter,
-    ItemPrinter<PrintItem>
+    ItemPrinter<
+      IndexPrinter,
+      NavCursorPrinter,
+      ItemBodyPrinter
+    >
   >,
   TextFmt,
   ConsoleOut
@@ -49,9 +53,10 @@ MainMenu menu{"Main menu",{"op1","op2","op3"}};
 NavDef<TreeNav,Root<MainMenu,menu>> nav;
 
 void run() {
-  nav.navPrint(out);
-  // menu.print(out);
-  // Ctx ctx{};
+  // nav.navPrint(out);
+  out.mode(LockMode::None);
+  Ctx ctx{};
+  menu.printMenu(out,ctx);
   // menu.body().printBody(out,ctx);
   cout<<endl;
 }
