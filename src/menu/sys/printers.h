@@ -69,7 +69,7 @@ struct TitlePrinter {
     template<typename I>
     bool printMenu(I& i,Ctx& ctx) {
       O::template fmtStart<Fmt::Title>(ctx);
-      i.print(O::obj());//,ctx);//title
+      i.print(O::obj(),ctx);//title
       O::template fmtStop<Fmt::Title>(ctx);
       return O::printMenu(i,ctx);
     }
@@ -180,7 +180,7 @@ struct ItemBodyPrinter {
     using Base=O;
     template<typename I>
     bool printItem(I& i,Ctx& ctx) {
-      i.print(Base::obj());//,ctx);
+      i.print(Base::obj(),ctx);
       return Base::printItem(i,ctx)||i.changed();
     }
   };

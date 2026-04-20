@@ -13,6 +13,8 @@
 
 #include "menu/sys/base.h"
 
+using CText=const char*;
+
 template<typename O=Nil> 
 struct DataAPI:O {
   using Base=O;
@@ -26,16 +28,7 @@ template<typename... OO>
 struct DataDef:APIOf<DataAPI<>,OO...> {
   using Base=APIOf<DataAPI<>,OO...>;
   using Base::Base;
-    // struct DataPrint {
-    //   template<typename O>
-    //   struct Part:O {
-    //     using Base=O;
-    //     using Base::Base;
-    //   };
-    // };
 };
-
-
 
 //compile-time data --
 template<typename T,T data>
@@ -49,7 +42,7 @@ struct StaticData {
     static constexpr void set(const Type& o) {data=o;}
     constexpr operator Type&() {return get();}
     constexpr operator Type&() const {return get();}
-    template<typename Out> void print(Out& out) const {out.put(get());}
+    template<typename Out> void print(Out& out,Ctx& ctx) const {out.put(get());}
   };
 };
 
@@ -65,9 +58,12 @@ struct StaticRef {
     static constexpr void set(const Type& o) {data=o;}
     operator Type&() {return get();}
     operator Type&() const {return get();}
-    template<typename Out> void print(Out& out) const {out.put(get());}
+    template<typename Out> void print(Out& out,Ctx& ctx) const {out.put(get());}
   };
 };
+
+template<const CText& text>
+using StaticText=StaticRef<const CText,text>;
 
 template<typename T>
 struct Data {
@@ -83,8 +79,7 @@ struct Data {
     constexpr void set(const Type& o) {data=o;}
     operator Type&() {return get();}
     operator Type&() const {return get();}
-    template<typename Out> void print(Out& out) const {
-      Ctx ctx{};
+    template<typename Out> void print(Out& out,Ctx& ctx) const {
       out.template fmtStart<Fmt::Data>(ctx);
       out.put(get());
       out.template fmtStop<Fmt::Data>(ctx);

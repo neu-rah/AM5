@@ -12,7 +12,7 @@ struct Menu {
     using Body = B;
     using Base::Base;
     Body m_body;
-    template<typename... OO> Part(OO... oo):m_body{oo...}{}
+    template<typename... OO> Part(OO&&... oo):m_body{std::forward<OO>(oo)...}{}
     
   //api--
     constexpr Part(Base&&t,B&&b):Base{std::forward<Base>(t)},m_body{std::forward<B>(b)}{}
@@ -59,25 +59,25 @@ struct Menu {
     Body& body() {return m_body;}
 
   //Id--
-    // static constexpr bool hasId(int id) {return Body::hasId(id);}
-    // template<int id> using HasId=Any<std::integral_constant<bool,id==Base::getId()>,typename Body::template HasId<id>>;
+    static constexpr bool hasId(int id) {return Body::hasId(id);}
+    template<int id> using HasId=std::integral_constant<bool,id==Base::getId()||typename Body::template HasId<id>{}>;
 
-    // template<int id> using WithId=typename std::conditional<
-    //   id==Base::getId(),
-    //   This,
-    //   typename Body::template WithId<id>
-    // >::type;
+    template<int id> using WithId=typename std::conditional<
+      id==Base::getId(),
+      This,
+      typename Body::template WithId<id>
+    >::type;
 
-    // template<int id> constexpr const When<id==Base::getId(),This>& withId() const {return *this;}
-    // template<int id> When<id==Base::getId(),This>& withId() {return *this;}
+    template<int id> constexpr const std::enable_if_t<id==Base::getId(),This>& withId() const {return *this;}
+    template<int id> std::enable_if_t<id==Base::getId(),This>& withId() {return *this;}
 
-    // template<int id>
-    // constexpr const When<id!=Base::getId()&&HasId<id>::value,WithId<id>>&
-    // withId() const {return m_body.template withId<id>();}
+    template<int id>
+    constexpr const std::enable_if_t<id!=Base::getId()&&HasId<id>::value,WithId<id>>&
+    withId() const {return m_body.template withId<id>();}
 
-    // template<int id>
-    // When<id!=Base::getId()&&HasId<id>::value,WithId<id>>&
-    // withId() {return m_body.template withId<id>();}
+    template<int id>
+    std::enable_if_t<id!=Base::getId()&&HasId<id>::value,WithId<id>>&
+    withId() {return m_body.template withId<id>();}
   };
 };
 

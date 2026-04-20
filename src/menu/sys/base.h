@@ -28,9 +28,11 @@
   #include <cassert>
   #include <type_traits>
   #include <utility>
+  #include <cstring>
   #include <cstdlib>
   #include <cstdio>
   #include <limits>
+  #include <algorithm>
 #endif
 
 
@@ -62,7 +64,7 @@ struct Path {
   operator bool() const {return len==0;}
   Path focus(Depth l) const {assert(l<=len);return {l,(Sz*)&data[0]};}
   Path next() const {return Path{(Depth)(len-1),&data[1]};}
-  Sz sel() const {assert(len>0);return data[0];}
+  Sz sel() const {return len?data[0]:0;}
   Sz last() const {return data[len-1];}
 };
 

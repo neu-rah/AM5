@@ -57,8 +57,6 @@ struct OutLink:N {
   struct Part:N::Part<O> {
     using Base=typename N::template Part<O>;
     using Base::Base;
-    // template<Fmt tag> void fmtStart(const Ctx& ctx) {}
-    // template<Fmt tag> void fmtStop(const Ctx& ctx) {}
   };
 };
 
@@ -69,10 +67,10 @@ struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>{//}::template Map<OutLink>{
   using Base=APIOf<API,O,OO...>;//::template Map<OutLink>;
   using Base::printItem;
   using Base::obj;
-  // static_assert(Base::template Excludes<IsCursor>::value||Base::template Requires<IsDataParser>::value,"Cursor requires preseeding DataParser<>");
-  // static_assert(Base::template Excludes<Class<class Clip>>::value||Base::template Requires<IsDataParser>::value,"Clip requires preseeding DataParser<>");
-  // static_assert(Base::template Excludes<Class<class TexWrap>>::value||Base::template Requires<IsDataParser>::value,"TextWrap requires preseeding DataParser<>");
-  // static_assert(Base::template Excludes<Class<class UTF8>>::value||Base::template Requires<IsDataParser>::value,"UTF8 requires preseeding DataParser<>");
+  static_assert(Base::template Excludes<IsCursor>::value||Base::template Requires<IsDataParser>::value,"Cursor requires preseeding DataParser<>");
+  static_assert(Base::template Excludes<Class<class Clip>>::value||Base::template Requires<IsDataParser>::value,"Clip requires preseeding DataParser<>");
+  static_assert(Base::template Excludes<Class<class TexWrap>>::value||Base::template Requires<IsDataParser>::value,"TextWrap requires preseeding DataParser<>");
+  static_assert(Base::template Excludes<Class<class UTF8>>::value||Base::template Requires<IsDataParser>::value,"UTF8 requires preseeding DataParser<>");
   template<typename Item>
   bool printTitle(const Item& item,Ctx& ctx){
     Base::fmtStart(Fmt::Title,ctx);
@@ -171,24 +169,25 @@ struct IOutDef:IOut,DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>{
   // template<typename I> static constexpr bool printItem(I& item,Ctx& ctx) {return printItem(*reinterpret_cast<IItemDef<I>*>(&item),ctx);}
 };
 
-template<typename... OO,typename T> 
-DefinedOut<OO...>& operator<<(DefinedOut<OO...>& out,const T& o) {out.put(o);return out;}
+//generic stream to outputs -------------------------------------
+  template<typename... OO,typename T> 
+  DefinedOut<OO...>& operator<<(DefinedOut<OO...>& out,const T& o) {out.put(o);return out;}
 
-template<template<typename...> class T,typename... NN,typename... OO> 
-DefinedOut<OO...>& operator<<(DefinedOut<OO...>& out,const T<NN...> o) {o.printItem(out);return out;}
+  template<template<typename...> class T,typename... NN,typename... OO> 
+  DefinedOut<OO...>& operator<<(DefinedOut<OO...>& out,const T<NN...> o) {o.printItem(out);return out;}
 
-template<typename... OO> DefinedOut<OO...>& endl (DefinedOut<OO...>& s) {s.nl();return s;}
+  template<typename... OO> DefinedOut<OO...>& endl (DefinedOut<OO...>& s) {s.nl();return s;}
 
-template<typename... OO> DefinedOut<OO...>& flush(DefinedOut<OO...>& s) {s.flush();return s;}
+  template<typename... OO> DefinedOut<OO...>& flush(DefinedOut<OO...>& s) {s.flush();return s;}
 
-template<Sz x,Sz y,typename... OO> DefinedOut<OO...>& xy(DefinedOut<OO...>& s) {s.xy(x,y);return s;}
+  template<Sz x,Sz y,typename... OO> DefinedOut<OO...>& xy(DefinedOut<OO...>& s) {s.xy(x,y);return s;}
 
-template<size_t n,typename... OO> 
-DefinedOut<OO...>& operator<<(DefinedOut<OO...>& out,const char t[n]){for(int i=0;i<n;i++) out.put(t[i]);}
+  template<size_t n,typename... OO> 
+  DefinedOut<OO...>& operator<<(DefinedOut<OO...>& out,const char t[n]){for(int i=0;i<n;i++) out.put(t[i]);}
 
-template<typename... OO> 
-DefinedOut<OO...>& operator<<(DefinedOut<OO...>& out,DefinedOut<OO...>&(f)(DefinedOut<OO...>&))
-  {f(out);return out;}
+  template<typename... OO> 
+  DefinedOut<OO...>& operator<<(DefinedOut<OO...>& out,DefinedOut<OO...>&(f)(DefinedOut<OO...>&))
+    {f(out);return out;}
 
 //internal components --
 

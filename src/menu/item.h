@@ -17,7 +17,7 @@ template<typename Def=Nil>
 struct ItemAPI:Def {
   template<typename> using Requires=std::false_type;
   template<typename> using Excludes=std::true_type;
-  static constexpr Sz depth() {return 1;}
+  static constexpr Depth depth() {return 0;}
   static constexpr bool enabled() {return true;}
   static constexpr void enable(bool=true) {}
   static constexpr bool changed() {return false;}
@@ -27,21 +27,23 @@ struct ItemAPI:Def {
   template<typename Out> static constexpr bool printItem(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr void print(Out&) {}
   template<typename Nav> static constexpr bool nav(Nav& n,CKE cke,Path) {return false;}
+  //Id--
+  static constexpr int getId() {return -1;}
+  template<int> using HasId=std::false_type;
+  template<int> using WithId=ItemAPI<CRTP<ItemAPI<Nil>>>;
 };
 
 template<typename N>
 struct ItemLink:N {
   template<typename O>
-  struct Part:N::Part<O> {
+  struct Part:N::template Part<O> {
     using Base=typename N::template Part<O>;
     using Base::Base;
-    // constexpr bool changed() {return Base::changed()||O::changed();}
+    constexpr void sync() {Base::sync();O::sync();}
+    constexpr bool changed() {return Base::changed()||O::changed();}
     //API chain calls for nav function
     template<typename Nav>
-    bool nav(Nav& n,const CKE& cke,const Path p) {
-      dout<<"•"<<flush;
-      return Base::nav(n,cke,p)||O::nav(n,cke,p);
-    }
+    bool nav(Nav& n,const CKE& cke,const Path p) {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
   };
 };
 
@@ -61,7 +63,7 @@ struct IItem {
   // virtual Depth depth() const {return 0;}
   virtual bool printMenu(IOut& out,Ctx& ctx) {return false;}
   virtual bool printBody(IOut& out,Ctx&) {return false;}
-  virtual void print(IOut& out,Ctx& ctx) {}
+  virtual void print(IOut& out) {}
   virtual bool enabled() const {return true;}
   virtual void enable(bool=true) {}
   virtual bool changed() const {return false;}
@@ -88,7 +90,7 @@ struct IItemDef:IItem, ItemDef<II...> {
   virtual void sync() const override {Base::sync();}
   virtual bool printMenu(IOut& out,Ctx& ctx) override {return Base::printMenu(out,ctx);}
   virtual bool printBody(IOut& out,Ctx& ctx) override {return Base::printBody(out,ctx);}
-  virtual void print(IOut& out,Ctx& ctx) override {Base::print(out,ctx);}
+  virtual void print(IOut& out) override {Base::print(out);}
   template <typename Out> static constexpr bool printMenu(Out& out,Ctx& ctx) {return Base::printMenu(out,ctx);}
   template<typename Out> static constexpr void print(Out& out,Ctx& ctx) {return Base::print(out,ctx);}
 
@@ -146,9 +148,9 @@ struct EnDis {
     using Base::Base;
     bool enabled(const Path ={}) const {return Base::get();}
     void enable(bool e=true) {Base::set(e);}
-    template<bool kbd, typename Nav>
+    template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path)
-      {return enabled()?Base::template nav<kbd>(n,cke,path):false;}
+      {return enabled()?Base::nav(n,cke,path):false;}
   };
 };
 
@@ -157,51 +159,26 @@ struct CloseOnSelect {
   template<typename I>
   struct Part:I {
     using I::I;
-    template<bool kbd, typename Nav>
+    template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       if(cke.cmd==Cmd::Enter) return n.close();
-      return I::template nav<kbd>(n,cke,path);
+      return I::nav(n,cke,path);
     }
   };
 };
 
 //fields ---
-//static validity check and change within range
-// template<typename T,T low,T high,bool w=false>
-// struct StaticRange {
-//   using DataType=T;
-//   template<typename I>
-//   struct Part:I {
-//     using Base=I;
-//     using Base::Base;
-//     using DataType=decltype(low);
-//     static constexpr bool chk(DataType o) {return low<=o&&o<=high;}
-//     // using Base::up;
-//     // using Base::down;
-//     static constexpr DataType stepUp(DataType o,DataType step) {
-//       assert(step>=0);
-//       if(w) return o+step>=high?low:o+step;
-//       else return o+step<high?o+step:high;
-//     }
-//     static constexpr DataType stepDown(DataType o,DataType step) {
-//       assert(step>=0);
-//       if(w) return o-step<=low?high:o-step;
-//       else return o-step>low?o-step:low;
-//     }
-//   };
-// };
-
 struct EditField {
   template<typename I>
   struct Part:I {
-    template<bool kbd, typename Nav>
+    template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       bool r=false;
       if(cke.cmd==Cmd::Enter) {
         n.navMode(path.len?NavMode::Nav:NavMode::Edit);
         r=true;
       }
-      return I::template nav<kbd>(n,cke,path)||r;
+      return I::nav(n,cke,path)||r;
     }
   };
 };
@@ -217,10 +194,10 @@ struct NumField {
     using Base::get;
     using Base::up;
     using Base::down;
-    using DataType=typename Base::DataType;
+    using Type=typename Base::Type;
     // bool up(DataType n=1) {set(Base::up(Base::get(),n));return Base::up();}
     // bool down(DataType n=1) {set(Base::down(get(),n));return Base::down();}
-    template<bool kbd, typename Nav>
+    template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       // if(n.navMode()==NavMode::Edit) 
       switch(cke.cmd){
@@ -228,7 +205,7 @@ struct NumField {
         case Cmd::Down: return Base::down();
         default: break;
       }
-      return Base::template nav<kbd>(n,cke,path);
+      return Base::nav(n,cke,path);
     }
   };
 };
@@ -249,17 +226,17 @@ struct RecallNavPos {
       if(ctx.path.data[0]==ctx.idx) Base::body().printItem(out,ctx,ctx.path.len>1?ctx.path.last():m_sel);
       else Base::body().printItem(out,ctx,m_sel);
     }
-    template<bool kbd,typename Nav>
+    template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       if(cke.cmd==Cmd::Enter) {
         if(path.len) m_sel=path.sel();//store selected item index
         else {
-          bool r=I::template nav<kbd>(n,cke,path);//still check base
+          bool r=I::nav(n,cke,path);//still check base
           n.go(m_sel);//restore selected index
           return r;
         }
       }
-      return I::template nav<kbd>(n,cke,path);//still check base
+      return I::nav(n,cke,path);//still check base
     }
     protected: Sz m_sel{0};
   };
@@ -270,10 +247,10 @@ struct ParentDraw {
   struct Part:I {
     using I::I;
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ParentDraw");
-    template<bool kbd,typename Nav>
+    template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       if(cke.cmd==Cmd::Enter) return path.len?n.close():n.padOpen();
-      return  I::template nav<kbd>(n,cke,path);
+      return  I::nav(n,cke,path);
     }
   };
 };
@@ -290,12 +267,13 @@ struct ItemNav {
     static constexpr const Wraps s_wraps{wraps};
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
-      bool r=Base::nav(n,cke,path);
+      // bool r=Base::nav(n,cke,path);
       if(cke.cmd==Cmd::Enter) {
         if(path.len==0) return n.open();
         else if(path.len==1) return n.close();
       }
-      return r;
+      return false;
+      // return r;
     }
   };
 };
@@ -350,9 +328,9 @@ struct ItemRef {
     static constexpr void print(Out& out,Ctx& ctx) 
       {ref.print(out,ctx);}
 
-    template<bool kbd,typename Nav> 
+    template<typename Nav> 
     static constexpr bool nav(Nav& n,const CKE& cke,const Path p) 
-      {return ref.template nav<kbd>(n,cke,p);}
+      {return ref.nav(n,cke,p);}
 
     //Id--
     static constexpr int getId() {return -1;}
