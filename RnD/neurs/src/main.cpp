@@ -194,7 +194,7 @@ namespace action {
 
 template<typename... OO> using Desc=OnFocus<typename Put<OO...>::template ToOut<decltype(footer),footer,Clear::yes>>;
 
-using Back=ItemDef<CloseOnSelect,AsLabel<StaticText<text::back>>,Desc<StaticText<desc::back>>>;
+using Back=ItemDef<CloseOnSelect,AsLabel<StaticText<text::back>>,Desc<AsLabel<StaticText<desc::back>>>>;
 using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>,Desc<StaticText<desc::quit>>>>;
 
 using CItem=ItemDef<Text>;
@@ -319,7 +319,7 @@ bool action::op2(Sz) {
   // msg.setColors(GREEN,BLACK);
   // msg.clear();
   msg<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  // mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }
 
@@ -329,7 +329,10 @@ bool run() {
   if(fps) {
     fps.reset();
     nav.in(in);
-    if(nav.changed(out)) {nav.navPrint(out);nav.sync();}
+    if(nav.changed(out)) {
+      nav.navPrint(out);
+      nav.sync();
+    }
     if(msg.changed()) {msg.print();msg.sync();}
   }
   return running;
@@ -363,5 +366,6 @@ void setup(){
   int main() {
     setup();
     while(run());
+    dout<<xy<0,24><<"end."<<endl;
   }
 #endif

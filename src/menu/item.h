@@ -18,7 +18,7 @@ struct ItemAPI:Def {
   static constexpr const Wraps wraps{Wraps::no};
   template<typename> using Requires=std::false_type;
   template<typename> using Excludes=std::true_type;
-  static constexpr Depth depth() {return 1;}
+  static constexpr Depth depth() {return 0;}
   static constexpr bool enabled() {return true;}
   static constexpr void enable(bool=true) {}
   static constexpr bool changed() {return false;}
@@ -26,7 +26,7 @@ struct ItemAPI:Def {
   template<typename Out> static constexpr bool printMenu(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr bool printBody(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr bool printItem(Out&,Ctx&) {return false;}
-  template<typename Out> static constexpr void print(Out&) {}
+  template<typename Out> static constexpr void print(Out&,Ctx&) {}
   template<typename Nav> static constexpr bool nav(Nav& n,CKE cke,Path) {return false;}
   //Id--
   static constexpr int getId() {return -1;}
@@ -54,10 +54,29 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<ItemLink> {
   using Base::Base;
   using Base::printMenu;
   using Base::nav;
+  using Base::enabled;
+  using Base::print;
   template<typename Out> void printMenu(Out& out,Ctx&& ctx) {Base::printMenu(out,ctx);}
   void enter(Path path) {nav({Cmd::Enter},path);}
+
+  template<typename Nav>
+  bool nav(Nav& n,const CKE& cke,const Path p)
+    {return enabled()?Base::nav(n,cke,p):cke.cmd==Cmd::Enter;}
+
+  template<typename Out> bool print(Out& out,Ctx&& ctx={})  
+    {return print(out,std::forward<Ctx&>(ctx));}
+
+  template<typename Out> bool print(Out& out,Ctx& ctx) {
+    out.fmtStart(Fmt::Data,ctx);
+    // out.put(Base::get());
+    Base::print(out,ctx);
+    out.fmtStop(Fmt::Data,ctx);
+    return Base::changed();
+  }
+
   template<typename... XX> using Ins=::ItemDef<XX...,OO...>;
   template<typename... XX> using App=::ItemDef<OO...,XX...>;
+
 };
 
 struct IItem {
@@ -356,12 +375,12 @@ struct Put {
       using Base=typename Chain<OO...,End>::template Part<O>;
       template<typename Out> 
       void print(Out& out,Ctx& ctx) {
+        // dout<<xy<0,1><<colors<RED,BLUE><<"alt out"<<flush<<resume<Out,out>;
         if(out.locked()) return;
         alt.resume();
         if constexpr(clr==Clear::yes) alt.clear();
         Base::print(alt,ctx);
         out.resume();
-        Colors<int> cor{out.getColors()};
         O::print(out,ctx);
       }
     };
@@ -381,6 +400,7 @@ struct OnFocus {
   struct Part:Chain<OO...,End>::template Part<O> {
     using Base=typename Chain<OO...,End>::template Part<O>;
     template<typename Out> void print(Out& out,Ctx& ctx) {
+      // dout<<xy<0,1><<colors<RED,BLUE><<"OnFocus::print"<<flush<<resume<Out,out>;
       if(ctx) Base::print(out,ctx);
       O::print(out,ctx);
     }

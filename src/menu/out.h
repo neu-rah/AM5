@@ -214,7 +214,7 @@ struct DeviceCursor {
     template<Fmt tag>
     void fmtStop(Ctx& ctx) {
       if(F::obj().unlocked()) {
-        F::fmtStop(tag,ctx);
+        F::template fmtStop<tag>(ctx);
         if(tag==Fmt::EditCursor) {
           m_editing=true;
           m_text_cursor_at=F::obj().pos();

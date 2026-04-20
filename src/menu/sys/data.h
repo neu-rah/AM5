@@ -42,7 +42,8 @@ struct StaticData {
     static constexpr void set(const Type& o) {data=o;}
     constexpr operator Type&() {return get();}
     constexpr operator Type&() const {return get();}
-    template<typename Out> void print(Out& out,Ctx& ctx) const {out.put(get());}
+    template<typename Out> void print(Out& out,Ctx& ctx) const 
+      {out.put(get());Base::print(out,ctx);}
   };
 };
 
@@ -58,7 +59,8 @@ struct StaticRef {
     static constexpr void set(const Type& o) {data=o;}
     operator Type&() {return get();}
     operator Type&() const {return get();}
-    template<typename Out> void print(Out& out,Ctx& ctx) const {out.put(get());}
+    template<typename Out> void print(Out& out,Ctx& ctx) 
+      {out.put(get());Base::print(out,ctx);}
   };
 };
 
@@ -79,10 +81,11 @@ struct Data {
     constexpr void set(const Type& o) {data=o;}
     operator Type&() {return get();}
     operator Type&() const {return get();}
-    template<typename Out> void print(Out& out,Ctx& ctx) const {
+    template<typename Out> void print(Out& out,Ctx& ctx) {
       out.template fmtStart<Fmt::Data>(ctx);
       out.put(get());
       out.template fmtStop<Fmt::Data>(ctx);
+      Base::print(out,ctx);
     }
   };
 };
