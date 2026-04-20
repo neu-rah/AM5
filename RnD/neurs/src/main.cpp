@@ -260,16 +260,20 @@ using SelectDemo=SelectFieldDef<
   Wraps::yes
 >;
 
+//a Map operation, this operation will fit Map<> and will insert OO... components into the chain
+template<typename... OO> struct Ins {template<typename M>  using Map=typename M::template Ins<OO...>;};
+template<typename... OO> struct App {template<typename M>  using Map=typename M::template App<OO...>;};
+
 using ToggleDemo=ToggleFieldDef<
   Title<
+    BodyAction<action::subIdx>,
     AsLabel<StaticText<text::toggle_demo>>,
-    AsEditMode<>,//edit mode indicator
-    BodyAction<action::subIdx>
+    AsEditMode<>//edit mode indicator
   >,
   StaticBody<//sub menu static body
-    ItemDef<CloseOnSelect,AsField<StaticText<text::no>>>,
-    ItemDef<CloseOnSelect,AsField<StaticText<text::yes>>>
-  >
+    ItemDef<AsField<StaticText<text::no>>>,
+    ItemDef<AsField<StaticText<text::yes>>>
+  >//::Map<Ins<CloseOnSelect>::Map>
 >;
 
 using Power=NumFieldDef<
@@ -385,6 +389,8 @@ void setup(){
 #else
   int main() {
     setup();
+    nav.go(3);
+    nav.enter();
     while(run());
     dout<<xy<0,24><<"end."<<endl;
   }

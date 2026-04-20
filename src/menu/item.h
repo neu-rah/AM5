@@ -46,12 +46,10 @@ struct ItemLink:N {
     using Base::Base;
     // constexpr void sync() {Base::sync();O::sync();}
     // constexpr bool changed() const {return Base::changed()||O::changed();}
-    // //API chain calls for nav function
-    // template<typename Nav>
-    // bool nav(Nav& n,const CKE& cke,const Path p) {
-    //   dout<<xy<0,1><<colors<WHITE,BLUE><<"•"<<(cnt<>++)<<flush;
-    //   return Base::nav(n,cke,p)||O::nav(n,cke,p);
-    // }
+    //API chain calls for nav function
+    template<typename Nav>
+    bool nav(Nav& n,const CKE& cke,const Path p) 
+      {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
   };
 };
 
@@ -258,7 +256,10 @@ struct RecallNavPos {
     void print(Out& out,Ctx& ctx) {
       Base::print(out,ctx);
       out.setPos(out.pos());
-      if(ctx.path.data[0]==ctx.idx) Base::body().printItem(out,ctx,ctx.path.len>1?ctx.path.last():m_sel);
+      if(ctx) {
+        if(ctx.mode==NavMode::Edit) Base::m_body.printItem(out,ctx,ctx.path.last());
+        else Base::m_body.printItem(out,ctx,m_sel);
+      }
       else Base::body().printItem(out,ctx,m_sel);
     }
     template<typename Nav>

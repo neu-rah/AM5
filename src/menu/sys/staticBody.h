@@ -95,7 +95,7 @@ struct StaticBody<O> {
   }
 
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
-    {return m_item.printItem(out,ctx);}
+    {return m_item.print(out,ctx),m_item.changed();}
 
   template<typename Nav> bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
     {assert(i==0);return m_item.nav(n,cke,path);}
