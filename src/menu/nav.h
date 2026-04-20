@@ -64,7 +64,7 @@ struct TreeNav {
     using Base::root;
     // using Base::obj;
     static constexpr const Depth depth() {return Root::depth();}
-    constexpr Path focus(Sz i) const {return m_path.focus(i);}
+    constexpr Path focus(Sz i) {return m_path.focus(i);}
     constexpr Path self() const {return m_path.self();}
     constexpr Path parent() const {return m_path.parent();}
     Depth level() {return m_level;}

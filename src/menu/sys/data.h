@@ -108,6 +108,8 @@ struct Data {
 
 // template<const char*& text> using Text=StaticRef<const char*,text>;
 using Text=Data<const char*>;
+using Bool=Data<bool>;
+using Int=Data<int>;
 
 template<typename W>
 struct Watch {
@@ -164,3 +166,12 @@ struct NumRange {
   };
 };
 
+template<typename T,T def_val>
+struct Default {
+  template<typename I>
+  struct Part:I {
+    using Base=I;
+    template<typename... OO> constexpr Part(OO... oo):I{def_val,oo...}{}
+    template<typename... OO> constexpr Part(decltype(def_val) o, OO... oo):I{o,oo...}{}
+  };
+};

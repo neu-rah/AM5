@@ -17,6 +17,7 @@
 #include <type_traits>
 #include <utility>
 #include <cstdlib>
+#include <cstdio>
 #include <limits>
 
 using Sz=int;
@@ -39,6 +40,8 @@ struct CKE {
   bool ext;
 };
 
+template<typename Cor> struct Colors{Cor fg;Cor bg;};
+
 struct Path {
   Depth len;
   Sz* data;
@@ -46,12 +49,14 @@ struct Path {
   Path focus(Depth l) const {assert(l<=len);return {l,(Sz*)&data[0]};}
   Path next() const {return Path{(Depth)(len-1),&data[1]};}
   Sz sel() const {assert(len>0);return data[0];}
+  Sz last() const {return data[len-1];}
 };
 
 template<Depth depth>
 struct PathData {
   Sz data[depth]{0};
-  Path focus(Depth o) {return {o,data};}
+  Path focus(Depth o) {return Path{o,data};}
+  Sz sel(Depth level=0) const {return data[level];}
   Path path(Depth from=0) {return Path{depth-from,&data[from]};}
   const Path path(Depth from=0) const {return Path{depth-from,&data[from]};}
   Path path(Depth from,Depth len) {return Path{len,&data[from]};}
@@ -77,5 +82,46 @@ struct Ctx {
   Ctx next() const {return Ctx{path.next(),mode,printAt-1,0,&tops[1]};}
   // Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr):path{p},mode{nm},printAt{pl},prevSel{ps},tops{t}{}
   operator bool() const {return path.len?idx==path.data[0]:idx==0;}
+};
+
+//rule predicates------------------------------------------
+struct IsCursor {
+  template<typename Head,typename Base> using Requires=typename Base::IsCursor;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct RawDevice {
+  template<typename Head,typename Base> using Requires=typename Base::RawDevice;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsFormat {
+  template<typename Head,typename Base> using Requires=typename Base::IsFormat;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsPrinter {
+  template<typename Head,typename Base> using Requires=typename Base::IsPrinter;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsDataParser {
+  template<typename Head,typename Base> using Requires=typename Base::IsDataParser;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsParser {
+  template<typename Head,typename Base> using Requires=typename Base::IsParser;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsArea {
+  template<typename Head,typename Base> using Requires=typename Base::IsArea;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsBuffer {
+  template<typename Head,typename Base> using Requires=typename Base::IsBuffer;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
 };
 

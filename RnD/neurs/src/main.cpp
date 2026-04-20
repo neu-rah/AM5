@@ -1,6 +1,10 @@
 // includes --
   #include <menu.h>
   #include <menu/fmt/textFmt.h>
+  #include <menu/IO/pcKbdIn.h>
+  #include <menu/IO/linuxKeyIn.h>
+  #include <menu/IO/streamOut.h>
+
   #include <tinyTimeUtils.h>
 
   #ifdef ARDUINO
@@ -35,12 +39,21 @@ OutDef<
   ConsoleOut
 > out;
 
+InDef<
+  #ifdef ARDUINO
+    SerialIn,
+  #else
+    LinuxKeyIn,
+  #endif
+  PCKbd
+> in;
+
 int power=55;
 
 void op1(Sz i) {cout<<"option 1 called!"<<endl;}
 
 using MainMenu=MenuDef<
-  Title<Text>,
+  Title<ItemNav<Wraps::yes>,Text>,
   StaticBody<
     ItemDef<Text,Action<op1>>,
     ItemDef<Text>,
@@ -53,12 +66,15 @@ MainMenu menu{"Main menu",{"op1","op2","op3"}};
 NavDef<TreeNav,Root<MainMenu,menu>> nav;
 
 void run() {
-  // nav.navPrint(out);
-  out.mode(LockMode::None);
-  Ctx ctx{};
-  menu.printMenu(out,ctx);
-  // menu.body().printBody(out,ctx);
-  cout<<endl;
+  static TinyTimeUtils::FPS<30> fps;
+  if(fps) {
+    fps.reset();
+    nav.in(in);
+    if(nav.changed(out)) {
+      nav.navPrint(out);
+      nav.sync();
+    }
+  }
 }
 
 void setup(){
@@ -66,6 +82,8 @@ void setup(){
     Serial.begin(115200);
     while(!Serial);
   #endif
+  out.mode(LockMode::None);
+  nav.navPrint(out);
 }
 
 #ifdef ARDUINO

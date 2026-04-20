@@ -49,10 +49,9 @@ struct Menu {
     bool printItem(Out& out,Ctx& ctx) const 
       {return (Base::print(out,ctx),false);}
     
-    template<bool kbd,typename Nav> 
-    bool nav(Nav& n,CKE cke,Path p) {
-      if(p.len&&m_body.template nav<kbd>(n,cke,p.next(),p.sel())) return true;//walk the path
-      if (Base::template nav<kbd>(n,cke,p)) return true;
+    void nav(CKE cke,Path p) {
+      if(p.len&&m_body.nav(cke,p.next(),p.sel())) return true;//walk the path
+      if (Base::template nav(cke,p)) return true;
       return p.len?n.doNav(cke,len(),Base::s_wraps):false;
     }
 

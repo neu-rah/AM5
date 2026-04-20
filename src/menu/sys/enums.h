@@ -1,8 +1,10 @@
 #pragma once
 
 enum {no=false,yes=true};
+enum class Wraps:bool {no,yes};
+enum class Scroll {no,yes};
 enum class Edge {start,stop};
-enum class Wraps:bool {no=false,yes=true};
+enum class Clear {no,yes};
 
 enum class NavMode {Nav,Edit,Tune};
 
