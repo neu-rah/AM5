@@ -76,6 +76,6 @@ struct Ctx {
   void top(Sz i){if(tops) tops[0]=i;}
   Ctx next() const {return Ctx{path.next(),mode,printAt-1,0,&tops[1]};}
   // Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr):path{p},mode{nm},printAt{pl},prevSel{ps},tops{t}{}
-  operator bool() const {return idx==path.data[0];}
+  operator bool() const {return path.len?idx==path.data[0]:idx==0;}
 };
 

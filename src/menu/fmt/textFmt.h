@@ -17,12 +17,25 @@ struct TextFmt {
   template<typename O>
   struct Part:O {
     using Base=O;
+    using Base::nl;
+    using Base::put;
     using Base::fmtStart;
     using Base::fmtStop;
-    template<Edge edge,Fmt tag> static void fmt(const Ctx& ctx) {edge==Edge::start?fmtStart<tag>(ctx):fmtStop<tag>(ctx);}
-    // void fmtStart(Fmt tag,const Ctx& ctx) {
-    //   Base::fmtStart(tag,ctx);
-    // }
+    template<Fmt tag>
+    void fmtStart(const Ctx& ctx) {
+      switch(tag) {
+        case Fmt::Index: put((char)(ctx.idx<9?'1'+ctx.idx:' '));break;
+        case Fmt::NavCursor: put(ctx?(ctx.enabled?'>':'-'):' ');break;
+        case Fmt::EditMode: switch(ctx.mode) {
+          case NavMode::Nav: put(' ');break;
+          case NavMode::Edit: put(':');break;
+          case NavMode::Tune: put('>');break;
+          default: break;
+        };break;
+        default: break;
+      }
+      Base::template fmtStart<tag>(ctx);
+    }
     template<Fmt tag>
     static void fmtStop(const Ctx& ctx) {
       switch(tag) {
