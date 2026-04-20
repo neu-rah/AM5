@@ -50,7 +50,7 @@ struct Menu {
       {return (Base::print(out,ctx),false);}
     
     template<typename Nav> 
-    bool nav(Nav& n,CKE cke,Path p) {
+    bool nav(Nav& n,const CKE& cke,Path p) {
       if(p.len&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
       if (Base::nav(n,cke,p)) return true;
       return p.len?n.doNav(cke,size(),Base::wraps):false;

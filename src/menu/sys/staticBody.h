@@ -41,7 +41,7 @@ struct StaticBody {
     {return i?m_body.printItem(out,ctx,i-1):(m_item.print(out,ctx),m_item.changed());}
 
   template<typename Nav>
-  bool nav(Nav& n,CKE cke,Path path,Sz i)
+  bool nav(Nav& n,const CKE& cke,Path path,Sz i)
     {return i?m_body.nav(n,cke,path,i-1):m_item.nav(n,cke,path);}
 //Id, this is compile-time search/reference --
   template<int id>
@@ -97,7 +97,7 @@ struct StaticBody<O> {
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
     {return m_item.printItem(out,ctx);}
 
-  template<typename Nav> bool nav(Nav& n,CKE cke,Path path,Sz i) 
+  template<typename Nav> bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
     {assert(i==0);return m_item.nav(n,cke,path);}
 //Id--
   template<int id>

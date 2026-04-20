@@ -13,7 +13,7 @@ struct CArrayBody {
   static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i];}
 
   template<typename Nav> 
-  bool nav(Nav& n,CKE cke,Path path,Sz i) 
+  bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
     {return data[i].nav(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
@@ -41,7 +41,7 @@ struct CPtrArrayBody {
   static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i]->size();}
 
   template<typename Nav> 
-  bool nav(Nav& n,CKE cke,Path path,Sz i) 
+  bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
     {return data[i]->nav(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {

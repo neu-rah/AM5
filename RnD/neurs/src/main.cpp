@@ -2,7 +2,7 @@
   #include <menu.h>
   #include <menu/fmt/textFmt.h>
   #include <menu/fmt/ansiFmt.h>
-  // #include <menu/fmt/xmlFmt.h>
+  #include <menu/fmt/xmlFmt.h>
   #include <menu/sys/cArrayBody.h>
   #include <menu/sys/stdBody.h>
   #include <menu/IO/pcKbdIn.h>
@@ -96,7 +96,7 @@ OutDef<
   #endif
   StaticPos<35,15>,
   StaticArea<40,3>
-> msg;
+> syslog;
 
 OutDef<
   TextFmt,
@@ -116,6 +116,15 @@ OutDef<
   StaticPos<40,11>,
   StaticArea<20,3>
 > footer;
+
+OutDef<
+  TextFmt,
+  #ifdef __AVR__
+    SerialOut
+  #else
+    ConsoleOut
+  #endif
+> web;
 
 bool op1(Sz i) {cout<<"option 1 called!"<<endl;return true;}
 
@@ -165,36 +174,36 @@ enum ids {op3,power,container};
 
 namespace action {
   bool op1(Sz) {
-    // msg.setColors(GREEN,BLACK);
-    // msg.clear();
-    msg<<"option #1 action called."<<endl;
+    // syslog.setColors(GREEN,BLACK);
+    // syslog.clear();
+    syslog<<"option #1 action called."<<endl;
     return true;
   }
   bool op2(Sz);
   bool op3(Sz) {
-    // msg.setColors(GREEN,BLACK);
-    // msg.clear();
-    msg<<"option #3 action called."<<endl;
+    // syslog.setColors(GREEN,BLACK);
+    // syslog.clear();
+    syslog<<"option #3 action called."<<endl;
     return true;
   }
   bool quit(Sz) {
-    // msg.setColors(RED,BLACK);
-    // msg.clear();
-    msg<<"Bye!"<<endl;
+    syslog.setColors(RED,BLACK);
+    syslog.erase();
+    syslog<<"Bye!"<<endl;
     running=false;
     return true;
   }
   bool subIdx(Sz i) {
-    // msg.setColors(GREEN,BLACK);
-    // msg.clear();
-    msg<<"sub option #"<<i<<" selected."<<endl;
+    // syslog.setColors(GREEN,BLACK);
+    // syslog.clear();
+    syslog<<"sub option #"<<i<<" selected."<<endl;
     return true;
   }
 }
 
 template<typename... OO> using Desc=OnFocus<typename Put<OO...>::template ToOut<decltype(footer),footer,Clear::yes>>;
 
-using Back=ItemDef<CloseOnSelect,AsLabel<StaticText<text::back>>,Desc<AsLabel<StaticText<desc::back>>>>;
+using Back=ItemDef<CloseOnSelect,StaticText<text::back>,Desc<StaticText<desc::back>>>;
 using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>,Desc<StaticText<desc::quit>>>>;
 
 using CItem=ItemDef<Text>;
@@ -267,7 +276,7 @@ using Power=NumFieldDef<
   Title<
     Id<ids::power>,
     AsLabel<StaticText<text::power>>,//field label
-    ItemNav<Wraps::yes>
+    ItemNav<Wraps::no>
   >,
   NumField<//use range to change the data
     StaticNumRange<int,0,100>,//valid range
@@ -293,7 +302,12 @@ using MainMenu=MenuDef<
       >
     >,
     MenuDef<//sub menu with C array body (all items of the type)
-      Title<BodyAction<action::subIdx>,ItemNav<Wraps::no>,StaticText<text::array_sub_menu>,Desc<StaticText<desc::array_sub_menu>>>,
+      Title<
+        BodyAction<action::subIdx>,
+        ItemNav<Wraps::no>,
+        StaticText<text::array_sub_menu>,
+        Desc<StaticText<desc::array_sub_menu>>
+      >,
       CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
     >,
     MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
@@ -316,10 +330,10 @@ INavDef<
 > nav;
 
 bool action::op2(Sz) {
-  // msg.setColors(GREEN,BLACK);
-  // msg.clear();
-  msg<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  // mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  // syslog.setColors(GREEN,BLACK);
+  // syslog.clear();
+  syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
+  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }
 
@@ -331,9 +345,14 @@ bool run() {
     nav.in(in);
     if(nav.changed(out)) {
       nav.navPrint(out);
-      nav.sync();
+      dout<<xy<0,24><<colors<GREEN,BLACK><<"web://"<<web.freeY()<<flush;
+      nav.navPrint(web);
+      out.resume();
+      nav.sync(out);
+      nav.sync(web);
     }
-    if(msg.changed()) {msg.print();msg.sync();}
+    if(syslog.changed()) {syslog.print();syslog.sync();}
+
   }
   return running;
 }
@@ -344,14 +363,15 @@ void setup(){
     while(!Serial);
   #endif
   cout<<"ArduinoMenu R&D"<<endl;
+  web.mode(LockMode::None);
   footer.mode(LockMode::None);
   footer.setColors(BLUE,BLACK);
   footer.clear();
   footer.put("footer");
-  msg.mode(LockMode::None);
-  msg.setColors(GREEN,BLACK);
-  msg.clear();
-  msg.put(".·•<::(log)::>•·.");
+  syslog.mode(LockMode::None);
+  syslog.setColors(GREEN,BLACK);
+  syslog.clear();
+  syslog.put(".·•<::(log)::>•·.");
   out.mode(LockMode::None);
   nav.navPrint(out);
   //populate std container menu

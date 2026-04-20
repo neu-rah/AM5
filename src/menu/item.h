@@ -18,16 +18,20 @@ struct ItemAPI:Def {
   static constexpr const Wraps wraps{Wraps::no};
   template<typename> using Requires=std::false_type;
   template<typename> using Excludes=std::true_type;
-  static constexpr Depth depth() {return 0;}
+  static constexpr Depth depth() {return 1;}
   static constexpr bool enabled() {return true;}
   static constexpr void enable(bool=true) {}
   static constexpr bool changed() {return false;}
+  template<typename Out> static constexpr bool changed(Out&) {return false;}
   static constexpr void sync() {}
+  template<typename Out> static constexpr void sync(Out&) {}
+  static constexpr bool up() {return false;}
+  static constexpr bool down() {return false;}
   template<typename Out> static constexpr bool printMenu(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr bool printBody(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr bool printItem(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr void print(Out&,Ctx&) {}
-  template<typename Nav> static constexpr bool nav(Nav& n,CKE cke,Path) {return false;}
+  template<typename Nav> static constexpr bool nav(Nav& n,const CKE& cke,Path) {return false;}
   //Id--
   static constexpr int getId() {return -1;}
   template<int> using HasId=std::false_type;
@@ -40,11 +44,14 @@ struct ItemLink:N {
   struct Part:N::template Part<O> {
     using Base=typename N::template Part<O>;
     using Base::Base;
-    constexpr void sync() {Base::sync();O::sync();}
-    constexpr bool changed() const {return Base::changed()||O::changed();}
-    //API chain calls for nav function
-    template<typename Nav>
-    bool nav(Nav& n,const CKE& cke,const Path p) {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
+    // constexpr void sync() {Base::sync();O::sync();}
+    // constexpr bool changed() const {return Base::changed()||O::changed();}
+    // //API chain calls for nav function
+    // template<typename Nav>
+    // bool nav(Nav& n,const CKE& cke,const Path p) {
+    //   dout<<xy<0,1><<colors<WHITE,BLUE><<"•"<<(cnt<>++)<<flush;
+    //   return Base::nav(n,cke,p)||O::nav(n,cke,p);
+    // }
   };
 };
 
@@ -53,7 +60,7 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<ItemLink> {
   using Base=typename APIOf<ItemAPI<>,OO...>::template Map<ItemLink>;
   using Base::Base;
   using Base::printMenu;
-  using Base::nav;
+  // using Base::nav;
   using Base::enabled;
   using Base::print;
   template<typename Out> void printMenu(Out& out,Ctx&& ctx) {Base::printMenu(out,ctx);}
@@ -81,18 +88,18 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<ItemLink> {
 
 struct IItem {
   // virtual Depth depth() const {return 0;}
-  virtual bool printMenu(IOut& out,Ctx& ctx) {return false;}
-  virtual bool printBody(IOut& out,Ctx&) {return false;}
-  virtual void print(IOut& out,Ctx&) {}
-  virtual bool enabled() const {return true;}
-  virtual void enable(bool=true) {}
-  virtual bool changed() const {return false;}
-  virtual bool changed(IOut& out) const {return false;}
-  virtual void sync() {}
-  virtual void sync(IOut& out) {}
-  virtual bool up() const {return false;}
-  virtual bool down() const {return false;}
-  virtual bool nav(INav& n,const CKE& cke,const Path p) {return false;}
+  virtual bool printMenu(IOut& out,Ctx& ctx)=0;
+  virtual bool printBody(IOut& out,Ctx&)=0;
+  virtual void print(IOut& out,Ctx&)=0;
+  virtual bool enabled() const=0;
+  virtual void enable(bool=true)=0;
+  virtual bool changed() const=0;
+  virtual bool changed(IOut& out)=0;
+  virtual void sync()=0;
+  virtual void sync(IOut& out)=0;
+  virtual bool up() const=0;
+  virtual bool down() const=0;
+  virtual bool nav(INav& n,const CKE& cke,const Path p)=0;
 
   template <typename Out>
   static constexpr bool printMenu(Out& out,Ctx& ctx) 
@@ -106,15 +113,21 @@ struct IItemDef:IItem, ItemDef<II...> {
   using Base::Base;
 
   // virtual Depth depth() const override {return Base::depth();}
-  virtual bool changed() const override {return Base::changed();}
-  virtual void sync() override {Base::sync();}
   virtual bool printMenu(IOut& out,Ctx& ctx) override {return Base::printMenu(out,ctx);}
   virtual bool printBody(IOut& out,Ctx& ctx) override {return Base::printBody(out,ctx);}
   virtual void print(IOut& out,Ctx& ctx) override {Base::print(out,ctx);}
+  virtual bool enabled() const override {return Base::enabled();}
+  virtual void enable(bool o=true) override {return Base::enable(o);}
+  virtual bool changed() const override {return Base::changed();}
+  virtual bool changed(IOut& out) override {return Base::changed(out);}
+  virtual void sync() override {Base::sync();}
+  virtual void sync(IOut& out) override {Base::sync(out);}
+  virtual bool up() const {return Base::up();};
+  virtual bool down() const {return Base::down();};
+  virtual bool nav(INav& n,const CKE& cke,const Path p) override {return Base::nav(n,cke,p);}
   template <typename Out> static constexpr bool printMenu(Out& out,Ctx& ctx) {return Base::printMenu(out,ctx);}
   template<typename Out> static constexpr void print(Out& out,Ctx& ctx) {return Base::print(out,ctx);}
 
-  bool nav(INav& n,const CKE& cke,const Path p) {return Base::nav(n,cke,p);}
   //Id--
   static constexpr int getId() {return -1;}
   template<int> using HasId=std::false_type;
@@ -130,7 +143,7 @@ struct Action {
   struct Part:O {
     using Base=O;
     template<typename Nav>
-    static constexpr bool nav(Nav& n,CKE cke,Path path) 
+    static constexpr bool nav(Nav& n,const CKE& cke,Path path) 
       {return cke.cmd==Cmd::Enter&&action(path.sel());}
   };
 };
@@ -144,8 +157,10 @@ struct BodyAction {
     using Base::Base;
     using Base::enabled;
     template<typename Nav>
-    bool nav(Nav& n,const CKE& cke,const Path p) 
-      {return cke.cmd==Cmd::Enter&&p.len?f(p.last()):false;}
+    bool nav(Nav& n,const CKE& cke,const Path p) {
+      if(cke.cmd==Cmd::Enter&&p.len) return (f(p.last()),Base::nav(n,cke,p));
+      else return Base::nav(n,cke,p);
+    }
   };
 };
 
@@ -328,7 +343,7 @@ struct ItemRef {
     using RefType=R;
     operator RefType&() const {return ref;}
     static constexpr const Depth depth() {return ref.depth();}
-    static constexpr Sz len(Path p={}) {return ref.len(p);}
+    static constexpr Sz size(Path p={}) {return ref.size(p);}
     static constexpr bool enabled() {return ref.enable(); }
     static constexpr void enable(bool o=true) {ref.enable(o);}
     static constexpr bool changed() {return ref.changed();}
@@ -375,7 +390,6 @@ struct Put {
       using Base=typename Chain<OO...,End>::template Part<O>;
       template<typename Out> 
       void print(Out& out,Ctx& ctx) {
-        // dout<<xy<0,1><<colors<RED,BLUE><<"alt out"<<flush<<resume<Out,out>;
         if(out.locked()) return;
         alt.resume();
         if constexpr(clr==Clear::yes) alt.clear();
@@ -400,7 +414,6 @@ struct OnFocus {
   struct Part:Chain<OO...,End>::template Part<O> {
     using Base=typename Chain<OO...,End>::template Part<O>;
     template<typename Out> void print(Out& out,Ctx& ctx) {
-      // dout<<xy<0,1><<colors<RED,BLUE><<"OnFocus::print"<<flush<<resume<Out,out>;
       if(ctx) Base::print(out,ctx);
       O::print(out,ctx);
     }

@@ -8,7 +8,7 @@ struct StdBody:T {
   constexpr Sz size(Sz i) const {return T::operator[](i).size();}
 
   template<typename Nav> 
-  bool nav(Nav& n,CKE cke,Path path,Sz i) 
+  bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
     {return T::operator[](i)->nav(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {

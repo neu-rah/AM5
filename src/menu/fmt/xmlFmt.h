@@ -8,7 +8,8 @@ struct XmlFmt {
     using Base=O;
     // using Base::nl;
     using Base::put;
-    void putTag(Fmt tag) {
+    template<Fmt tag>
+    void putTag() {
       switch(tag) {
         case Fmt::View: put("view");break;
         case Fmt::Title: put("title");break;
@@ -27,10 +28,11 @@ struct XmlFmt {
         default: put("fmt");break;
       }
     }
-    void fmtStart(Fmt tag,Ctx& ctx) {
+    template<Fmt tag>
+    void fmtStart(Ctx& ctx) {
       if(tag!=Fmt::Data) {
         put('<');
-        putTag(tag);
+        putTag<tag>();
         put('>');
       }
       switch(tag) {
@@ -40,10 +42,11 @@ struct XmlFmt {
         case Fmt::NavCursor:
         case Fmt::Data: Base::put("<![CDATA[");
       }
-      Base::fmtStart(tag,ctx);
+      Base::template fmtStart<tag>(ctx);
     }
-    void fmtStop(Fmt tag,Ctx& ctx) {
-      Base::fmtStop(tag,ctx);
+    template<Fmt tag>
+    void fmtStop(Ctx& ctx) {
+      Base::template fmtStop<tag>(ctx);
       switch(tag) {
         case Fmt::EditCursor:
         case Fmt::EditMode:
@@ -54,7 +57,7 @@ struct XmlFmt {
       if(tag!=Fmt::Data) {
         put('<');
         put('/');
-        putTag(tag);
+        putTag<tag>();
         put('>');
       }
     }

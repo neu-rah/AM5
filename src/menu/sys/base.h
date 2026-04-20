@@ -36,8 +36,8 @@
 #endif
 
 
-using Sz=int;
-using Depth=char;
+using Sz=int;//must be signed
+using Depth=char;//must be signed
 using Key=int;
 
 struct Nil{};
@@ -92,7 +92,7 @@ struct Ctx {
   Sz idx{0};
   bool enabled{true};
   Sz sel() const {return path.sel();}
-  Sz len() const {return path.len;}
+  Depth len() const {return path.len;}
   Sz top() const {return tops?tops[0]:0;}
   void top(Sz i){if(tops) tops[0]=i;}
   Ctx next() const {return Ctx{path.next(),mode,printAt-1,0,&tops[1]};}
