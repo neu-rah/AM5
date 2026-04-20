@@ -110,7 +110,6 @@ struct TreeNav {
       return root().printMenu(out,ctx);
     }
 
-    template<bool kbd> 
     bool doCmd(Cmd cmd,Key k=0, bool e=false) {
       if(cmd==Cmd::Esc) return close();//preemptive esc=>close
       return root().nav(Base::obj(),{cmd,k,e},focus(m_level+1));
@@ -118,6 +117,7 @@ struct TreeNav {
 
     bool doNav(CKE cke,Sz len,Wraps w) {
       DataDef<NumRange<Sz>,Data<Sz&>> at(0,len-1,w,m_path.data[level()]);
+      dout<<xy<1,2><<colors<RED,WHITE><<"doNav "<<len-1<<flush;
       switch(cke.cmd) {
         case Cmd::Up: at.up();break;
         case Cmd::Down: at.down();break;

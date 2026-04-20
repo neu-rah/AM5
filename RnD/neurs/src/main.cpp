@@ -1,6 +1,8 @@
 // includes --
   #include <menu.h>
-  #include <menu/fmt/textFmt.h>
+  // #include <menu/fmt/textFmt.h>
+  #include <menu/fmt/ansiFmt.h>
+  // #include <menu/fmt/xmlFmt.h>
   #include <menu/IO/pcKbdIn.h>
   #include <menu/IO/linuxKeyIn.h>
   #include <menu/IO/streamOut.h>
@@ -24,19 +26,42 @@
   #endif
   using namespace std;
 
-OutDef<
-  ViewPrinter,
-  MenuPrinter<
-    TitlePrinter,
-    BodyPrinter,
-    ItemPrinter<
-      IndexPrinter,
-      NavCursorPrinter,
-      ItemBodyPrinter
+//this are responsible for format
+using Printer=Chain<
+  ViewPrinter,// outermost format envelope
+  MenuPrinter<// calls printMenu
+    TitlePrinter,// just print the title
+    ScrollBodyPrinter,//scroll till focus is visible
+    // BodyPrinter,//stream/serial print
+    ItemPrinter<//calls printItem:
+      IndexPrinter,// print item index 1-9
+      NavCursorPrinter,// use a text cursor on selected item.
+      ItemBodyPrinter//→ printItem → printTo
     >
-  >,
-  TextFmt,
-  ConsoleOut
+  >
+>;
+
+IOutDef<
+  Printer,//user defined format sequence
+  ANSIFmt,//add some ANSI colors and format to the output
+  // ClearFree,//clear free space after menu print
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  ColorTrack<int>,//track color setting for device resume
+  Cursor,//account for cursor movement, single character only, tracks pos for resume also
+  Gate,//locks output for measuring and other operations
+  ANSIOut,//inject ansi codes into the next output device
+  #ifdef ARDUINO
+    SerialOut,
+  #else
+    ConsoleOut,
+    // Debug_MinimalDrawConsole,
+  #endif
+  StaticPos<40,5>,
+  StaticArea<20,6>
 > out;
 
 InDef<
@@ -48,9 +73,9 @@ InDef<
   PCKbd
 > in;
 
-int power=55;
-
 bool op1(Sz i) {cout<<"option 1 called!"<<endl;return true;}
+
+bool running{true};
 
 using MainMenu=MenuDef<
   Title<ItemNav<Wraps::yes>,Text>,
@@ -65,8 +90,8 @@ MainMenu menu{"Main menu",{"op1","op2","op3"}};
 
 NavDef<TreeNav,Root<MainMenu,menu>> nav;
 
-void run() {
-  static TinyTimeUtils::FPS<30> fps;
+bool run() {
+  static TinyTimeUtils::FPS<60> fps;
   if(fps) {
     fps.reset();
     nav.in(in);
@@ -75,6 +100,7 @@ void run() {
       nav.sync();
     }
   }
+  return running;
 }
 
 void setup(){
@@ -89,5 +115,8 @@ void setup(){
 #ifdef ARDUINO
   void loop() {run();}
 #else
-  int main() {setup();run();}
+  int main() {
+    setup();
+    while(run());
+  }
 #endif

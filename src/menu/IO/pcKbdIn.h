@@ -25,7 +25,7 @@ struct PCKbd {
       static TinyTimeUtils::Timeout<30> escTimer;
       if (esc==1 && escTimer&&!k) {
         esc = 0;
-        return nav.template doCmd<true>(Cmd::Esc,0,false);
+        return nav.doCmd(Cmd::Esc,0,false);
       }
       if(k==term||!k) return false;
       if (esc==1) {
@@ -35,20 +35,20 @@ struct PCKbd {
         } else {
           esc=0;
           escTimer.reset();
-          return nav.template doCmd<true>(Cmd::Esc)&&
-                 nav.template doCmd<true>(Cmd::Key,k);
+          return nav.doCmd(Cmd::Esc)&&
+                 nav.doCmd(Cmd::Key,k);
         }
       } else if(esc==2) {
         term=0x7E;
         esc=0;
         switch(k) {
-          case 'A':return nav.template doCmd<true>(Cmd::Down);
-          case 'B':return nav.template doCmd<true>(Cmd::Up);
-          case 'C':return nav.template doCmd<true>(Cmd::Left);
-          case 'D':return nav.template doCmd<true>(Cmd::Right);
+          case 'A':return nav.doCmd(Cmd::Down);
+          case 'B':return nav.doCmd(Cmd::Up);
+          case 'C':return nav.doCmd(Cmd::Left);
+          case 'D':return nav.doCmd(Cmd::Right);
           default: 
             esc=0;
-            return O::parseKey(nav,k)||nav.template doCmd<true>(Cmd::Key,k,true);
+            return O::parseKey(nav,k)||nav.doCmd(Cmd::Key,k,true);
         }
       } else {
         esc=0;
@@ -62,12 +62,12 @@ struct PCKbd {
           case 0x1B:
           case 0xA:
             term=0xD;
-            return nav.template doCmd<true>(Cmd::Enter);
+            return nav.doCmd(Cmd::Enter);
           case 0xD:
             term=0xA;
-            return nav.template doCmd<true>(Cmd::Enter);
+            return nav.doCmd(Cmd::Enter);
           default:
-            return nav.template doCmd<true>(Cmd::Key,k)||O::parseKey(nav,k);
+            return nav.doCmd(Cmd::Key,k)||O::parseKey(nav,k);
           }
         }
       }

@@ -11,14 +11,28 @@
 
 #pragma once
 
-#include "menu/sys/enums.h"
 #include <hapi.h>
-#include <cassert>
-#include <type_traits>
-#include <utility>
-#include <cstdlib>
-#include <cstdio>
-#include <limits>
+#include "menu/sys/enums.h"
+
+#ifdef ARDUINO
+#include <Arduino.h>
+#undef max
+#endif
+
+#ifdef __AVR__
+  #include <assert.h>
+  #include "menu/sys/platform/avr/avr_std.h"
+#else
+  #include <iostream>
+  #include <cstdint>
+  #include <cassert>
+  #include <type_traits>
+  #include <utility>
+  #include <cstdlib>
+  #include <cstdio>
+  #include <limits>
+#endif
+
 
 using Sz=int;
 using Depth=char;
@@ -124,4 +138,8 @@ struct IsBuffer {
   template<typename Head,typename Base> using Requires=typename Base::IsBuffer;
   template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
 };
+
+//debug ---
+#include "menu/sys/debug.h"
+
 

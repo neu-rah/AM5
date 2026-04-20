@@ -145,8 +145,8 @@ struct NumRange {
       :m_low{l},m_high{h},m_wraps{w},Base{std::forward<OO>(oo)...}{}
     constexpr bool valid(N o) const {return o<=m_low&&o<=m_high;}
     constexpr N clamp(N o) const {return o<m_low?m_low:o>m_high?m_high:o;}
-    constexpr N stepUp(N o,N s,Wraps w) {return m_high-o>s?o+s:w==Wraps::yes?m_low:m_high;}
-    constexpr N stepDown(N s,N o,Wraps w) {return o-m_low>s?o-s:w==Wraps::yes?m_high:m_low;}
+    constexpr N stepUp(N o,N s,Wraps w) {return m_high-o>=s?o+s:w==Wraps::yes?m_low:m_high;}
+    constexpr N stepDown(N s,N o,Wraps w) {return o-m_low>=s?o-s:w==Wraps::yes?m_high:m_low;}
     // static constexpr N step(N s,N o,Wraps w) {return s<0?stepDown(-s,o,w):stepUp(s,o,w);}
     void up(N s=1) {get()=stepUp(s,get(),m_wraps);}
     void down(N s=1) {get()=stepDown(s,get(),m_wraps);}

@@ -51,11 +51,22 @@ struct OutAPI:Cfg {
   template<typename Item> static constexpr bool printMenu(Item& item,Ctx& ctx) {return false;}
 };
 
+template<typename N>
+struct OutLink:N {
+  template<typename O>
+  struct Part:N::Part<O> {
+    using Base=typename N::template Part<O>;
+    using Base::Base;
+    // template<Fmt tag> void fmtStart(const Ctx& ctx) {}
+    // template<Fmt tag> void fmtStop(const Ctx& ctx) {}
+  };
+};
+
 template<typename API,typename... OO> struct DefinedOut;
 
 template<typename API,typename O,typename... OO>
-struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>{
-  using Base=APIOf<API,O,OO...>;
+struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>{//}::template Map<OutLink>{
+  using Base=APIOf<API,O,OO...>;//::template Map<OutLink>;
   using Base::printItem;
   using Base::obj;
   // static_assert(Base::template Excludes<IsCursor>::value||Base::template Requires<IsDataParser>::value,"Cursor requires preseeding DataParser<>");
@@ -72,16 +83,19 @@ struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>{
 };
 
 template<typename API>
-struct DefinedOut<API>:APIOf<API>
+struct DefinedOut<API>:APIOf<API>//OutLink<APIOf<API>>
   {using Base=APIOf<API>;};
 
-template<typename... OO> struct OutDef:DefinedOut<OutAPI<CRTP<OutDef<OO...>>>,OO...>{};
+template<typename... OO>
+struct OutDef:DefinedOut<OutAPI<CRTP<OutDef<OO...>>>,OO...>{};
 
 struct IOut {
   virtual void mode(LockMode) {}
   virtual LockMode mode() {return LockMode::None;}
   virtual void fmtStart(Fmt,Ctx&) {}
+  template<Fmt tag> void fmtStart(Ctx& ctx) {fmtStart(tag,ctx);}
   virtual void fmtStop(Fmt,Ctx&) {}
+  template<Fmt tag> void fmtStop(Ctx& ctx) {fmtStart(tag,ctx);}
   virtual Sz posX() const {return 0;}
   virtual Sz posY() const {return 0;}
   Pos pos() const {return {posX(),posY()};}
@@ -103,8 +117,46 @@ struct IOutDef:IOut,DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>{
   using Base=DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>;
   virtual void mode(LockMode m) {Base::mode(m);}
   virtual LockMode mode() {return Base::mode();}
-  virtual void fmtStart(Fmt tag,Ctx& ctx) override {Base::fmtStart(tag,ctx);}
-  virtual void fmtStop(Fmt tag,Ctx& ctx) override {Base::fmtStop(tag,ctx);}
+  using Base::fmtStart;
+  using Base::fmtStop;
+  virtual void fmtStart(Fmt tag,Ctx& ctx) override {
+    switch(tag){
+      case Fmt::View: Base::template fmtStart<Fmt::View>(ctx);break;
+      case Fmt::Title: Base::template fmtStart<Fmt::Title>(ctx);break;
+      case Fmt::Menu: Base::template fmtStart<Fmt::Menu>(ctx);break;
+      case Fmt::Body: Base::template fmtStart<Fmt::Body>(ctx);break;
+      case Fmt::Item: Base::template fmtStart<Fmt::Item>(ctx);break;
+      case Fmt::Index: Base::template fmtStart<Fmt::Index>(ctx);break;
+      case Fmt::Accel: Base::template fmtStart<Fmt::Accel>(ctx);break;
+      case Fmt::NavCursor: Base::template fmtStart<Fmt::NavCursor>(ctx);break;
+      case Fmt::Field: Base::template fmtStart<Fmt::Field>(ctx);break;
+      case Fmt::Label: Base::template fmtStart<Fmt::Label>(ctx);break;
+      case Fmt::EditMode: Base::template fmtStart<Fmt::EditMode>(ctx);break;
+      case Fmt::EditCursor: Base::template fmtStart<Fmt::EditCursor>(ctx);break;
+      case Fmt::Data: Base::template fmtStart<Fmt::Data>(ctx);break;
+      case Fmt::Unit: Base::template fmtStart<Fmt::Unit>(ctx);break;
+    }
+    // Base::template fmtStart<tag>(ctx);
+  }
+  virtual void fmtStop(Fmt tag,Ctx& ctx) override {
+    switch(tag){
+      case Fmt::View: Base::template fmtStop<Fmt::View>(ctx);break;
+      case Fmt::Title: Base::template fmtStop<Fmt::Title>(ctx);break;
+      case Fmt::Menu: Base::template fmtStop<Fmt::Menu>(ctx);break;
+      case Fmt::Body: Base::template fmtStop<Fmt::Body>(ctx);break;
+      case Fmt::Item: Base::template fmtStop<Fmt::Item>(ctx);break;
+      case Fmt::Index: Base::template fmtStop<Fmt::Index>(ctx);break;
+      case Fmt::Accel: Base::template fmtStop<Fmt::Accel>(ctx);break;
+      case Fmt::NavCursor: Base::template fmtStop<Fmt::NavCursor>(ctx);break;
+      case Fmt::Field: Base::template fmtStop<Fmt::Field>(ctx);break;
+      case Fmt::Label: Base::template fmtStop<Fmt::Label>(ctx);break;
+      case Fmt::EditMode: Base::template fmtStop<Fmt::EditMode>(ctx);break;
+      case Fmt::EditCursor: Base::template fmtStop<Fmt::EditCursor>(ctx);break;
+      case Fmt::Data: Base::template fmtStop<Fmt::Data>(ctx);break;
+      case Fmt::Unit: Base::template fmtStop<Fmt::Unit>(ctx);break;
+    }
+    // Base::template fmtStop<tag>(ctx);
+  }
   virtual Sz posX() const override {return Base::posX();}
   virtual Sz posY() const override {return Base::posY();}
   virtual void setPos(Pos p) override {Base::setPos(p);}
@@ -155,14 +207,15 @@ struct DeviceCursor {
   template<typename F>
   struct Part:F {
     using F::fmtStart;
-    void fmtStart(Fmt tag,Ctx& ctx) {
-      F::fmtStart(tag,ctx);
+    template<Fmt tag>
+    void fmtStart(Ctx& ctx) {
+      F::template fmtStart<tag>(ctx);
       if(tag==Fmt::Item&&ctx) m_text_cursor_at=F::obj().pos();
     }
     template<Fmt tag>
-    void fmtStart(Ctx& ctx) {
+    void fmtStop(Ctx& ctx) {
       if(F::obj().unlocked()) {
-        F::fmtStart(tag,ctx);
+        F::fmtStop(tag,ctx);
         if(tag==Fmt::EditCursor) {
           m_editing=true;
           m_text_cursor_at=F::obj().pos();
@@ -223,13 +276,15 @@ struct UseEditCursorFmt {
   template<typename F>
   struct Part:F {
     //force renew of editing state before printing, if still valid
-    void fmtStart(Fmt tag,Ctx& ctx) {
+    template<Fmt tag>
+    void fmtStart(Ctx& ctx) {
       if(tag==Fmt::EditCursor&&!F::locked()) F::m_editing=false;
-      F::fmtStart(tag,ctx);
+      F::template fmtStart<tag>(ctx);
     }
     //restores meaningful cursor position after printing done
-    void fmtStop(Fmt tag,Ctx& ctx) {
-      F::fmtStop(tag,ctx);
+    template<Fmt tag>
+    void fmtStop(Ctx& ctx) {
+      F::template fmtStop<tag>(ctx);
       if(tag==Fmt::View) {
         if(F::locked()) F::mode(LockMode::Update);
         F::setPos(F::m_text_cursor_at);

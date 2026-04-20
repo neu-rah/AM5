@@ -30,7 +30,7 @@ struct ItemAPI:Def {
 };
 
 template<typename N>
-struct Link:N {
+struct ItemLink:N {
   template<typename O>
   struct Part:N::Part<O> {
     using Base=typename N::template Part<O>;
@@ -39,19 +39,15 @@ struct Link:N {
     //API chain calls for nav function
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path p) {
+      dout<<"•"<<flush;
       return Base::nav(n,cke,p)||O::nav(n,cke,p);
     }
   };
 };
 
-// template<typename... OO>
-// struct DataDef:APIOf<DataAPI<>,OO...>::template Map<Link> {
-//   using Base=typename APIOf<DataAPI<>,OO...>::template Map<Link>;
-// };
-
 template<typename... OO>
-struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<Link> {
-  using Base=typename APIOf<ItemAPI<>,OO...>::template Map<Link>;
+struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<ItemLink> {
+  using Base=typename APIOf<ItemAPI<>,OO...>::template Map<ItemLink>;
   using Base::Base;
   using Base::printMenu;
   using Base::nav;
@@ -74,18 +70,12 @@ struct IItem {
   virtual void sync(IOut& out) {}
   virtual bool up() const {return false;}
   virtual bool down() const {return false;}
-  virtual bool nav(bool kbd,INav& n,const CKE& cke,const Path p) {return false;}
+  virtual bool nav(INav& n,const CKE& cke,const Path p) {return false;}
 
   template <typename Out>
   static constexpr bool printMenu(Out& out,Ctx& ctx) 
     {return printMenu(out,ctx);}
 
-  template<bool kbd>
-  bool nav(INav& n,const CKE& cke,const Path p) {
-    return kbd?
-      nav(true,n,cke,p):
-      nav(false,n,cke,p);
-  }
 };
 
 template<typename... II>
@@ -102,12 +92,7 @@ struct IItemDef:IItem, ItemDef<II...> {
   template <typename Out> static constexpr bool printMenu(Out& out,Ctx& ctx) {return Base::printMenu(out,ctx);}
   template<typename Out> static constexpr void print(Out& out,Ctx& ctx) {return Base::print(out,ctx);}
 
-  template<bool kbd>
-  bool nav(INav& n,const CKE& cke,const Path p) {
-    return kbd?
-      nav(true,n,cke,p):
-      nav(false,n,cke,p);
-  }
+  bool nav(INav& n,const CKE& cke,const Path p) {return Base::nav(n,cke,p);}
   //Id--
   static constexpr int getId() {return -1;}
   template<int> using HasId=std::false_type;
@@ -136,11 +121,9 @@ struct BodyAction {
     using Base=I;
     using Base::Base;
     using Base::enabled;
-    template<bool kbd,typename Nav>
-    bool nav(Nav& n,const CKE& cke,const Path p) {
-      if(cke.cmd==Cmd::Enter&&p.len) return (f(p.last()),Base::template nav<kbd>(n,cke,p));
-      else return Base::template nav<kbd>(n,cke,p);
-    }
+    template<typename Nav>
+    bool nav(Nav& n,const CKE& cke,const Path p) 
+      {return cke.cmd==Cmd::Enter&&p.len?f(p.last()):false;}
   };
 };
 
