@@ -113,11 +113,11 @@ struct TreeNav {
     template<bool kbd> 
     bool doCmd(Cmd cmd,Key k=0, bool e=false) {
       if(cmd==Cmd::Esc) return close();//preemptive esc=>close
-      return root().template nav<kbd>(Base::obj(),{cmd,k,e},focus(m_level+1));
+      return root().nav(Base::obj(),{cmd,k,e},focus(m_level+1));
     }
 
     bool doNav(CKE cke,Sz len,Wraps w) {
-      DataDef<NumRange<Sz>,Data<Sz&>> at{0l,len-1,w,m_path.m_pathData[level()]};
+      DataDef<NumRange<Sz>,Data<Sz&>> at(0,len-1,w,m_path.data[level()]);
       switch(cke.cmd) {
         case Cmd::Up: at.up();break;
         case Cmd::Down: at.down();break;
@@ -128,15 +128,15 @@ struct TreeNav {
 
     template<typename In>  bool in(In& in) {return in.cmd(Base::obj());}
 
-    void go(Sz i,Depth delta=0) {m_path.m_pathData[m_level+delta]=i;}
+    void go(Sz i,Depth delta=0) {m_path.data[m_level+delta]=i;}
 
-    void navMode(NavMode m) {m_navMode=m;}
+    void navMode(NavMode m) {m_navMode.get()=m;}
     NavMode navMode() const {return m_navMode.get();}
 
     bool padOpen() {
       if(m_level.get()<=depth()) {
         m_level.set(m_level+1);
-        m_path.m_pathData[m_level]=0;
+        m_path.data[m_level]=0;
         if(m_level.get()<m_print_level) m_print_level=m_level;
         return true;
       } else return false;

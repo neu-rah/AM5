@@ -22,7 +22,7 @@ struct Menu {
     static constexpr const Depth depth() {return 1+Body::depth();}
 
     template<Sz n=0> static constexpr Sz cnt() {return Body::template cnt<n+1>();}
-    constexpr Sz len() const {return m_body.len();}
+    constexpr Sz size() const {return m_body.size();}
 
     template<typename Out>
     bool printMenu(Out& out,Ctx&& ctx) {return printMenu(out,ctx);}
@@ -49,10 +49,11 @@ struct Menu {
     bool printItem(Out& out,Ctx& ctx) const 
       {return (Base::print(out,ctx),false);}
     
-    void nav(CKE cke,Path p) {
-      if(p.len&&m_body.nav(cke,p.next(),p.sel())) return true;//walk the path
-      if (Base::template nav(cke,p)) return true;
-      return p.len?n.doNav(cke,len(),Base::s_wraps):false;
+    template<typename Nav> 
+    bool nav(Nav& n,CKE cke,Path p) {
+      if(p.len&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
+      if (Base::nav(n,cke,p)) return true;
+      return p.len?n.doNav(cke,size(),Base::s_wraps):false;
     }
 
     Body& body() {return m_body;}

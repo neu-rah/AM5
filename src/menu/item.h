@@ -13,7 +13,7 @@
 
 #include "menu/sys/base.h"
 
-template<typename Def>
+template<typename Def=Nil>
 struct ItemAPI:Def {
   template<typename> using Requires=std::false_type;
   template<typename> using Excludes=std::true_type;
@@ -25,27 +25,33 @@ struct ItemAPI:Def {
   template<typename Out> static constexpr bool printMenu(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr bool printBody(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr bool printItem(Out&,Ctx&) {return false;}
-  // template<typename Out> static constexpr void print(Out&) {}
-  static constexpr void nav(CKE cke,Path) {}
-
-  // template <typename Out>
-  // static constexpr bool printMenu(Out& out,Ctx& ctx) {return false;}
-  
-  // template<typename Out>
-  // static constexpr bool printBody(Out& out,Ctx&) {return false;}
-
-  // template<typename Out> 
-  // static constexpr void print(Out& out,Ctx& ctx) {}
-
-  template<bool kbd,typename Nav> 
-  static constexpr bool nav(Nav& n,const CKE& cke,const Path p) 
-    {return false;}
-
+  template<typename Out> static constexpr void print(Out&) {}
+  template<typename Nav> static constexpr bool nav(Nav& n,CKE cke,Path) {return false;}
 };
 
+template<typename N>
+struct Link:N {
+  template<typename O>
+  struct Part:N::Part<O> {
+    using Base=typename N::template Part<O>;
+    using Base::Base;
+    // constexpr bool changed() {return Base::changed()||O::changed();}
+    //API chain calls for nav function
+    template<typename Nav>
+    bool nav(Nav& n,const CKE& cke,const Path p) {
+      return Base::nav(n,cke,p)||O::nav(n,cke,p);
+    }
+  };
+};
+
+// template<typename... OO>
+// struct DataDef:APIOf<DataAPI<>,OO...>::template Map<Link> {
+//   using Base=typename APIOf<DataAPI<>,OO...>::template Map<Link>;
+// };
+
 template<typename... OO>
-struct ItemDef:APIOf<ItemAPI<Nil>,OO...> {
-  using Base=APIOf<ItemAPI<Nil>,OO...>;
+struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<Link> {
+  using Base=typename APIOf<ItemAPI<>,OO...>::template Map<Link>;
   using Base::Base;
   using Base::printMenu;
   using Base::nav;
@@ -109,17 +115,16 @@ struct IItemDef:IItem, ItemDef<II...> {
 };
 
 //---------------------------------------------------------------------------------------------
-using ActionFunc=void(*)(int);
+using ActionFunc=bool(*)(int);
 
 template<ActionFunc action>
 struct Action {
   template<typename O>
   struct Part:O {
     using Base=O;
-    static constexpr void nav(CKE cke,Path path) {
-      if(cke.cmd==Cmd::Enter) action(path.sel());
-      Base::nav(cke,path);
-    }
+    template<typename Nav>
+    static constexpr bool nav(Nav& n,CKE cke,Path path) 
+      {return cke.cmd==Cmd::Enter&&action(path.sel());}
   };
 };
 
@@ -300,9 +305,9 @@ struct ItemNav {
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ItemNav<>");
     static_assert(I::template Excludes<Class<ParentDraw>>::value,"ParentDraw must preseed ItemNav<>");
     static constexpr const Wraps s_wraps{wraps};
-    template<bool kbd, typename Nav>
+    template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
-      bool r=Base::template nav<kbd>(n,cke,path);
+      bool r=Base::nav(n,cke,path);
       if(cke.cmd==Cmd::Enter) {
         if(path.len==0) return n.open();
         else if(path.len==1) return n.close();

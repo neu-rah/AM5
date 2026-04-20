@@ -50,7 +50,7 @@ InDef<
 
 int power=55;
 
-void op1(Sz i) {cout<<"option 1 called!"<<endl;}
+bool op1(Sz i) {cout<<"option 1 called!"<<endl;return true;}
 
 using MainMenu=MenuDef<
   Title<ItemNav<Wraps::yes>,Text>,

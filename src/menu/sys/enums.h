@@ -1,7 +1,7 @@
 #pragma once
 
 enum {no=false,yes=true};
-enum class Wraps:bool {no,yes};
+enum class Wraps {no,yes};
 enum class Scroll {no,yes};
 enum class Edge {start,stop};
 enum class Clear {no,yes};

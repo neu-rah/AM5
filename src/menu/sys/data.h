@@ -22,24 +22,10 @@ struct DataAPI:O {
   // template<typename Out> static void printTo(Out& out,Ctx& ctx) {}
 };
 
-// template<typename N>
-// struct Link:N {
-//   template<typename O>
-//   struct Part:N::Part<O> {
-//     using Base=typename N::template Part<O>;
-//     using Base::Base;
-//     constexpr bool changed() {return Base::changed()||O::changed();}
-//   };
-// };
-
-// template<typename... OO>
-// struct DataDef:APIOf<DataAPI<>,OO...>::template Map<Link> {
-//   using Base=typename APIOf<DataAPI<>,OO...>::template Map<Link>;
-// };
-
 template<typename... OO>
 struct DataDef:APIOf<DataAPI<>,OO...> {
   using Base=APIOf<DataAPI<>,OO...>;
+  using Base::Base;
     // struct DataPrint {
     //   template<typename O>
     //   struct Part:O {
@@ -149,17 +135,18 @@ struct NumRange {
   struct Part:O {
     using Base=O;
     using Base::get;
-    using Type=typename Base::Type;
+    using Type=N;
     // using Base::Base;
     Type m_low;
     Type m_high;
     Wraps m_wraps;
     template<typename... OO>
-    Part(Type l,Type h,OO... oo):m_low{l},m_high{h},Base{std::forward<OO>(oo)...}{}
+    Part(Type l,Type h,Wraps w,OO&&... oo)
+      :m_low{l},m_high{h},m_wraps{w},Base{std::forward<OO>(oo)...}{}
     constexpr bool valid(N o) const {return o<=m_low&&o<=m_high;}
     constexpr N clamp(N o) const {return o<m_low?m_low:o>m_high?m_high:o;}
-    constexpr N stepUp(N o,N s,Wraps w) {return m_high-o>s?o+s:w?m_low:m_high;}
-    constexpr N stepDown(N s,N o,Wraps w) {return o-m_low>s?o-s:w?m_high:m_low;}
+    constexpr N stepUp(N o,N s,Wraps w) {return m_high-o>s?o+s:w==Wraps::yes?m_low:m_high;}
+    constexpr N stepDown(N s,N o,Wraps w) {return o-m_low>s?o-s:w==Wraps::yes?m_high:m_low;}
     // static constexpr N step(N s,N o,Wraps w) {return s<0?stepDown(-s,o,w):stepUp(s,o,w);}
     void up(N s=1) {get()=stepUp(s,get(),m_wraps);}
     void down(N s=1) {get()=stepDown(s,get(),m_wraps);}

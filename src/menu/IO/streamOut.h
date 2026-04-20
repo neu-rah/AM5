@@ -8,7 +8,7 @@ struct StreamOut {
   template<typename O>
   struct RawPart:O {
     static constexpr const Out& device{out};
-    static constexpr void nl() {out<<endl;}
+    static constexpr void nl() {endl(out);}
     static constexpr void flush() {out.flush();}
     template<typename T> static constexpr void put(const T& o) {out<<o;O::put(o);}
   };

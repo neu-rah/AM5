@@ -39,10 +39,9 @@ struct StaticBody {
   template<typename Out> void printItem(Out& out,Ctx& ctx,Sz i)
     {return i?m_body.printItem(out,ctx,i-1):m_item.print(out);}
 
-  void nav(CKE cke,Path path,Sz i) {
-    if(i) m_body.nav(cke,path,i-1);
-    else m_item.nav(cke,path);
-  }
+  template<typename Nav>
+  bool nav(Nav& n,CKE cke,Path path,Sz i)
+    {return i?m_body.nav(n,cke,path,i-1):m_item.nav(n,cke,path);}
 };
 
 template<typename O>
@@ -53,11 +52,17 @@ struct StaticBody<O> {
   static constexpr Sz depth() {return Item::depth();}
   static constexpr Sz size() {return 1;}
 
-  template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i) {assert(i==0);return m_item.printMenu(out,ctx);}
+  template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i) 
+    {assert(i==0);return m_item.printMenu(out,ctx);}
+
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
     out.printItem(m_item,ctx);
     return m_item.changed();
   }
-  template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i){return m_item.printItem(out,ctx);}
-  void nav(CKE cke,Path path,Sz i) {assert(i==0);m_item.nav(cke,path);}
+
+  template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
+    {return m_item.printItem(out,ctx);}
+
+  template<typename Nav> bool nav(Nav& n,CKE cke,Path path,Sz i) 
+    {assert(i==0);return m_item.nav(n,cke,path);}
 };
