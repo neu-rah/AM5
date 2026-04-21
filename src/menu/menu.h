@@ -12,7 +12,7 @@ struct Menu {
     using This=Part<I>;
     using Title=T;
     using Body = B;
-    // using Base::Base;
+    using Base::Base;
     Title m_title{};
     Body m_body;
 

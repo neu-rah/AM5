@@ -217,7 +217,7 @@ CItem cBody[]{
   "README.md"
 };
 
-bool stay(int i) {return false;}
+bool stay(int i) {return true;}
 
 IItem* iBody[]{
   new IItemDef<StaticText<text::op1>>{},
@@ -267,10 +267,9 @@ template<typename... OO> struct Ins {template<typename M>  using Map=typename M:
 template<typename... OO> struct App {template<typename M>  using Map=typename M::template App<OO...>;};
 
 using ToggleDemo=ToggleFieldDef<
-  Label<
+  ItemDef<
     BodyAction<action::subIdx>,
     StaticText<text::toggle_demo>,
-    // >,
     AsEditMode<>//edit mode indicator
   >,
   StaticBody<//sub menu static body
@@ -280,7 +279,7 @@ using ToggleDemo=ToggleFieldDef<
 >;
 
 using Power=NumFieldDef<
-  Title<
+  Chain<
     Id<ids::power>,
     AsLabel<StaticText<text::power>>,//field label
     ItemNav<Wraps::no>
@@ -334,10 +333,30 @@ template<typename... OO> constexpr auto staticBody(OO&&... oo) {return StaticBod
 template<typename T,typename B> constexpr auto menuDef(T&& t,B&& b) {return MenuDef<T,B>{std::forward<T>(t),std::forward<B>(b)};}
 
 auto mainMenu=menuDef(
-  ItemDef<Text>{"title"},
+  ItemDef<Text,ItemNav<Wraps::yes>>{"title"},
   staticBody(
-    ItemDef<Text>{"wtf"},
-    ItemDef<Text,Desc<Text>,Action<stay>>{"Stay","select and stay!"},
+    ItemDef<Text,Desc<Text>>{"wtf","a do nothing option."},
+    menuDef(
+      Title<ItemNav<Wraps::yes>,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
+      staticBody(
+        Power{},
+        ItemDef<ToggleBehave,Menu<
+          ItemDef<
+            BodyAction<action::subIdx>,
+            StaticText<text::toggle_demo>,
+            AsEditMode<>//edit mode indicator
+          >,
+          StaticBody<//sub menu static body
+            ItemDef<AsField<StaticText<text::no>>>,
+            ItemDef<AsField<StaticText<text::yes>>>
+          >
+        >>{},
+        // SelectDemo{},
+        // ChooseDemo{},
+        ItemDef<Text,Desc<Text>,Action<stay>>{"Stay","calls stay action function."},
+        Back{}
+      )
+    ),
     Quit{}
   )
 );

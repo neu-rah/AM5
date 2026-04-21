@@ -72,7 +72,7 @@ struct Data {
   struct Part:O {
     using Type=T;
     using Base=O;
-    // using Base::Base;
+    using Base::Base;
     Type data;
     template<typename... OO> Part(const Type& o,OO&&... oo):data{o},Base{std::forward<OO>(oo)...}{}
     constexpr Type& get() {return data;} 

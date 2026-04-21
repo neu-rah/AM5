@@ -206,6 +206,8 @@ struct EnDis {
 struct EditField {
   template<typename I>
   struct Part:I {
+    using Base=I;
+    using Base::Base;
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       bool r=false;
@@ -254,6 +256,7 @@ struct RecallNavPos {
   template<typename I>
   struct Part:I {
     using Base=I;
+    using Base::Base;
     template<typename Out> 
     void print(Out& out,Ctx& ctx) {
       Base::print(out,ctx);
@@ -343,6 +346,8 @@ template<typename R,R& ref>
 struct ItemRef {
   template<typename O>
   struct Part:O {
+    using Base=O;
+    using Base::Base;
     using RefType=R;
     operator RefType&() const {return ref;}
     static constexpr const Depth depth() {return ref.depth();}
