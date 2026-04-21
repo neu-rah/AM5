@@ -347,7 +347,7 @@ bool action::op2(Sz) {
   // syslog.setColors(GREEN,BLACK);
   // syslog.clear();
   syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  // mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }
 
