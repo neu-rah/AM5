@@ -23,9 +23,9 @@ struct StaticBody {
   using Map=StaticBody<M<O>,M<OO>...>;
   Item m_item;
   Body m_body;
-  constexpr StaticBody() {}
-  template<typename... II>
-  constexpr StaticBody(Item&& i,II&&... ii):m_item{std::forward<Item>(i)},m_body{std::forward<II>(ii)...}{}
+  // constexpr StaticBody() {}
+  // template<typename... II>
+  // constexpr StaticBody(Item&& i,II&&... ii):m_item{std::forward<Item>(i)},m_body{std::forward<II>(ii)...}{}
   static constexpr Depth depth() {return std::max(Item::depth(),Body::depth());}
   static constexpr Sz size() {return 1+Body::size();}
 
@@ -83,7 +83,7 @@ struct StaticBody<O> {
   using Item=O;
   template<template<typename> class M> using Map=StaticBody<M<O>>;
   Item m_item;
-  constexpr StaticBody(Item&& i):m_item{std::forward<Item>(i)}{}
+  // constexpr StaticBody(Item&& i):m_item{std::forward<Item>(i)}{}
 
   static constexpr Depth depth() {return Item::depth();}
   static constexpr Sz size() {return 1;}

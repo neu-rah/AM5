@@ -330,24 +330,28 @@ using MainMenu=MenuDef<
   >
 >;
 
-MainMenu mainMenu(
-  ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
-  ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
-  ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
-  ItemDef<Text,Desc<Text>,Action<stay>>{"Stay","select and stay!"},
-  Quit{}
+template<typename... OO> constexpr auto staticBody(OO&&... oo) {return StaticBody<OO...>{std::forward<OO>(oo)...};}
+template<typename T,typename B> constexpr auto menuDef(T&& t,B&& b) {return MenuDef<T,B>{std::forward<T>(t),std::forward<B>(b)};}
+
+auto mainMenu=menuDef(
+  ItemDef<Text>{"title"},
+  staticBody(
+    ItemDef<Text>{"wtf"},
+    ItemDef<Text,Desc<Text>,Action<stay>>{"Stay","select and stay!"},
+    Quit{}
+  )
 );
 
 INavDef<
   TreeNav,
-  Root<MainMenu,mainMenu>
+  Root<decltype(mainMenu),mainMenu>
 > nav;
 
 bool action::op2(Sz) {
   // syslog.setColors(GREEN,BLACK);
   // syslog.clear();
   syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  // mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }
 
