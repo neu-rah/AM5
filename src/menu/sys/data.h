@@ -118,11 +118,11 @@ struct StaticNumRange {
     using Base::Base;
     static constexpr bool valid(N o) {return o<=l&&o<=h;}
     static constexpr N clamp(N o) {return o<l?l:o>h?h:o;}
-    static constexpr N stepUp(N o,N s,Wraps w) {return h-o>s?o+s:w?l:h;}
-    static constexpr N stepDown(N s,N o,Wraps w) {return o-l>s?o-s:w?h:l;}
+    static constexpr N stepUp(N o,N s,Wraps w) {return h-o>s?o+s:w==Wraps::yes?l:h;}
+    static constexpr N stepDown(N s,N o,Wraps w) {return o-l>s?o-s:w==Wraps::yes?h:l;}
     static constexpr N step(N s,N o,Wraps w) {return s<0?stepDown(-s,o,w):stepUp(s,o,w);}
-    static constexpr void up(N s,Wraps w) {get()=stepUp(s,get(),w);}
-    static constexpr void down(N s,Wraps w) {get()=stepDown(s,get(),w);}
+    constexpr void up(N s,Wraps w) {get()=stepUp(s,get(),w);}
+    constexpr void down(N s,Wraps w) {get()=stepDown(s,get(),w);}
   };
 };
 

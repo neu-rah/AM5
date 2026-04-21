@@ -20,3 +20,7 @@
 #include "menu/item.h"
 #include "menu/menu.h"
 #include "menu/nav.h"
+
+template<typename... OO> constexpr auto staticBody(OO&&... oo) {return StaticBody<OO...>{std::forward<OO>(oo)...};}
+template<typename T,typename B> constexpr auto menuDef(T&& t,B&& b) {return MenuDef<T,B>{std::forward<T>(t),std::forward<B>(b)};}
+

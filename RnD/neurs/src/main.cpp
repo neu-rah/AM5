@@ -267,96 +267,61 @@ template<typename... OO> struct Ins {template<typename M>  using Map=typename M:
 template<typename... OO> struct App {template<typename M>  using Map=typename M::template App<OO...>;};
 
 using ToggleDemo=ToggleFieldDef<
-  ItemDef<
-    BodyAction<action::subIdx>,
-    StaticText<text::toggle_demo>,
-    AsEditMode<>//edit mode indicator
-  >,
-  StaticBody<//sub menu static body
+  ItemDef<BodyAction<action::subIdx>,Text,AsEditMode<>>,
+  StaticBody<
     ItemDef<AsField<StaticText<text::no>>>,
-    ItemDef<AsField<StaticText<text::yes>>>
-  >//::Map<Ins<CloseOnSelect>::Map>
+    ItemDef<AsField<StaticText<text::yes>>>,
+    ItemDef<AsField<Text>>
+  >
 >;
 
 using Power=NumFieldDef<
   Chain<
     Id<ids::power>,
-    AsLabel<StaticText<text::power>>,//field label
-    ItemNav<Wraps::no>
+    AsLabel<StaticText<text::power>>//field label
   >,
   NumField<//use range to change the data
     StaticNumRange<int,0,100>,//valid range
+    ItemNav<Wraps::no>,
     Watch<AsField<Default<int,55>,Int>>//use `int` and `change watch` as field (data)
   >,
   StaticText<text::percent>//field unit
 >;
 
-using MainMenu=MenuDef<
-  Title<ItemNav<Wraps::yes>,StaticText<text::main_menu>>,
-  StaticBody<//main menu static body
-    ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>,
-    ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>,
-    ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>,
-    // MenuDef<
-    //   Title<ItemNav<Wraps::yes>,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>,
-    //   StaticBody<
-    //     Power,
-    //     ToggleDemo,
-    //     SelectDemo,
-    //     ChooseDemo,
-    //     Back
-    //   >
-    // >,
-    // MenuDef<//sub menu with C array body (all items of the type)
-    //   Title<
-    //     BodyAction<action::subIdx>,
-    //     ItemNav<Wraps::no>,
-    //     StaticText<text::array_sub_menu>,
-    //     Desc<StaticText<desc::array_sub_menu>>
-    //   >,
-    //   CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
-    // >,
-    // MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
-    //   Title<BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
-    //   CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>
-    // >,
-    // MenuDef<
-    //   Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
-    //   StdBody<vector<IItem*>>
-    // >,
-    ItemDef<Text,Desc<Text>,Action<stay>>,
-    Quit
-  >
->;
-
-template<typename... OO> constexpr auto staticBody(OO&&... oo) {return StaticBody<OO...>{std::forward<OO>(oo)...};}
-template<typename T,typename B> constexpr auto menuDef(T&& t,B&& b) {return MenuDef<T,B>{std::forward<T>(t),std::forward<B>(b)};}
-
 auto mainMenu=menuDef(
   ItemDef<Text,ItemNav<Wraps::yes>>{"title"},
   staticBody(
-    ItemDef<Text,Desc<Text>>{"wtf","a do nothing option."},
+    ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
+    ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
+    ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
     menuDef(
       Title<ItemNav<Wraps::yes>,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
       staticBody(
         Power{},
-        ItemDef<ToggleBehave,Menu<
-          ItemDef<
-            BodyAction<action::subIdx>,
-            StaticText<text::toggle_demo>,
-            AsEditMode<>//edit mode indicator
-          >,
-          StaticBody<//sub menu static body
-            ItemDef<AsField<StaticText<text::no>>>,
-            ItemDef<AsField<StaticText<text::yes>>>
-          >
-        >>{},
-        // SelectDemo{},
-        // ChooseDemo{},
+        ToggleDemo{"Sure","maybe"},
+        SelectDemo{},
+        ChooseDemo{},
         ItemDef<Text,Desc<Text>,Action<stay>>{"Stay","calls stay action function."},
         Back{}
       )
     ),
+    MenuDef<//sub menu with C array body (all items of the type)
+      Title<
+        BodyAction<action::subIdx>,
+        ItemNav<Wraps::no>,
+        StaticText<text::array_sub_menu>,
+        Desc<StaticText<desc::array_sub_menu>>
+      >,
+      CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
+    >{},
+    MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
+      Title<BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
+      CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>
+    >{},
+    MenuDef<
+      Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
+      StdBody<vector<IItem*>>
+    >{},
     Quit{}
   )
 );
@@ -370,7 +335,7 @@ bool action::op2(Sz) {
   // syslog.setColors(GREEN,BLACK);
   // syslog.clear();
   syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  // mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }
 
@@ -412,9 +377,9 @@ void setup(){
   out.mode(LockMode::None);
   nav.navPrint(out);
   //populate std container menu
-  // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
-  // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
-  // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
+  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
+  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
+  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
 }
 
 #ifdef ARDUINO

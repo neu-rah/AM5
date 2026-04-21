@@ -20,7 +20,7 @@ struct Menu {
     // template<typename... OO> constexpr Part(T&& t,OO&&... oo):m_title{std::forward<T>(t)},m_body{std::forward<OO>(oo)...}{}
     // template<typename O> constexpr Part(O&& o):m_body{std::forward<O>(o)}{}
     
-    // constexpr Part(Title&&t,B&&b):m_title{std::forward<Title>(t)},m_body{std::forward<B>(b)}{}
+    constexpr Part(Title&&t,B&&b):m_title{std::forward<Title>(t)},m_body{std::forward<B>(b)}{}
     template<typename... OO>
     constexpr Part(Title&&t,OO&&... oo):m_title{std::forward<Title>(t)},m_body{std::forward<OO>(oo)...}{}
 
