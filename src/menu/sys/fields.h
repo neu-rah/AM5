@@ -12,18 +12,22 @@ struct ToggleBehave {
   struct Part:RecallNavPos::Part<I> {
     using Base=typename RecallNavPos::template Part<I>;
     static constexpr const Wraps wraps{Wraps::yes};
+    bool changed() {return m_changed/*||Base::changed()*/;}
+    bool sync() {return m_changed=false;Base::sync();}
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
+      I::nav(n,cke,path);
       if(cke.cmd==Cmd::Enter) {
         n.open();
         n.go(Base::m_sel);
         n.doNav({Cmd::Up},Base::size(),Wraps::yes);
+        m_changed=Base::m_sel!=n.sel();
         Base::m_sel=n.sel();
-        return Base::nav(n,cke,path);
+        n.close();
       }
-      bool r=Base::nav(n,cke,path);
-      return r;
+      return changed();
     }
+    protected: bool m_changed{true};
   };
 };
 

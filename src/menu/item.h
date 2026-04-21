@@ -38,24 +38,25 @@ struct ItemAPI:Def {
   template<int> using WithId=ItemAPI<CRTP<ItemAPI<Nil>>>;
 };
 
-// template<typename N>
-// struct ItemLink:N {
-//   template<typename O>
-//   struct Part:N::template Part<O> {
-//     using Base=typename N::template Part<O>;
-//     using Base::Base;
-//     // constexpr void sync() {Base::sync();O::sync();}
-//     // constexpr bool changed() const {return Base::changed()||O::changed();}
-//     //API chain calls for nav function
-//     template<typename Nav>
-//     bool nav(Nav& n,const CKE& cke,const Path p) 
-//       {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
-//   };
-// };
+template<typename N>
+struct ItemLink:N {
+  template<typename O>
+  struct Part:N::template Part<O> {
+    using Base=typename N::template Part<O>;
+    using Base::Base;
+    // constexpr void sync() {Base::sync();O::sync();}
+    using Base changed;
+    constexpr bool changed() {return Base::changed()||O::changed();}
+    //API chain calls for nav function
+    // template<typename Nav>
+    // bool nav(Nav& n,const CKE& cke,const Path p) 
+    //   {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
+  };
+};
 
 template<typename... OO>
-struct ItemDef:APIOf<ItemAPI<>,OO...> {//::template Map<ItemLink> {
-  using Base=APIOf<ItemAPI<>,OO...>;//::template Map<ItemLink>;
+struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<ItemLink> {
+  using Base=typename APIOf<ItemAPI<>,OO...>::template Map<ItemLink>;
   using Base::Base;
   using Base::printMenu;
   using Base::enabled;
@@ -89,7 +90,7 @@ struct IItem {
   virtual void print(IOut& out,Ctx&)=0;
   virtual bool enabled() const=0;
   virtual void enable(bool=true)=0;
-  virtual bool changed() const=0;
+  virtual bool changed()=0;
   virtual bool changed(IOut& out)=0;
   virtual void sync()=0;
   virtual void sync(IOut& out)=0;
@@ -114,7 +115,7 @@ struct IItemDef:IItem, ItemDef<II...> {
   virtual void print(IOut& out,Ctx& ctx) override {Base::print(out,ctx);}
   virtual bool enabled() const override {return Base::enabled();}
   virtual void enable(bool o=true) override {return Base::enable(o);}
-  virtual bool changed() const override {return Base::changed();}
+  virtual bool changed() override {return Base::changed();}
   virtual bool changed(IOut& out) override {return Base::changed(out);}
   virtual void sync() override {Base::sync();}
   virtual void sync(IOut& out) override {Base::sync(out);}
@@ -154,8 +155,8 @@ struct BodyAction {
     using Base::enabled;
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path p) {
-      if(cke.cmd==Cmd::Enter&&p.len) return (f(p.last()),Base::nav(n,cke,p));
-      else return Base::nav(n,cke,p);
+      if(cke.cmd==Cmd::Enter&&p.len) f(p.last());
+      return Base::nav(n,cke,p);
     }
   };
 };

@@ -265,14 +265,16 @@ template<typename... OO> struct Ins {template<typename M>  using Map=typename M:
 template<typename... OO> struct App {template<typename M>  using Map=typename M::template App<OO...>;};
 
 using ToggleDemo=ToggleFieldDef<
-  Title<
+  Label<
     BodyAction<action::subIdx>,
-    AsLabel<StaticText<text::toggle_demo>>,
+    // AsLabel<
+    StaticText<text::toggle_demo>,
+    // >,
     AsEditMode<>//edit mode indicator
   >,
   StaticBody<//sub menu static body
-    ItemDef<AsField<StaticText<text::no>>>,
-    ItemDef<AsField<StaticText<text::yes>>>
+    ItemDef<CloseOnSelect,AsField<StaticText<text::no>>>,
+    ItemDef<CloseOnSelect,AsField<StaticText<text::yes>>>
   >//::Map<Ins<CloseOnSelect>::Map>
 >;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "menu/item.h"
+#include "menu/sys/printers.h"
 #include "tinyTimeUtils.h"
 
 template <typename T, typename B>
@@ -85,3 +86,4 @@ template <typename T, typename B> using MenuDef=ItemDef<Menu<T,B>>;
 template <typename T, typename B> using IMenuDef=IItemDef<Menu<T,B>>;
 
 template<typename... OO> using Title=Chain<OO...>; 
+template<typename... OO> using Label=AsLabel<OO...>; 
