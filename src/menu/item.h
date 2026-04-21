@@ -236,7 +236,6 @@ struct NumField {
     // bool down(DataType n=1) {set(Base::down(get(),n));return Base::down();}
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
-      // dout<<xy<0,1><<colors<RED,BLACK><<"NumField::nav "<<cke.cmd<<" "<<(cnt<>++)<<padWith<10><<flush;
       if(n.navMode()==NavMode::Edit) switch(cke.cmd){
         case Cmd::Up: Base::up(1,Base::wraps); return true;
         case Cmd::Down: Base::down(1,Base::wraps); return true;
@@ -308,7 +307,6 @@ struct ItemNav {
     static constexpr const Wraps wraps{w};
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
-      dout<<xy<0,1><<colors<RED,BLACK><<"ItemNav::nav "<<cke.cmd<<" "<<(cnt<>++)<<padWith<10><<flush;
       bool r=Base::nav(n,cke,path);
       if(cke.cmd==Cmd::Enter) {
         if(path.len==0) return n.open();
