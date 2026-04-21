@@ -68,7 +68,7 @@ struct TreeNav {
     constexpr Path self() const {return m_path.self();}
     constexpr Path parent() const {return m_path.parent();}
     Depth level() {return m_level;}
-    Sz sel() {return m_path.sel(m_level);}
+    Sz sel() const {return m_path.sel(m_level);}
 
     void sync() {
       m_level.sync();
@@ -85,7 +85,7 @@ struct TreeNav {
       out.mode(om);
     }
 
-    bool changed() {
+    bool changed() const {
       return m_level.changed()
         ||m_navMode.changed()
         ||m_prevSel!=sel();

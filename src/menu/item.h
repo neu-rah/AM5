@@ -22,7 +22,7 @@ struct ItemAPI:Def {
   static constexpr bool enabled() {return true;}
   static constexpr void enable(bool=true) {}
   static constexpr bool changed() {return false;}
-  template<typename Out> static constexpr bool changed(Out&) {return false;}
+  // template<typename Out> static constexpr bool changed(Out&) {return false;}
   static constexpr void sync() {}
   template<typename Out> static constexpr void sync(Out&) {}
   static constexpr bool up() {return false;}
@@ -38,25 +38,24 @@ struct ItemAPI:Def {
   template<int> using WithId=ItemAPI<CRTP<ItemAPI<Nil>>>;
 };
 
-template<typename N>
-struct ItemLink:N {
-  template<typename O>
-  struct Part:N::template Part<O> {
-    using Base=typename N::template Part<O>;
-    using Base::Base;
-    // constexpr void sync() {Base::sync();O::sync();}
-    using Base changed;
-    constexpr bool changed() {return Base::changed()||O::changed();}
-    //API chain calls for nav function
-    // template<typename Nav>
-    // bool nav(Nav& n,const CKE& cke,const Path p) 
-    //   {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
-  };
-};
+// template<typename N>
+// struct ItemLink:N {
+//   template<typename O>
+//   struct Part:N::template Part<O> {
+//     using Base=typename N::template Part<O>;
+//     using Base::Base;
+//     // constexpr void sync() {Base::sync();O::sync();}
+//     constexpr bool changed() const {return Base::changed()||O::changed();}
+//     //API chain calls for nav function
+//     // template<typename Nav>
+//     // bool nav(Nav& n,const CKE& cke,const Path p) 
+//     //   {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
+//   };
+// };
 
 template<typename... OO>
-struct ItemDef:APIOf<ItemAPI<>,OO...>::template Map<ItemLink> {
-  using Base=typename APIOf<ItemAPI<>,OO...>::template Map<ItemLink>;
+struct ItemDef:APIOf<ItemAPI<>,OO...>{//::template Map<ItemLink> {
+  using Base=APIOf<ItemAPI<>,OO...>;//::template Map<ItemLink>;
   using Base::Base;
   using Base::printMenu;
   using Base::enabled;
@@ -91,7 +90,7 @@ struct IItem {
   virtual bool enabled() const=0;
   virtual void enable(bool=true)=0;
   virtual bool changed()=0;
-  virtual bool changed(IOut& out)=0;
+  // virtual bool changed(IOut& out)=0;
   virtual void sync()=0;
   virtual void sync(IOut& out)=0;
   virtual bool up() const=0;
@@ -116,7 +115,7 @@ struct IItemDef:IItem, ItemDef<II...> {
   virtual bool enabled() const override {return Base::enabled();}
   virtual void enable(bool o=true) override {return Base::enable(o);}
   virtual bool changed() override {return Base::changed();}
-  virtual bool changed(IOut& out) override {return Base::changed(out);}
+  // virtual bool changed(IOut& out) override {return Base::changed(out);}
   virtual void sync() override {Base::sync();}
   virtual void sync(IOut& out) override {Base::sync(out);}
   virtual bool up() const {return Base::up();};
@@ -132,13 +131,15 @@ struct IItemDef:IItem, ItemDef<II...> {
 };
 
 //---------------------------------------------------------------------------------------------
-using ActionFunc=bool(*)(int);
+using ActionFunc=bool(&)(int);
 
 template<ActionFunc action>
 struct Action {
-  template<typename O>
-  struct Part:O {
-    using Base=O;
+  template<typename I>
+  struct Part:I {
+    using Base=I;
+    using Base::Base;
+    constexpr Part(){}
     template<typename Nav>
     static constexpr bool nav(Nav& n,const CKE& cke,Path path) 
       {return cke.cmd==Cmd::Enter&&action(path.sel());}
@@ -187,17 +188,18 @@ struct EnDis {
 };
 
 /// @brief just closes the nav level on enter
-struct CloseOnSelect {
-  template<typename I>
-  struct Part:I {
-    using I::I;
-    template<typename Nav>
-    bool nav(Nav& n,const CKE& cke,const Path path) {
-      if(cke.cmd==Cmd::Enter) return n.close();
-      return I::nav(n,cke,path);
-    }
-  };
-};
+/// this is now the default behavior if returning false (fallback)
+// struct CloseOnSelect {
+//   template<typename I>
+//   struct Part:I {
+//     using I::I;
+//     template<typename Nav>
+//     bool nav(Nav& n,const CKE& cke,const Path path) {
+//       if(cke.cmd==Cmd::Enter) return n.close();
+//       return I::nav(n,cke,path);
+//     }
+//   };
+// };
 
 //fields ---
 struct EditField {
@@ -347,7 +349,7 @@ struct ItemRef {
     static constexpr bool enabled() {return ref.enable(); }
     static constexpr void enable(bool o=true) {ref.enable(o);}
     static constexpr bool changed() {return ref.changed();}
-    template<typename Out> static constexpr bool changed(Out& out) {return ref.changed(out);}
+    // template<typename Out> static constexpr bool changed(Out& out) {return ref.changed(out);}
     static constexpr void sync() {ref.sync();}
     static constexpr bool up() {return ref.up();}
     static constexpr bool down() {return ref.down();}
@@ -383,15 +385,17 @@ struct Put {
       template<typename O>
       struct Part:O {
         using Base=O;
+        using Base::Base;
         template<typename Out> static constexpr void print(Out& out,Ctx& ctx) {}
       };
     };
     template<typename O>
     struct Part:Chain<OO...,End>::template Part<O> {
       using Base=typename Chain<OO...,End>::template Part<O>;
+      using Base::Base;
       template<typename Out> 
       void print(Out& out,Ctx& ctx) {
-        if(out.locked()) return;
+        if(!(out.mode()==LockMode::None||out.mode()==LockMode::Update)) return;
         alt.resume();
         if constexpr(clr==Clear::yes) alt.clear();
         Base::print(alt,ctx);
@@ -408,12 +412,14 @@ struct OnFocus {
     template<typename O>
     struct Part:O {
       using Base=O;
+      using Base::Base;
       template<typename Out> static constexpr void print(Out& out,Ctx& ctx) {}
     };
   };
   template<typename O>
   struct Part:Chain<OO...,End>::template Part<O> {
     using Base=typename Chain<OO...,End>::template Part<O>;
+      using Base::Base;
     template<typename Out> void print(Out& out,Ctx& ctx) {
       if(ctx) Base::print(out,ctx);
       O::print(out,ctx);

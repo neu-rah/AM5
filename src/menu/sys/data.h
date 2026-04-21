@@ -79,7 +79,7 @@ struct Data {
     constexpr const Type& get() const {return data;} 
     constexpr void set(const Type& o) {data=o;}
     operator Type&() {return get();}
-    operator Type&() const {return get();}
+    operator const Type&() const {return get();}
     template<typename Out> void print(Out& out,Ctx& ctx) {
       out.template fmtStart<Fmt::Data>(ctx);
       out.put(get());
@@ -103,7 +103,7 @@ struct Watch {
     using Base::get;
     using Base::Base;
     std::remove_reference_t<Type> watched;
-    constexpr bool changed() {return get()!=watched/*||Base::changed()*/;}
+    constexpr bool changed() const {return get()!=watched/*||Base::changed()*/;}
     constexpr void sync() {watched=get();}
   };
 };

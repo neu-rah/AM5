@@ -11,14 +11,14 @@ struct Menu {
     using This=Part<I>;
     using Base = typename T::template Part<I>;
     using Body = B;
-    using Base::Base;
+    // using Base::Base;
     Body m_body;
     template<typename... OO> Part(OO&&... oo):m_body{std::forward<OO>(oo)...}{}
     
   //api--
-    constexpr Part(Base&&t,B&&b):Base{std::forward<Base>(t)},m_body{std::forward<B>(b)}{}
-    template<typename... OO>
-    constexpr Part(Base&&t,OO&&... oo):Base{std::forward<Base>(t)},m_body{std::forward<OO>(oo)...}{}
+    // constexpr Part(Base&&t,B&&b):Base{std::forward<Base>(t)},m_body{std::forward<B>(b)}{}
+    // template<typename... OO>
+    // constexpr Part(Base&&t,OO&&... oo):Base{std::forward<Base>(t)},m_body{std::forward<OO>(oo)...}{}
 
     static constexpr const Depth depth() {return 1+Body::depth();}
 

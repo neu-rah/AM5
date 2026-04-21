@@ -197,13 +197,13 @@ namespace action {
     // syslog.setColors(GREEN,BLACK);
     // syslog.clear();
     syslog<<"sub option #"<<i<<" selected."<<endl;
-    return true;
+    return false;
   }
 }
 
 template<typename... OO> using Desc=OnFocus<typename Put<OO...>::template ToOut<decltype(footer),footer,Clear::yes>>;
 
-using Back=ItemDef<CloseOnSelect,StaticText<text::back>,Desc<StaticText<desc::back>>>;
+using Back=ItemDef</*CloseOnSelect,*/StaticText<text::back>,Desc<StaticText<desc::back>>>;
 using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>,Desc<StaticText<desc::quit>>>>;
 
 using CItem=ItemDef<Text>;
@@ -217,12 +217,14 @@ CItem cBody[]{
   "README.md"
 };
 
+bool stay(int i) {return false;}
+
 IItem* iBody[]{
   new IItemDef<StaticText<text::op1>>{},
   new IItemDef<StaticText<text::op2>>{},
   new IItemDef<StaticText<text::op3>>{},
   new IItemDef<Text>{"what else..."},
-  new IItemDef<Text>{"IItem*"},
+  new IItemDef<Text,Desc<Text>,Action<stay>>{"Stay","select and stay!"},
   new IItemDef<StaticText<text::back>>{}
   // new Back::As<IItemDef>{}
 };
@@ -267,14 +269,13 @@ template<typename... OO> struct App {template<typename M>  using Map=typename M:
 using ToggleDemo=ToggleFieldDef<
   Label<
     BodyAction<action::subIdx>,
-    // AsLabel<
     StaticText<text::toggle_demo>,
     // >,
     AsEditMode<>//edit mode indicator
   >,
   StaticBody<//sub menu static body
-    ItemDef<CloseOnSelect,AsField<StaticText<text::no>>>,
-    ItemDef<CloseOnSelect,AsField<StaticText<text::yes>>>
+    ItemDef<AsField<StaticText<text::no>>>,
+    ItemDef<AsField<StaticText<text::yes>>>
   >//::Map<Ins<CloseOnSelect>::Map>
 >;
 
@@ -297,38 +298,45 @@ using MainMenu=MenuDef<
     ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>,
     ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>,
     ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>,
-    MenuDef<
-      Title<ItemNav<Wraps::yes>,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>,
-      StaticBody<
-        Power,
-        ToggleDemo,
-        SelectDemo,
-        ChooseDemo,
-        Back
-      >
-    >,
-    MenuDef<//sub menu with C array body (all items of the type)
-      Title<
-        BodyAction<action::subIdx>,
-        ItemNav<Wraps::no>,
-        StaticText<text::array_sub_menu>,
-        Desc<StaticText<desc::array_sub_menu>>
-      >,
-      CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
-    >,
-    MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
-      Title<BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
-      CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>
-    >,
-    MenuDef<
-      Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
-      StdBody<vector<IItem*>>
-    >,
+    // MenuDef<
+    //   Title<ItemNav<Wraps::yes>,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>,
+    //   StaticBody<
+    //     Power,
+    //     ToggleDemo,
+    //     SelectDemo,
+    //     ChooseDemo,
+    //     Back
+    //   >
+    // >,
+    // MenuDef<//sub menu with C array body (all items of the type)
+    //   Title<
+    //     BodyAction<action::subIdx>,
+    //     ItemNav<Wraps::no>,
+    //     StaticText<text::array_sub_menu>,
+    //     Desc<StaticText<desc::array_sub_menu>>
+    //   >,
+    //   CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
+    // >,
+    // MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
+    //   Title<BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
+    //   CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>
+    // >,
+    // MenuDef<
+    //   Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
+    //   StdBody<vector<IItem*>>
+    // >,
+    ItemDef<Text,Desc<Text>,Action<stay>>,
     Quit
   >
 >;
 
-MainMenu mainMenu;
+MainMenu mainMenu(
+  ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
+  ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
+  ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
+  ItemDef<Text,Desc<Text>,Action<stay>>{"Stay","select and stay!"},
+  Quit{}
+);
 
 INavDef<
   TreeNav,
@@ -339,7 +347,7 @@ bool action::op2(Sz) {
   // syslog.setColors(GREEN,BLACK);
   // syslog.clear();
   syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  // mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }
 
@@ -381,9 +389,9 @@ void setup(){
   out.mode(LockMode::None);
   nav.navPrint(out);
   //populate std container menu
-  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
-  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
-  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
+  // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
+  // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
+  // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
 }
 
 #ifdef ARDUINO
@@ -391,8 +399,6 @@ void setup(){
 #else
   int main() {
     setup();
-    nav.go(3);
-    nav.enter();
     while(run());
     dout<<xy<0,24><<"end."<<endl;
   }

@@ -4,10 +4,6 @@
 			"path": "."
 		},
 		{
-			"name": "data",
-			"path": "RnD/data"
-		},
-		{
 			"name": "neurs",
 			"path": "RnD/neurs"
 		}

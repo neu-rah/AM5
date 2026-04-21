@@ -90,22 +90,24 @@ template<typename... OO>
 struct OutDef:DefinedOut<OutAPI<CRTP<OutDef<OO...>>>,OO...>{};
 
 struct IOut {
-  virtual void mode(LockMode) {}
-  virtual LockMode mode() {return LockMode::None;}
-  virtual void fmtStart(Fmt,Ctx&) {}
+  virtual void mode(LockMode)=0;
+  virtual LockMode mode()=0;
+  virtual void resume()=0;
+  virtual void fmtStart(Fmt,Ctx&)=0;
+  virtual void fmtStop(Fmt,Ctx&)=0;
+  virtual Sz posX() const=0;
+  virtual Sz posY() const=0;
+  virtual void setPos(Pos)=0;
+  virtual void put(const int)=0;
+  virtual void put(const double)=0;
+  virtual void put(const char)=0;
+  virtual void put(const char*)=0;
+  virtual void put(const char* const*)=0;
+  virtual void put(const char* const*& str)=0;
+
   template<Fmt tag> void fmtStart(Ctx& ctx) {fmtStart(tag,ctx);}
-  virtual void fmtStop(Fmt,Ctx&) {}
   template<Fmt tag> void fmtStop(Ctx& ctx) {fmtStart(tag,ctx);}
-  virtual Sz posX() const {return 0;}
-  virtual Sz posY() const {return 0;}
   Pos pos() const {return {posX(),posY()};}
-  virtual void setPos(Pos) {}
-  virtual void put(const int) {}
-  virtual void put(const double) {}
-  virtual void put(const char) {}
-  virtual void put(const char*) {}
-  virtual void put(const char* const*) {}
-  virtual void put(const char* const*& str) {}
   // virtual bool printItem(IItem& item,Ctx& ctx) {return false;}
   // virtual bool printMenu(IItem& item,Ctx& ctx) {return false;}
   // template<typename I> static constexpr bool printItem(I& item,Ctx& ctx) {return printItem(*reinterpret_cast<IItemDef<I>*>(&item),ctx);}
@@ -117,6 +119,7 @@ struct IOutDef:IOut,DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>{
   using Base=DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>;
   virtual void mode(LockMode m) {Base::mode(m);}
   virtual LockMode mode() {return Base::mode();}
+  virtual void resume() override {Base::resume();}
   using Base::fmtStart;
   using Base::fmtStop;
   virtual void fmtStart(Fmt tag,Ctx& ctx) override {
