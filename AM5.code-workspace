@@ -6,6 +6,10 @@
 		{
 			"name": "neurs",
 			"path": "RnD/neurs"
+		},
+		{
+			"name": "cons",
+			"path": "RnD/cons"
 		}
 	],
 	"settings": {}
