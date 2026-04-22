@@ -2,7 +2,7 @@
 
 enum {no=false,yes=true};
 enum class Wraps {no,yes};
-enum class Scroll {no,yes};
+enum class Scroll {no=false,yes=true};
 enum class Edge {start,stop};
 enum class Clear {no,yes};
 
