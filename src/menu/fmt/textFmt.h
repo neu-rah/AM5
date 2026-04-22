@@ -27,9 +27,9 @@ struct TextFmt {
         case Fmt::Index: put((char)(ctx.idx<9?'1'+ctx.idx:' '));break;
         case Fmt::NavCursor: put(ctx?(ctx.enabled?'>':'-'):' ');break;
         case Fmt::EditMode: switch(ctx.mode) {
-          case NavMode::Nav: put(' ');break;
-          case NavMode::Edit: put(':');break;
-          case NavMode::Tune: put('>');break;
+          case NavMode::Nav: put(':');break;
+          case NavMode::Edit: put('=');break;
+          case NavMode::Tune: put('.');break;
           default: break;
         };break;
         default: break;
@@ -37,7 +37,7 @@ struct TextFmt {
       Base::template fmtStart<tag>(ctx);
     }
     template<Fmt tag>
-    static void fmtStop(const Ctx& ctx) {
+    void fmtStop(const Ctx& ctx) {
       switch(tag) {
         case Fmt::Menu:
         case Fmt::Title:

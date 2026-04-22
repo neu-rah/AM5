@@ -72,10 +72,10 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>{//::template Map<ItemLink> {
     {return print(out,std::forward<Ctx&>(ctx));}
 
   template<typename Out> bool print(Out& out,Ctx& ctx) {
-    out.fmtStart(Fmt::Data,ctx);
+    // out.fmtStart(Fmt::Data,ctx);
     // out.put(Base::get());
     Base::print(out,ctx);
-    out.fmtStop(Fmt::Data,ctx);
+    // out.fmtStop(Fmt::Data,ctx);
     return Base::changed();
   }
 

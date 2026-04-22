@@ -31,34 +31,37 @@ struct ANSIFmt {
     void itemColor(const Ctx& ctx) {setColors(itemFg(ctx,ctx.enabled),itemBg(ctx));}
     //TODO: consider fmt<Start/Stop> instead
     template<Fmt tag>
-    void fmtStart(Ctx& ctx) {
+    void fmtStart(const Ctx& ctx) {
       switch(tag) {
         case Fmt::View: 
           setColors(RED,BLUE);
           clear();
           break;
-        case Fmt::Title: setColors(BLACK,CYAN);break;
+        case Fmt::Title: setColors(BLACK,MAGENTA);break;
         case Fmt::Index:if(ctx.idx<9) put(ctx.idx+1);break;
         case Fmt::NavCursor:put(ctx?(ctx.enabled?'>':'-'):' ');break;
         case Fmt::Item: itemColor(ctx);break;
         case Fmt::Field: setColors(ctx?(ctx.enabled?WHITE:BLACK):(ctx.enabled?YELLOW:BLACK),itemBg(ctx));break;
         case Fmt::EditMode:
           setColors(RED,itemBg(ctx));
-          if(ctx.path.data[0]==ctx.idx) switch(ctx.mode){
+          if(ctx) switch(ctx.mode){
             case NavMode::Nav: put(':');break;
             case NavMode::Edit: put('=');break;
             case NavMode::Tune: put("·");break;
           } else put(' ');
           itemColor(ctx);
           break;
+        case Fmt::Unit: setColors(BLACK,itemBg(ctx));break;
         default:break;
       }
       Base::template fmtStart<tag>(ctx);
     }
     template<Fmt tag>
-    void fmtStop(Ctx& ctx) {
+    void fmtStop(const Ctx& ctx) {
       switch(tag) {
         case Fmt::Title:
+          setColors(BLACK,MAGENTA);
+          padWith(freeX());
           nl();
           break;
         case Fmt::Menu:
@@ -74,6 +77,7 @@ struct ANSIFmt {
           nl();
           setColors(itemFg(false,true),itemBg(false));
           break;
+        case Fmt::Unit: itemColor(ctx);break;
         default:break;
       }
       Base::template fmtStop<tag>(ctx);

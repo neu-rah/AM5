@@ -61,15 +61,16 @@ template<typename Cor> struct Colors{Cor fg;Cor bg;};
 struct Path {
   Depth len;
   Sz* data;
-  operator bool() const {return len==0;}
+  operator bool() const {return len>0;}
   Path focus(Depth l) const {assert(l<=len);return {l,(Sz*)&data[0]};}
-  Path next() const {return Path{(Depth)(len-1),&data[1]};}
+  Path next() const {assert(len);return Path{(Depth)(len-1),&data[1]};}
   Sz sel() const {return len?data[0]:0;}
-  Sz last() const {return data[len-1];}
+  Sz last() const {assert(len-1>=0);return data[len-1];}
 };
 
 template<Depth depth>
 struct PathData {
+  static_assert(depth>0,"expecting this to have at least one item");
   Sz data[depth]{0};
   Path focus(Depth o) {return Path{o,data};}
   Sz sel(Depth level=0) const {return data[level];}

@@ -10,11 +10,21 @@ enum class NavMode {Nav,Edit,Tune};
 
 enum class Cmd {Enter,Esc,Up,Down,Left,Right,Key,Go};
 
-enum class Fmt {
-  View,Title,Menu,Body,Item,
-  Index,Accel,NavCursor,
-  Field,Label,EditMode,EditCursor,Data,Unit
+enum class Fmt:int {
+  View=0<<0,Title=1<<0,Menu=1<<1,Body=1<<2,Item=1<<3,
+  Index=1<<4,Accel=1<<5,NavCursor=1<<6,
+  Field=1<<7,Label=1<<8,EditMode=1<<9,EditCursor=1<<10,Data=1<<11,Unit=1<<12
 };
+
+inline int operator|(Fmt a,Fmt b){return (int)a|(int)b;}
+inline int operator|(int a,Fmt b){return (int)a|(int)b;}
+inline int operator|(Fmt a,int b){return (int)a|(int)b;}
+inline int operator&(Fmt a,Fmt b){return (int)a&(int)b;}
+inline int operator&(int a,Fmt b){return (int)a&(int)b;}
+inline int operator&(Fmt a,int b){return (int)a&(int)b;}
+inline int operator^(Fmt a,Fmt b){return (int)a^(int)b;}
+inline int operator^(int a,Fmt b){return (int)a^(int)b;}
+inline int operator^(Fmt a,int b){return (int)a^(int)b;}
 
 /// @brief lock/unlock print output
 enum class LockMode {

@@ -63,7 +63,10 @@ struct TitlePrinter {
     template<typename I>
     bool printMenu(I& i,Ctx& ctx) {
       O::template fmtStart<Fmt::Title>(ctx);
+      Ctx tmp{};
+      // Base::put("[");
       i.print(O::obj(),ctx);//title
+      // Base::_put((int)Base::mode());
       O::template fmtStop<Fmt::Title>(ctx);
       return O::printMenu(i,ctx);
     }
@@ -238,7 +241,6 @@ struct StaticDataPrinter {
       template<typename I>
       bool printItem(I& i,Ctx& ctx) {
         bool r=O::printItem(i,ctx);
-        // dout<<"*"<<ctx.path<<flush;
         return r;
       }
     };

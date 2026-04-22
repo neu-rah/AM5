@@ -126,7 +126,10 @@ struct TreeNav {
 
     template<typename In>  bool in(In& in) {return in.cmd(Base::obj());}
 
-    void go(Sz i,Depth delta=0) {m_path.data[m_level+delta]=i;}
+    void go(Sz i,Depth delta=0) {
+      assert(m_level+delta<depth());
+      m_path.data[m_level+delta]=i;
+    }
 
     void navMode(NavMode m) {m_navMode.get()=m;}
     NavMode navMode() const {return m_navMode.get();}

@@ -93,8 +93,8 @@ struct IOut {
   virtual void mode(LockMode)=0;
   virtual LockMode mode()=0;
   virtual void resume()=0;
-  virtual void fmtStart(Fmt,Ctx&)=0;
-  virtual void fmtStop(Fmt,Ctx&)=0;
+  virtual void fmtStart(Fmt,const Ctx&)=0;
+  virtual void fmtStop(Fmt,const Ctx&)=0;
   virtual Sz posX() const=0;
   virtual Sz posY() const=0;
   virtual void setPos(Pos)=0;
@@ -105,8 +105,8 @@ struct IOut {
   virtual void put(const char* const*)=0;
   virtual void put(const char* const*& str)=0;
 
-  template<Fmt tag> void fmtStart(Ctx& ctx) {fmtStart(tag,ctx);}
-  template<Fmt tag> void fmtStop(Ctx& ctx) {fmtStart(tag,ctx);}
+  template<Fmt tag> void fmtStart(const Ctx& ctx) {fmtStart(tag,ctx);}
+  template<Fmt tag> void fmtStop(const Ctx& ctx) {fmtStart(tag,ctx);}
   Pos pos() const {return {posX(),posY()};}
   // virtual bool printItem(IItem& item,Ctx& ctx) {return false;}
   // virtual bool printMenu(IItem& item,Ctx& ctx) {return false;}
@@ -122,7 +122,7 @@ struct IOutDef:IOut,DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>{
   virtual void resume() override {Base::resume();}
   using Base::fmtStart;
   using Base::fmtStop;
-  virtual void fmtStart(Fmt tag,Ctx& ctx) override {
+  virtual void fmtStart(Fmt tag,const Ctx& ctx) override {
     switch(tag){
       case Fmt::View: Base::template fmtStart<Fmt::View>(ctx);break;
       case Fmt::Title: Base::template fmtStart<Fmt::Title>(ctx);break;
@@ -141,7 +141,7 @@ struct IOutDef:IOut,DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>{
     }
     // Base::template fmtStart<tag>(ctx);
   }
-  virtual void fmtStop(Fmt tag,Ctx& ctx) override {
+  virtual void fmtStop(Fmt tag,const Ctx& ctx) override {
     switch(tag){
       case Fmt::View: Base::template fmtStop<Fmt::View>(ctx);break;
       case Fmt::Title: Base::template fmtStop<Fmt::Title>(ctx);break;
@@ -204,27 +204,56 @@ struct PartialDraw {
   };
 };
 
+struct Gate {
+  template<typename O>
+  struct Part:O {
+    using IsParser=std::true_type;
+    static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed Gate");
+    static_assert(O::template Excludes<IsFormat>::value,"formats must be above Gate");
+    using Base=O;
+    void nl() {if(unlocked()) Base::nl();}
+    void clear() {if(unlocked()) Base::clear();}
+    template<typename T>
+    void put(const T o) {if(unlocked()) Base::put(o);}
+    LockMode mode() const {return m_mode;}
+    void mode(LockMode m) {m_mode=m;}
+    Pos measure() {
+      m_mode=LockMode::Measure;
+      return Base::getPos();
+    }
+    Area measure(Pos o) {
+      m_mode=LockMode::Update;
+      return {Base::posX()-o.x,Base::posY()-o.y};
+    }
+    bool unlocked() const {return m_mode==LockMode::None/*||m_mode==LockMode::Update*/;}
+    bool locked() const {return !unlocked();}
+    protected: LockMode m_mode{LockMode::Update};
+  };
+};
+
 /// @brief use device cursor, must be placed on top of the device
 /// will record the edit cursor position upon Fmt::TextEditCursor start
 /// for ´ANSIEditFmt´ (or similar) to restore upon Fmt::Viewport stop
 struct DeviceCursor {
   template<typename F>
   struct Part:F {
+    static_assert(F::template Excludes<Class<class Gate>>::value,"Gate must be above DeviceCursor");
+    // static_assert(F::Obj::template Requires<Class<Gate>>::value,"Gate must be above DeviceCursor");
     using F::fmtStart;
     template<Fmt tag>
-    void fmtStart(Ctx& ctx) {
+    void fmtStart(const Ctx& ctx) {
       F::template fmtStart<tag>(ctx);
       if(tag==Fmt::Item&&ctx) m_text_cursor_at=F::obj().pos();
     }
     template<Fmt tag>
-    void fmtStop(Ctx& ctx) {
-      if(F::obj().unlocked()) {
+    void fmtStop(const Ctx& ctx) {
+      // if(F::obj().unlocked()) {
         F::template fmtStop<tag>(ctx);
         if(tag==Fmt::EditCursor) {
           m_editing=true;
           m_text_cursor_at=F::obj().pos();
         }
-      }
+      // }
     }
   protected:
     Pos m_text_cursor_at{0,0};
@@ -281,13 +310,13 @@ struct UseEditCursorFmt {
   struct Part:F {
     //force renew of editing state before printing, if still valid
     template<Fmt tag>
-    void fmtStart(Ctx& ctx) {
+    void fmtStart(const Ctx& ctx) {
       if(tag==Fmt::EditCursor&&!F::locked()) F::m_editing=false;
       F::template fmtStart<tag>(ctx);
     }
     //restores meaningful cursor position after printing done
     template<Fmt tag>
-    void fmtStop(Ctx& ctx) {
+    void fmtStop(const Ctx& ctx) {
       F::template fmtStop<tag>(ctx);
       if(tag==Fmt::View) {
         if(F::locked()) F::mode(LockMode::Update);
@@ -369,33 +398,6 @@ struct UTF8 {
     }
     protected:
       Sz m_raw{0};
-  };
-};
-
-struct Gate {
-  template<typename O>
-  struct Part:O {
-    using IsParser=std::true_type;
-    static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed Gate");
-    static_assert(O::template Excludes<IsFormat>::value,"formats must be above Gate");
-    using Base=O;
-    void nl() {if(unlocked()) Base::nl();}
-    void clear() {if(unlocked()) Base::clear();}
-    template<typename T>
-    void put(const T o) {if(unlocked()) Base::put(o);}
-    LockMode mode() const {return m_mode;}
-    void mode(LockMode m) {m_mode=m;}
-    Pos measure() {
-      m_mode=LockMode::Measure;
-      return Base::getPos();
-    }
-    Area measure(Pos o) {
-      m_mode=LockMode::Update;
-      return {Base::posX()-o.x,Base::posY()-o.y};
-    }
-    bool unlocked() const {return m_mode==LockMode::None/*||m_mode==LockMode::Update*/;}
-    bool locked() const {return !unlocked();}
-    protected: LockMode m_mode{LockMode::Update};
   };
 };
 
@@ -564,3 +566,4 @@ struct Buffer {
       char buffer[width()*height()]{0};
   };
 };
+

@@ -117,13 +117,33 @@ OutDef<
   StaticArea<20,3>
 > footer;
 
-OutDef<
-  TextFmt,
+IOutDef<
+  ViewPrinter,// outermost format envelope
+  MenuPrinter<// calls printMenu
+    TitlePrinter,// just print the title
+    // ScrollBodyPrinter,//scroll till focus is visible
+    BodyPrinter,//stream/serial print
+    ItemPrinter<//calls printItem:
+      NavCursorPrinter,// use a text cursor on selected item.
+      ItemBodyPrinter//→ printItem → printTo
+    >
+  >,
+  XmlFmt,
+  DataParser<>,//put all data into characters
+  CtrlChars,//catch \n into nl()
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  ColorTrack<int>,
+  Cursor,//track and report cursor movement
+  Gate,//locks output for measuring and other operations
+  ANSIOut,//inject ansi codes into the next output device
   #ifdef __AVR__
-    SerialOut
+    SerialOut,
   #else
-    ConsoleOut
+    ConsoleOut,
   #endif
+  StaticPos<0,20>,
+  StaticArea<100,20>
 > web;
 
 bool op1(Sz i) {cout<<"option 1 called!"<<endl;return true;}
@@ -139,11 +159,11 @@ namespace text {
   static const CText array_sub_menu{"Same type array>"};
   static const CText sub_ibody{"IItem* array"};
   static const CText sub_sbody{"std::container"};
-  static const CText sub1{"10%"};
-  static const CText sub2{"40%"};
-  static const CText sub3{"60%"};
-  static const CText sub4{"80%"};
-  static const CText sub5{"100%"};
+  static const CText sub1{"10"};
+  static const CText sub2{"40"};
+  static const CText sub3{"60"};
+  static const CText sub4{"80"};
+  static const CText sub5{"100"};
   static const CText power{"Power"};
   static const CText percent{"%"};
   static const CText off{"Off"};
@@ -236,11 +256,11 @@ using ChooseDemo=ChooseFieldDef<
     BodyAction<action::subIdx>
   >,
   StaticBody<//sub menu static body
-    ItemDef<AsField<StaticText<text::sub1>>>,
-    ItemDef<AsField<StaticText<text::sub2>>>,
-    ItemDef<AsField<StaticText<text::sub3>>>,
-    ItemDef<AsField<StaticText<text::sub4>>>,
-    ItemDef<AsField<StaticText<text::sub5>>>
+    ItemDef<AsField<StaticText<text::sub1>,AsUnit<StaticText<text::percent>>>>,
+    ItemDef<AsField<StaticText<text::sub2>,AsUnit<StaticText<text::percent>>>>,
+    ItemDef<AsField<StaticText<text::sub3>,AsUnit<StaticText<text::percent>>>>,
+    ItemDef<AsField<StaticText<text::sub4>,AsUnit<StaticText<text::percent>>>>,
+    ItemDef<AsField<StaticText<text::sub5>,AsUnit<StaticText<text::percent>>>>
     //,Back <--//TODO: extend the enter nav to this level and respect the handling (same as esc)
   >,
   Wraps::yes
@@ -285,11 +305,11 @@ using Power=NumFieldDef<
     ItemNav<Wraps::no>,
     Watch<AsField<Default<int,55>,Int>>//use `int` and `change watch` as field (data)
   >,
-  StaticText<text::percent>//field unit
+  AsUnit<StaticText<text::percent>>//field unit
 >;
 
 auto mainMenu=menuDef(
-  ItemDef<Text,ItemNav<Wraps::yes>>{"title"},
+  ItemDef<Text,ItemNav<Wraps::yes>>{"Main menu"},
   staticBody(
     ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
     ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
@@ -298,7 +318,7 @@ auto mainMenu=menuDef(
       Title<ItemNav<Wraps::yes>,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
       staticBody(
         Power{},
-        ToggleDemo{"Sure","maybe"},
+        ToggleDemo{"Toggle","Maybe"},
         SelectDemo{},
         ChooseDemo{},
         ItemDef<Text,Desc<Text>,Action<stay>>{"Stay","calls stay action function."},
@@ -326,9 +346,18 @@ auto mainMenu=menuDef(
   )
 );
 
+auto tinyMenu=menuDef(
+  ItemDef<Text,ItemNav<Wraps::yes>>{"title"},
+  staticBody(
+    ItemDef<Text>{"op1"},
+    ItemDef<Text,Action<action::quit>>{"exit"}
+  )
+);
+
 INavDef<
   TreeNav,
   Root<decltype(mainMenu),mainMenu>
+  // Root<decltype(tinyMenu),tinyMenu>
 > nav;
 
 bool action::op2(Sz) {
@@ -345,15 +374,27 @@ bool run() {
   if(fps) {
     fps.reset();
     nav.in(in);
+    bool w=false;
+    bool o=false;
+    bool s=false;
+    // if(nav.changed(web)) {}
     if(nav.changed(out)) {
-      nav.navPrint(out);
-      dout<<xy<0,24><<colors<GREEN,BLACK><<"web://"<<web.freeY()<<flush;
+
+      w=true;
+      dout<<xy<0,24><<colors<RED,WHITE><<flush;
+      web.clear();
+      web.resume();
       nav.navPrint(web);
+
+      o=true;
       out.resume();
-      nav.sync(out);
-      nav.sync(web);
+      nav.navPrint(out);
+      
     }
-    if(syslog.changed()) {syslog.print();syslog.sync();}
+    if(syslog.changed()) {s=true;syslog.print();}
+    if(s) syslog.sync();
+    if(o) nav.sync(out);
+    // if(w) nav.sync(web);
 
   }
   return running;
@@ -365,7 +406,17 @@ void setup(){
     while(!Serial);
   #endif
   cout<<"ArduinoMenu R&D"<<endl;
+
+  //populate std container menu
+  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
+  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
+  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
+
+  //initialize outputs
   web.mode(LockMode::None);
+  web.setColors(BLUE,WHITE);
+  web.clear();
+  nav.navPrint(web);
   footer.mode(LockMode::None);
   footer.setColors(BLUE,BLACK);
   footer.clear();
@@ -376,10 +427,6 @@ void setup(){
   syslog.put(".·•<::(log)::>•·.");
   out.mode(LockMode::None);
   nav.navPrint(out);
-  //populate std container menu
-  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
-  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
-  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
 }
 
 #ifdef ARDUINO
