@@ -124,6 +124,7 @@ IOutDef<
     // ScrollBodyPrinter,//scroll till focus is visible
     BodyPrinter,//stream/serial print
     ItemPrinter<//calls printItem:
+      IndexPrinter,
       NavCursorPrinter,// use a text cursor on selected item.
       ItemBodyPrinter//→ printItem → printTo
     >

@@ -11,9 +11,9 @@ enum class NavMode {Nav,Edit,Tune};
 enum class Cmd {Enter,Esc,Up,Down,Left,Right,Key,Go};
 
 enum class Fmt:int {
-  View=0<<0,Title=1<<0,Menu=1<<1,Body=1<<2,Item=1<<3,
-  Index=1<<4,Accel=1<<5,NavCursor=1<<6,
-  Field=1<<7,Label=1<<8,EditMode=1<<9,EditCursor=1<<10,Data=1<<11,Unit=1<<12
+  None=0<<0,View=1<<0,Title=1<<1,Menu=1<<2,Body=1<<3,Item=1<<4,
+  Index=1<<5,Accel=1<<6,NavCursor=1<<7,
+  Field=1<<8,Label=1<<9,EditMode=1<<10,EditCursor=1<<11,Data=1<<12,Unit=1<<13
 };
 
 inline int operator|(Fmt a,Fmt b){return (int)a|(int)b;}

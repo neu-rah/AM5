@@ -10,14 +10,15 @@ struct XmlFmt {
     using Base::put;
 
     int data{};//count levels of data sections
-    bool tagOpen{0};//we are on tag opening, atributes are allowed here, second open is illegal
-    bool tagClose{0};//just closing the tag
+    // bool tagOpen{0};//we are on tag opening, atributes are allowed here, second open is illegal
+    // bool tagClose{0};//just closing the tag
     int level{0};//tag indent level
-    // Fmt tag;//we only use this tags!
+    Fmt target{Fmt::None};//we only use this tags!
 
     template<Fmt tag>
     void putTag() {
       switch(tag) {
+        case Fmt::None: put("None");break;
         case Fmt::View: put("view");break;
         case Fmt::Title: put("title");break;
         case Fmt::Menu: put("menu");break;
@@ -39,32 +40,73 @@ struct XmlFmt {
 
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
-      if(tag&(Fmt::EditCursor|Fmt::EditMode|Fmt::Index|Fmt::Data)){
-        put("<![CDATA[");
+      static int cnt;
+      if(tag==Fmt::View) {
+        level=0;
+        data=0;
+        target=Fmt::None;
+        // return;
+      }
+      if(((target&(Fmt::Item))|(tag|(Fmt::Data|Fmt::Title)))&&!(tag&(Fmt::Index|Fmt::NavCursor|Fmt::EditMode))) {
+        put("•");
+        put('>');
+        target=Fmt::None;
+      }
+      if(tag&(Fmt::Data)){
+        if(data==0) put("<![CDATA[");
         data++;
-        switch(tag) {
-          case Fmt::EditCursor: 
-        }
       } else {
         if(tag&(Fmt::Title|Fmt::Item|Fmt::View|Fmt::Menu|Fmt::Body)) {
           indent();
-          put('<');putTag<tag>();put('>');
-          // nl();
+          put('<');
+          putTag<tag>();
+          target=tag;
+          switch(tag) {
+            case Fmt::View: 
+              put(" sn=\"");
+              put(cnt++);
+              put('"');
+              break;
+            case Fmt::Body:
+              put(" selidx=\"");
+              put(ctx.sel());
+              put('"');
+              break;
+          }
+        }
+        if(tag&(Fmt::Index|Fmt::NavCursor|Fmt::EditMode)) {
+          if(target==Fmt::Item) {
+            switch(tag) {
+              case Fmt::Index: put(" idx=\"");put((char)(ctx.idx<9?'1'+ctx.idx:' '));put('"');break;
+              case Fmt::NavCursor: put(" sel=\"");put(ctx?(ctx.enabled?'>':'-'):' ');put('"');break;
+              case Fmt::EditMode:
+                put(" mode=\"");
+                switch(ctx.mode) {
+                  case NavMode::Nav: put(':');break;
+                  case NavMode::Edit: put('=');break;
+                  case NavMode::Tune: put('.');break;
+                  default: break;
+                }
+                put('"');
+            }
+            return Base::template fmtStart<tag>(ctx);;
+          }
         }
         if(tag&(Fmt::View|Fmt::Menu|Fmt::Body)){
           //level incrementing tags, nl after
+          put('>');
           nl();
           level++;
+          Base::template fmtStart<tag>(ctx);
         }
       }
-      Base::template fmtStart<tag>(ctx);
     }
 
     template<Fmt tag>
     void fmtStop(const Ctx& ctx) {
-      if(tag&(Fmt::EditCursor|Fmt::EditMode|Fmt::Index|Fmt::Data)){
-        put("]]>");
-        data--;
+      if(tag&(Fmt::Data)) {
+        if(data>0) data--;
+        if(data==0) put("]]>");
       } else {
         if(tag&(Fmt::View|Fmt::Menu|Fmt::Body)) {
           // nl();
