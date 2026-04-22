@@ -40,7 +40,7 @@ struct StaticData {
     static constexpr T get() {return data;} 
     static constexpr void set(const Type& o) {data=o;}
     constexpr operator Type&() {return get();}
-    constexpr operator Type&() const {return get();}
+    constexpr operator const Type&() const {return get();}
     template<typename Out> void print(Out& out,Ctx& ctx) const {
       out.template fmtStart<Fmt::Data>(ctx);
       out.put(get());
@@ -82,15 +82,15 @@ struct Data {
     using Base=O;
     using Base::Base;
     Type data;
-    template<typename... OO> Part(const Type& o,OO&&... oo):data{o},Base{std::forward<OO>(oo)...}{}
-    constexpr Type& get() {return data;} 
-    constexpr const Type& get() const {return data;} 
-    constexpr void set(const Type& o) {data=o;}
-    operator Type&() {return get();}
-    operator const Type&() const {return get();}
+    template<typename... OO> Part(const Type& o,OO&&... oo):Base{std::forward<OO>(oo)...},data{o}{}
+    // constexpr Type& get() {return data;} 
+    const Type& get() const {return data;} 
+    void set(const Type& o) {data=o;}
+    operator Type&() {return data;}
+    operator const Type&() const {return data;}
     template<typename Out> void print(Out& out,Ctx& ctx) {
       out.template fmtStart<Fmt::Data>(ctx);
-      out.put(get());
+      out.put(data);
       out.template fmtStop<Fmt::Data>(ctx);
       Base::print(out,ctx);
     }
@@ -112,7 +112,7 @@ struct Watch {
     using Base::Base;
     std::remove_reference_t<Type> watched;
     constexpr bool changed() const {return get()!=watched/*||Base::changed()*/;}
-    constexpr void sync() {watched=get();}
+    void sync() {watched=get();}
   };
 };
 
@@ -122,6 +122,7 @@ struct StaticNumRange {
   struct Part:O {
     using Base=O;
     using Base::get;
+    using Base::set;
     using Type=typename Base::Type;
     using Base::Base;
     static constexpr bool valid(N o) {return o<=l&&o<=h;}
@@ -129,8 +130,8 @@ struct StaticNumRange {
     static constexpr N stepUp(N o,N s,Wraps w) {return h-o>s?o+s:w==Wraps::yes?l:h;}
     static constexpr N stepDown(N s,N o,Wraps w) {return o-l>s?o-s:w==Wraps::yes?h:l;}
     static constexpr N step(N s,N o,Wraps w) {return s<0?stepDown(-s,o,w):stepUp(s,o,w);}
-    constexpr void up(N s,Wraps w) {get()=stepUp(s,get(),w);}
-    constexpr void down(N s,Wraps w) {get()=stepDown(s,get(),w);}
+    void up(N s,Wraps w) {set(stepUp(s,get(),w));}
+    void down(N s,Wraps w) {set(stepDown(s,get(),w));}
   };
 };
 
@@ -147,7 +148,7 @@ struct NumRange {
     Wraps m_wraps;
     template<typename... OO>
     Part(Type l,Type h,Wraps w,OO&&... oo)
-      :m_low{l},m_high{h},m_wraps{w},Base{std::forward<OO>(oo)...}{}
+      :Base{std::forward<OO>(oo)...},m_low{l},m_high{h},m_wraps{w}{}
     constexpr bool valid(N o) const {return o<=m_low&&o<=m_high;}
     constexpr N clamp(N o) const {return o<m_low?m_low:o>m_high?m_high:o;}
     constexpr N stepUp(N o,N s,Wraps w) {return m_high-o>=s?o+s:w==Wraps::yes?m_low:m_high;}

@@ -62,6 +62,7 @@ struct XmlFmt {
           putTag<tag>();
           target=tag;
           switch(tag) {
+              default: break;
             case Fmt::View: 
               put(" sn=\"");
               put(cnt++);
@@ -77,6 +78,7 @@ struct XmlFmt {
         if(tag&(Fmt::Index|Fmt::NavCursor|Fmt::EditMode)) {
           if(target==Fmt::Item) {
             switch(tag) {
+              default: break;
               case Fmt::Index: put(" idx=\"");put((char)(ctx.idx<9?'1'+ctx.idx:' '));put('"');break;
               case Fmt::NavCursor: put(" sel=\"");put(ctx?(ctx.enabled?'>':'-'):' ');put('"');break;
               case Fmt::EditMode:

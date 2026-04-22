@@ -6,6 +6,10 @@
 		{
 			"name": "neurs",
 			"path": "RnD/neurs"
+		},
+		{
+			"name": "tiny",
+			"path": "RnD/tiny"
 		}
 	],
 	"settings": {}

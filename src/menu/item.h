@@ -402,7 +402,7 @@ struct Put {
       void print(Out& out,Ctx& ctx) {
         if(!(out.mode()==LockMode::None||out.mode()==LockMode::Update)) return;
         alt.resume();
-        if constexpr(clr==Clear::yes) alt.clear();
+        if(clr==Clear::yes) alt.clear();
         Base::print(alt,ctx);
         out.resume();
         O::print(out,ctx);

@@ -64,9 +64,9 @@ struct TreeNav {
     using Base::root;
     // using Base::obj;
     static constexpr const Depth depth() {return Root::depth();}
-    constexpr Path focus(Sz i) {return m_path.focus(i);}
-    constexpr Path self() const {return m_path.self();}
-    constexpr Path parent() const {return m_path.parent();}
+    Path focus(Sz i) {return m_path.focus(i);}
+    Path self() const {return m_path.self();}
+    Path parent() const {return m_path.parent();}
     Depth level() {return m_level;}
     Sz sel() const {return m_path.sel(m_level);}
 
@@ -115,7 +115,7 @@ struct TreeNav {
     }
 
     bool doNav(CKE cke,Sz len,Wraps w) {
-      DataDef<NumRange<Sz>,Data<Sz&>> at(0,len-1,w,m_path.data[level()]);
+      DataDef<NumRange<Sz>,Data<Sz&>> at(0,len-1,w,m_path.data[(int)level()]);
       switch(cke.cmd) {
         case Cmd::Up: at.up();break;
         case Cmd::Down: at.down();break;
@@ -131,8 +131,8 @@ struct TreeNav {
       m_path.data[m_level+delta]=i;
     }
 
-    void navMode(NavMode m) {m_navMode.get()=m;}
-    NavMode navMode() const {return m_navMode.get();}
+    void navMode(NavMode m) {m_navMode.set(m);}
+    const NavMode navMode() const {return m_navMode.get();}
 
     bool padOpen() {
       if(m_level.get()<=depth()) {

@@ -35,10 +35,15 @@
   #include <algorithm>
 #endif
 
-
 using Sz=int;//must be signed
 using Depth=char;//must be signed
 using Key=int;
+
+/// @brief compile time `max(a,b)` function
+/// @tparam a value
+/// @tparam b value
+/// @return Sz
+template<const Sz a,const Sz b> constexpr Sz staticMax() {return a>b?a:b;}
 
 struct Nil{};
 
@@ -73,7 +78,7 @@ struct PathData {
   static_assert(depth>0,"expecting this to have at least one item");
   Sz data[depth]{0};
   Path focus(Depth o) {return Path{o,data};}
-  Sz sel(Depth level=0) const {return data[level];}
+  Sz sel(Depth level=0) const {return data[(int)level];}
   Path path(Depth from=0) {return Path{depth-from,&data[from]};}
   const Path path(Depth from=0) const {return Path{depth-from,&data[from]};}
   Path path(Depth from,Depth len) {return Path{len,&data[from]};}
@@ -97,7 +102,7 @@ struct Ctx {
   Sz top() const {return tops?tops[0]:0;}
   void top(Sz i){if(tops) tops[0]=i;}
   Ctx next() const {return Ctx{path.next(),mode,printAt-1,0,&tops[1]};}
-  // Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr):path{p},mode{nm},printAt{pl},prevSel{ps},tops{t}{}
+  Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr):path{p},mode{nm},printAt{pl},prevSel{ps},tops{t}{}
   operator bool() const {return path.len>0?idx==path.data[0]:idx==0;}
 };
 

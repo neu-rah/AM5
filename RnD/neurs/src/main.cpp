@@ -2,23 +2,25 @@
   #include <menu.h>
   #include <menu/fmt/textFmt.h>
   #include <menu/fmt/ansiFmt.h>
+  #include <menu/IO/pcKbdIn.h>
   #include <menu/fmt/xmlFmt.h>
   #include <menu/sys/cArrayBody.h>
-  #include <menu/sys/stdBody.h>
-  #include <menu/IO/pcKbdIn.h>
-  #include <menu/IO/linuxKeyIn.h>
-  #include <menu/IO/streamOut.h>
-  #include <vector>
-  #include <forward_list> 
+  #ifdef ARDUINO
+    #include <Arduino.h>
+    #include <menu/IO/arduino/serialIn.h>
+    #include <menu/IO/arduino/serialOut.h>
+  #else
+    #include <menu/IO/linuxKeyIn.h>
+    #include <menu/IO/streamOut.h>
+    #include <menu/sys/stdBody.h>
+    #include <vector>
+    #include <forward_list> 
+  #endif
 
   #include <tinyTimeUtils.h>
 
-  #ifdef ARDUINO
-    #include <Arduino.h>
-  #endif
-
   #ifdef __AVR__
-    #include <avr_std.h>
+    #include "menu/sys/platform/avr/avr_std.h"
     #include <streamFlow.h>
     using namespace StreamFlow;
     #define cout Serial
@@ -150,43 +152,43 @@ IOutDef<
 bool op1(Sz i) {cout<<"option 1 called!"<<endl;return true;}
 
 namespace text {
-  static const CText main_menu{"Main menu"};
-  static const CText back{"<Back"};
-  static const CText quit{"Exit!"};
-  static const CText op1{"Option 1"};
-  static const CText op2{"Option 2"};
-  static const CText op3{"Option 3"};
-  static const CText fields_menu{"Fields..."};
-  static const CText array_sub_menu{"Same type array>"};
-  static const CText sub_ibody{"IItem* array"};
-  static const CText sub_sbody{"std::container"};
-  static const CText sub1{"10"};
-  static const CText sub2{"40"};
-  static const CText sub3{"60"};
-  static const CText sub4{"80"};
-  static const CText sub5{"100"};
-  static const CText power{"Power"};
-  static const CText percent{"%"};
-  static const CText off{"Off"};
-  static const CText on{"On"};
-  static const CText yes{"Yes"};
-  static const CText no{"No"};
-  static const CText toggle_demo{"Toggle"};
-  static const CText select_demo{"Select"};
-  static const CText choose_demo{"Choose"};
+  static constexpr const CText main_menu{"Main menu"};
+  static constexpr const CText back{"<Back"};
+  static constexpr const CText quit{"Exit!"};
+  static constexpr const CText op1{"Option 1"};
+  static constexpr const CText op2{"Option 2"};
+  static constexpr const CText op3{"Option 3"};
+  static constexpr const CText fields_menu{"Fields..."};
+  static constexpr const CText array_sub_menu{"Same type array>"};
+  static constexpr const CText sub_ibody{"IItem* array"};
+  static constexpr const CText sub_sbody{"std::container"};
+  static constexpr const CText sub1{"10"};
+  static constexpr const CText sub2{"40"};
+  static constexpr const CText sub3{"60"};
+  static constexpr const CText sub4{"80"};
+  static constexpr const CText sub5{"100"};
+  static constexpr const CText power{"Power"};
+  static constexpr const CText percent{"%"};
+  static constexpr const CText off{"Off"};
+  static constexpr const CText on{"On"};
+  static constexpr const CText yes{"Yes"};
+  static constexpr const CText no{"No"};
+  static constexpr const CText toggle_demo{"Toggle"};
+  static constexpr const CText select_demo{"Select"};
+  static constexpr const CText choose_demo{"Choose"};
 };
 
 namespace desc {
-  static const CText back{"return to previous menu."};
-  static const CText quit{"terminate the program."};
-  static const CText dot{"."};
-  static const CText op1{"simple option with action function.\n`Enter` to activate function."};
-  static const CText op2{"toggles Option 3\nenabled/disabled state."};
-  static const CText op3{"simple option\ncan be enabled/disabled at runtime."};
-  static const CText fields_menu{"some field examples..."};
-  static const CText array_sub_menu{"pure C-Array as menu body, no virtual functions, all items the same"};
-  static const CText sub_ibody{"pure C-Array with virtual derived items"};
-  static const CText sub_sbody{"std::container with virtual items"};
+  static constexpr const CText back{"return to previous menu."};
+  static constexpr const CText quit{"terminate the program."};
+  static constexpr const CText dot{"."};
+  static constexpr const CText op1{"simple option with action function.\n`Enter` to activate function."};
+  static constexpr const CText op2{"toggles Option 3\nenabled/disabled state."};
+  static constexpr const CText op3{"simple option\ncan be enabled/disabled at runtime."};
+  static constexpr const CText fields_menu{"some field examples..."};
+  static constexpr const CText array_sub_menu{"pure C-Array as menu body, no virtual functions, all items the same"};
+  static constexpr const CText sub_ibody{"pure C-Array with virtual derived items"};
+  static constexpr const CText sub_sbody{"std::container with virtual items"};
 };
 
 bool running=true;
@@ -335,14 +337,16 @@ auto mainMenu=menuDef(
       >,
       CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
     >{},
-    MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
-      Title<BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
-      CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>
-    >{},
-    MenuDef<
-      Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
-      StdBody<vector<IItem*>>
-    >{},
+    #ifndef __AVR__
+      MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
+        Title<BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
+        CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>
+      >{},
+      MenuDef<
+        Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
+        StdBody<vector<IItem*>>
+      >{},
+    #endif
     Quit{}
   )
 );
@@ -375,14 +379,14 @@ bool run() {
   if(fps) {
     fps.reset();
     nav.in(in);
-    bool w=false;
+    // bool w=false;
     bool o=false;
     bool s=false;
     // if(nav.changed(web)) {}
     if(nav.changed(out)) {
 
-      w=true;
-      dout<<xy<0,24><<colors<RED,WHITE><<flush;
+      // w=true;
+      web.setColors(RED,WHITE);
       web.clear();
       web.resume();
       nav.navPrint(web);
@@ -395,7 +399,7 @@ bool run() {
     if(syslog.changed()) {s=true;syslog.print();}
     if(s) syslog.sync();
     if(o) nav.sync(out);
-    // if(w) nav.sync(web);
+    // if(o) web.sync(web);
 
   }
   return running;
@@ -408,10 +412,12 @@ void setup(){
   #endif
   cout<<"ArduinoMenu R&D"<<endl;
 
-  //populate std container menu
-  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
-  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
-  mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
+  #ifndef __AVR__
+    //populate std container menu
+    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
+    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
+    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
+  #endif
 
   //initialize outputs
   web.mode(LockMode::None);

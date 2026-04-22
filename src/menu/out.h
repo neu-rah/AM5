@@ -56,7 +56,7 @@ struct OutAPI:Cfg {
 template<typename N>
 struct OutLink:N {
   template<typename O>
-  struct Part:N::Part<O> {
+  struct Part:N::template Part<O> {
     using Base=typename N::template Part<O>;
     using Base::Base;
   };
@@ -124,6 +124,7 @@ struct IOutDef:IOut,DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>{
   using Base::fmtStop;
   virtual void fmtStart(Fmt tag,const Ctx& ctx) override {
     switch(tag){
+      default: break;
       case Fmt::View: Base::template fmtStart<Fmt::View>(ctx);break;
       case Fmt::Title: Base::template fmtStart<Fmt::Title>(ctx);break;
       case Fmt::Menu: Base::template fmtStart<Fmt::Menu>(ctx);break;
@@ -143,6 +144,7 @@ struct IOutDef:IOut,DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>{
   }
   virtual void fmtStop(Fmt tag,const Ctx& ctx) override {
     switch(tag){
+      default: break;
       case Fmt::View: Base::template fmtStop<Fmt::View>(ctx);break;
       case Fmt::Title: Base::template fmtStop<Fmt::Title>(ctx);break;
       case Fmt::Menu: Base::template fmtStop<Fmt::Menu>(ctx);break;
@@ -542,7 +544,7 @@ struct Buffer {
     Area free() const {return {freeX(),freeY()};}
     void put(char o) {
       m_changed=true;
-      if constexpr (scrl==Scroll::yes) 
+      if(scrl==Scroll::yes) 
         while(Base::freeY()<=0) scroll();
       buffer[posY()*width()+posX()]=o;
       Base::put(o);
