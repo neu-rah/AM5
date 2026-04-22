@@ -18,6 +18,7 @@ Still be able to add complex features for mighty devices while supporting tiny o
 
 plain C++ (no macros)
 
+**using types**
 ```c++
 using MainMenu=MenuDef<
   Title<ItemNav<Wraps::yes>,StaticText<&text::main_menu>>,
@@ -33,4 +34,15 @@ using MainMenu=MenuDef<
     Quit
   >
 >;
+```
+
+**using mixed functions and types**
+```c++
+auto tinyMenu=menuDef(
+  ItemDef<Text,ItemNav<Wraps::yes>>{"title"},
+  staticBody(
+    ItemDef<Text>{"op1"},
+    ItemDef<Text,Action<action::quit>>{"exit"}
+  )
+);
 ```

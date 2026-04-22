@@ -23,7 +23,6 @@ struct ItemAPI:Def {
   static constexpr bool enabled() {return true;}
   static constexpr void enable(bool=true) {}
   static constexpr bool changed() {return false;}
-  // template<typename Out> static constexpr bool changed(Out&) {return false;}
   static constexpr void sync() {}
   template<typename Out> static constexpr void sync(Out&) {}
   static constexpr bool up() {return false;}
