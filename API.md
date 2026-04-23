@@ -130,6 +130,14 @@ template<typename Out> void print(Out&,Ctx&)
 static constexpr int getId()
 ```
 
+#### Get item by id from a menu tree structure
+
+The reference assignment is compile time, runtime will see it as just a reference to an item.
+
+```c++
+using WithId<int id>
+```
+
 #### Process navigation commands
 
 ```c++

@@ -4,12 +4,8 @@
 			"path": "."
 		},
 		{
-			"name": "neurs",
-			"path": "RnD/neurs"
-		},
-		{
-			"name": "tiny",
-			"path": "RnD/tiny"
+			"name": "pads",
+			"path": "RnD/pads"
 		}
 	],
 	"settings": {}

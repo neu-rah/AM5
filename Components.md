@@ -22,7 +22,7 @@
 
 `Menu<T,B>` define a menu with title `T` and body `B`
 
-`NumField` translates nav commands into up/down API calls
+`NumField<...>` translates nav commands into up/down API calls
 
 `OnFocus<...>` conditional print of <...> when the item is on focus.
 
@@ -31,6 +31,28 @@
 `struct Put<...>` alternative output for content <...>
 
 `RecallNavPos` stores and restores navigation selection, also prints selected value when not editing.
+
+### Menu bodies
+
+`StaticBody<...>` type level compile-time menu body definition
+
+`CArrayBody<T,T[],Sz>` C style array of `T` type items, they must all be the same type
+
+`CPtrArrayBody<T,T[],Sz>` C style array holding item pointers, `IItem*` allows diverse virtual types on the same array
+
+`StdBody<T>` use `std::` container as menu body
+
+### fields
+
+*`ToggleBehave` behavior for toggle field base on `RecallNavPos`, no data stored
+
+`ToggleFieldDef<T,B>` alias for a menu that behaves like a toggle field (toggles from an enumerated list)
+
+`SelectFieldDef<T,B,Wraps>` alias for a field of enumerated values, navigate in-place to select
+
+`ChooseFieldDef<T,B,Wraps>` alias for a field of enumerated values, navigate as a dub-menu to choose.
+
+`NumFieldDef` alias for numeric field construction that includes some mandatory parts.
 
 ## Output components
 
