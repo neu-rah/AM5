@@ -245,7 +245,8 @@ struct DeviceCursor {
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
       F::template fmtStart<tag>(ctx);
-      if(tag==Fmt::Item&&ctx) m_text_cursor_at=F::obj().pos();
+      if(tag==Fmt::Item&&ctx&&(ctx.pad==Pad::no||ctx.path.len>0))
+        m_text_cursor_at=F::obj().pos();
     }
     template<Fmt tag>
     void fmtStop(const Ctx& ctx) {

@@ -295,7 +295,6 @@ struct ParentDraw {
 };
 
 /// @brief put nav focus on this item on Cmd::Enter
-// template<Wraps w>
 struct ItemNav {
   template<typename I>
   struct Part:I {

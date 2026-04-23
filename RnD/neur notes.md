@@ -10,16 +10,17 @@ _just like that..._
 - XML format still messed up
 - ~~fix Pad update, check changed/sync system for pads~~
 - allow pad exit without `Esc` (either side?)
+- ~~device cursor is signaling cursor position with pad close...~~
+- disable main selection highlight whe pad is active
 
 ## Design
 
 _design decisions_
 
 - ~~make a bitmask out of Fmt, too many switches on format (and they will still work!)~~ **done**
-- ~~move Wraps setting out of ItemNav~~ (rename), only usefulness is to open on enter, former CanNav, still have to rename or put the functionality somewhere else
-
-> 1) wrap check and param are used on _**data.h**_.
-> 2) wrap check is used on _**fields.h**_, all enum fields have a body, they all are menu based and they currently accept a param and deliver it using `ItemNav<w>` (only one does, others are ignoring it).
+- ~~move Wraps setting out of ItemNav (rename?)~~,  
+  only usefulness is to open on enter, former **CanNav**,  
+  ~~still have to rename or put the functionality somewhere else~~
 
 >`Wraps` setting now on `Menu` and on numeric ranges
 
