@@ -4,7 +4,7 @@
 #include "menu/sys/printers.h"
 #include "tinyTimeUtils.h"
 
-template <typename T, typename B,Wraps wraps=Wraps::no>
+template <typename T, typename B,Wraps wraps=Wraps::no,Pad pad=Pad::no>
 struct Menu {
   template <typename I>
   struct Part : I {
@@ -16,10 +16,6 @@ struct Menu {
     Title m_title{};
     Body m_body;
 
-    // template<typename... OO> constexpr Part(OO&&... oo):m_body{std::forward<OO>(oo)...}{}
-    // template<typename... OO> constexpr Part(T&& t,OO&&... oo):m_title{std::forward<T>(t)},m_body{std::forward<OO>(oo)...}{}
-    // template<typename O> constexpr Part(O&& o):m_body{std::forward<O>(o)}{}
-    
     constexpr Part(Title&&t,B&&b):m_title{std::forward<Title>(t)},m_body{std::forward<B>(b)}{}
     template<typename... OO>
     constexpr Part(Title&&t,OO&&... oo):m_title{std::forward<Title>(t)},m_body{std::forward<OO>(oo)...}{}
@@ -29,15 +25,30 @@ struct Menu {
     template<Sz n=0> static constexpr Sz cnt() {return Body::template cnt<n+1>();}
     constexpr Sz size() const {return m_body.size();}
 
-    template<typename Out> 
-    void print(Out& out,Ctx& ctx) {m_title.print(out,ctx);}
+     bool changed() {
+      if(pad==Pad::no) return m_title.changed();
+      return m_body.changed();
+    }
 
-      template<typename Out>
+
+    template<typename Out> 
+    void print(Out& out,Ctx& ctx) {
+      m_title.print(out,ctx);
+      if(pad==Pad::yes) {
+        Ctx padCtx{ctx.path.next(),ctx.mode,ctx.printAt,ctx.prevSel,ctx.tops,Pad::yes};
+        m_body.printBody(out,padCtx);
+      }
+    }
+
+    template<typename Out>
     bool printMenu(Out& out,Ctx&& ctx) {return printMenu(out,ctx);}
+
     template<typename Out>
     bool printMenu(Out& out,Ctx& ctx) {
       // cout<<"Menu::printmenu "<<ctx.path<<" p_lvl:"<<ctx.printAt<<endl;
       ctx.idx=0;
+      ctx.pad=pad;
+      out.resume();
       if(ctx.printAt){ //(ctx.len()>1) {
         Ctx tmp=ctx.next();
         return m_body.printMenu(out,tmp,ctx.sel());
@@ -89,8 +100,11 @@ struct Menu {
   };
 };
 
-template <typename T, typename B,Wraps w> using MenuDef=ItemDef<Menu<T,B,w>>;
-template <typename T, typename B,Wraps w> using IMenuDef=IItemDef<Menu<T,B,w>>;
+template <typename T, typename B,Pad pad=Pad::no>
+using PadMenu=ItemDef<Menu<T,B,Wraps::no,pad>>;
+
+template <typename T, typename B,Wraps w,Pad p> using MenuDef=ItemDef<Menu<T,B,w,p>>;
+template <typename T, typename B,Wraps w,Pad p> using IMenuDef=IItemDef<Menu<T,B,w,p>>;
 
 template<typename... OO> using Title=ItemDef<OO...>; 
 template<typename... OO> using Label=ItemDef<AsLabel<OO...>>; 

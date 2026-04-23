@@ -5,6 +5,7 @@ enum class Wraps {no,yes};
 enum class Scroll {no=false,yes=true};
 enum class Edge {start,stop};
 enum class Clear {no,yes};
+enum class Pad {no,yes};
 
 enum class NavMode {Nav,Edit,Tune};
 
@@ -36,6 +37,9 @@ enum class LockMode {
 };
 
 #ifdef MENU_DEBUG
+
+  template<typename Out>
+  Out& operator<<(Out& out, Pad o) {return out<<(o==Pad::yes?"yes":"no");}
 
   template<typename Out>
   Out& operator<<(Out& out,const Wraps& w) {

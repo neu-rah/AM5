@@ -26,6 +26,10 @@ StaticBody<OO...> staticBody(OO&&... oo)
   {return StaticBody<OO...>{std::forward<OO>(oo)...};}
 
 template<Wraps wraps,typename T,typename B> 
-constexpr MenuDef<T,B,wraps> menuDef(T&& t,B&& b)
-  {return MenuDef<T,B,wraps>{std::forward<T>(t),std::forward<B>(b)};}
+constexpr MenuDef<T,B,wraps,Pad::no> menuDef(T&& t,B&& b)
+  {return {std::forward<T>(t),std::forward<B>(b)};}
+
+template<typename T,typename B> 
+constexpr PadMenu<T,B,Pad::yes> padDef(T&& t,B&& b)
+  {return {std::forward<T>(t),std::forward<B>(b)};}
 

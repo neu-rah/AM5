@@ -95,16 +95,43 @@ struct Ctx {
   Sz printAt{path.len};
   Sz prevSel{0};
   Sz* tops{0};/// out device scroll pos (if used),
+  Pad pad{false};
   Sz idx{0};
   bool enabled{true};
   Sz sel() const {return path.sel();}
   Depth len() const {return path.len;}
   Sz top() const {return tops?tops[0]:0;}
   void top(Sz i){if(tops) tops[0]=i;}
-  Ctx next() const {return Ctx{path.next(),mode,printAt-1,0,&tops[1]};}
-  Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr):path{p},mode{nm},printAt{pl},prevSel{ps},tops{t}{}
+  Ctx next() const {return Ctx{path.next(),mode,printAt-1,0,&tops[1],pad,idx,enabled};}
+  Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr,Pad pad=Pad::no,Sz idx=0,bool en=true)
+    :path{p},mode{nm},printAt{pl},prevSel{ps},tops{t},pad{pad},idx{idx},enabled{en}{}
   operator bool() const {return path.len>0?idx==path.data[0]:idx==0;}
 };
+
+#ifdef MENU_DEBUG
+  template<typename Out>
+  Out& operator<<(Out& out,const Path o) {
+    out<<"{";
+    for(Sz i=0;i<o.len;i++) {
+      if(i) out<<",";
+      out<<o.data[i];
+    }
+    return out<<"}";
+  }
+
+  template<typename Out>
+  Out& operator<<(Out& out,const Ctx& o) {
+  return out
+    <<"path:"<<o.path
+    <<" mode:"<<o.mode
+    <<" printAt:"<<o.printAt
+    <<" prevSel:"<<o.prevSel
+    // <<" tops:"<<o.tops
+    <<" pad:"<<o.pad
+    <<" idx:"<<o.idx
+    <<" enabled:"<<o.enabled;
+  }
+#endif
 
 //rule predicates------------------------------------------
 struct IsCursor {

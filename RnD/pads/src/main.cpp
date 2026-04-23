@@ -54,7 +54,7 @@ IOutDef<
   DataParser<>,//put all data into characters
   CtrlChars,
   UTF8,//bypass UTF8 surrogate codes
-  TextWrap,//long texts continue next line
+  // TextWrap,//long texts continue next line
   Clip,//keep content inside area
   ColorTrack<int>,//track color setting for device resume
   Cursor,//account for cursor movement, single character only, tracks pos for resume also
@@ -96,20 +96,30 @@ namespace action {
 auto menu=menuDef<Wraps::yes>(
   ItemDef<Text,ItemNav>{"AM5 R&D"},
   staticBody(
-    ItemDef<Text>{"op1"},
-    menuDef<Wraps::yes>(
-      ItemDef<Text,ItemNav>{"Birth:"},
+    // ItemDef<Text>{"op1"},
+    padDef(
+      ItemDef<Text,ParentDraw,ItemNav>{"date:"},
       staticBody(
         ItemDef<
-          EditField,ParentDraw,AsEditMode<>,
+          EditField,ParentDraw,AsEditMode<>,ItemNav,
           NumField<StaticNumRange<int,1900,2050,Wraps::yes>,
-          ItemNav,
           Watch<AsField<Default<int,2026>,Int>>>
         >{2026},
-        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,12,Wraps::yes>,ItemNav,Watch<AsField<Int>>>>{1},
-        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,31,Wraps::yes>,ItemNav,Watch<AsField<Int>>>>{1}
+        ItemDef<
+          StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+          NumField<StaticNumRange<int,1,12,Wraps::yes>,
+          Watch<AsField<Int>>>
+        >{1},
+        ItemDef<
+          StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+          NumField<StaticNumRange<int,1,31,Wraps::yes>,
+          Watch<AsField<Int>>>
+        >{1}
       )
     ),
+    ItemDef<>{},
+    ItemDef<>{},
+    ItemDef<>{},
     ItemDef<Text,Action<action::quit>>{"Exit"}
   )
 );

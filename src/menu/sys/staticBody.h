@@ -29,6 +29,8 @@ struct StaticBody {
   static constexpr const Depth depth() {return staticMax<Item::depth(),Body::depth()>();}
   static constexpr Sz size() {return 1+Body::size();}
 
+  bool changed() {return m_item.changed()||m_body.changed();}
+  
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i)
     {return i?m_body.printMenu(out,ctx,i-1):m_item.printMenu(out,ctx);}
 
@@ -87,6 +89,8 @@ struct StaticBody<O> {
 
   static constexpr const Depth depth() {return Item::depth();}
   static constexpr Sz size() {return 1;}
+
+  bool changed() {return m_item.changed();}
 
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i) 
     {assert(i==0);return m_item.printMenu(out,ctx);}

@@ -8,6 +8,8 @@ _just like that..._
 - clear info panel on focus change
 - ~~web/xml printing window?~~ works, formatting still sucks
 - XML format still messed up
+- ~~fix Pad update, check changed/sync system for pads~~
+- allow pad exit without `Esc` (either side?)
 
 ## Design
 
@@ -46,6 +48,7 @@ _features still not implemented_
 - ✓ fields _(numeric and indexed enums)_
 - ✓ color space, provide color report for devices that do not support it (kind of cursor)
 - ✓ device resume, we need this for the following output panels to work, and color report too
+- text only non-selectable fake items, useful for Pad separators
 - real enum fields that retrieve and store data (not nav position)
 - pad menu/fields
 - text edit fields
