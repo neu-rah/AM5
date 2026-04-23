@@ -176,6 +176,7 @@ namespace text {
   static constexpr const CText toggle_demo{"Toggle"};
   static constexpr const CText select_demo{"Select"};
   static constexpr const CText choose_demo{"Choose"};
+  static constexpr const CText dateSep{"."};
 };
 
 namespace desc {
@@ -304,55 +305,80 @@ using Power=NumFieldDef<
     AsLabel<StaticText<text::power>>//field label
   >,
   NumField<//use range to change the data
-    StaticNumRange<int,0,100>,//valid range
-    ItemNav<Wraps::no>,
+    StaticNumRange<int,0,100,Wraps::no>,//valid range
+    ItemNav,
     Watch<AsField<Default<int,55>,Int>>//use `int` and `change watch` as field (data)
   >,
   AsUnit<StaticText<text::percent>>//field unit
 >;
 
-auto mainMenu=menuDef(
-  ItemDef<Text,ItemNav<Wraps::yes>>{"Main menu"},
+auto mainMenu=menuDef<Wraps::yes>(
+  ItemDef<Text,ItemNav>{"Main menu"},
   staticBody(
     ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
     ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
     ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
-    menuDef(
-      Title<ItemNav<Wraps::yes>,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
+    menuDef<Wraps::yes>(
+      Title<ItemNav,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
       staticBody(
         Power{},
         ToggleDemo{"Toggle","Maybe"},
         SelectDemo{},
         ChooseDemo{},
-        ItemDef<Text,Desc<Text>,Action<stay>>{"Stay","calls stay action function."},
+        padDef(
+          ItemDef<Text,ParentDraw,ItemNav>{"date:"},
+          staticBody(
+            ItemDef<
+              EditField,ParentDraw,AsEditMode<>,ItemNav,
+              NumField<StaticNumRange<int,1900,2050,Wraps::yes>,
+              Watch<AsField<Default<int,2026>,Int>>>
+            >{2026},
+            ItemDef<
+              StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+              NumField<StaticNumRange<int,1,12,Wraps::yes>,
+              Watch<AsField<Int>>>
+            >{1},
+            ItemDef<
+              StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+              NumField<StaticNumRange<int,1,31,Wraps::yes>,
+              Watch<AsField<Int>>>
+            >{1}
+          )
+        ),
         Back{}
       )
     ),
-    MenuDef<//sub menu with C array body (all items of the type)
+    MenuDef<//sub menu with C array body (all items of the same type)
       Title<
         BodyAction<action::subIdx>,
-        ItemNav<Wraps::no>,
+        ItemNav,
         StaticText<text::array_sub_menu>,
         Desc<StaticText<desc::array_sub_menu>>
       >,
-      CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
+      CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>,
+      Wraps::no,
+      Pad::no
     >{},
     #ifndef __AVR__
       MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
-        Title<BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
-        CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>
+        Title<BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
+        CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>,
+        Wraps::yes,
+        Pad::no
       >{},
       MenuDef<
-        Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav<Wraps::yes>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
-        StdBody<vector<IItem*>>
+        Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
+        StdBody<vector<IItem*>>,
+        Wraps::yes,
+        Pad::no
       >{},
     #endif
     Quit{}
   )
 );
 
-auto tinyMenu=menuDef(
-  ItemDef<Text,ItemNav<Wraps::yes>>{"title"},
+auto tinyMenu=menuDef<Wraps::yes>(
+  ItemDef<Text,ItemNav>{"title"},
   staticBody(
     ItemDef<Text>{"op1"},
     ItemDef<Text,Action<action::quit>>{"exit"}

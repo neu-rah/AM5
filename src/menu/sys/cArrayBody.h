@@ -8,12 +8,18 @@ struct CArrayBody {
   static constexpr const Sz size() {return _sz;}
   static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i];}
 
+  bool changed() {
+    bool c{false};
+    for(Sz i=0;i<_sz;i++) c=c||data[i].changed();
+    return c;
+  }
+
   template<typename Nav> 
   bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
     {return data[i].nav(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
-    for(Sz i=0;i<_sz&&out.freeY();i++) out.printItem(data[ctx.idx],ctx);
+    for(Sz i=0;i<_sz&&out.freeY();i++) out.printItem(data[ctx.idx],ctx);//? [ctx.idx]? why not i?
     return false;
   }
 
@@ -31,6 +37,12 @@ struct CPtrArrayBody {
   static constexpr Depth depth() {return 1;}
   static constexpr const Sz size() {return _sz;}
   static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i]->size();}
+
+  bool changed() {
+    bool c{false};
+    for(Sz i=0;i<_sz;i++) c=c||data[i]->changed();
+    return c;
+  }
 
   template<typename Nav> 
   bool nav(Nav& n,const CKE& cke,Path path,Sz i) 

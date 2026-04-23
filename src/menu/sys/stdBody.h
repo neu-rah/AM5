@@ -7,6 +7,11 @@ struct StdBody:T {
   constexpr Sz size() const {return T::size();}
   constexpr Sz size(Sz i) const {return T::operator[](i).size();}
 
+  bool changed() {
+    bool c{false};
+    for(auto i=T::begin();i<T::end();i++) c=c||(**i).changed();
+    return c;
+  }
   template<typename Nav> 
   bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
     {return T::operator[](i)->nav(n,cke,path);}
