@@ -52,7 +52,7 @@ struct StaticRoot {
     using Base=N;
     M m_menu;
     inline constexpr M& root() {return m_menu;}
-    // inline constexpr const M& root() const {return m_menu;}
+    static constexpr const Depth depth() {return M::depth();}
   };
 };
 

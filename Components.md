@@ -1,5 +1,29 @@
 # AM5 Components
 
+## Data components
+
+This components should also be used by items
+
+`StaticData<T,T data>` compile-time data storage
+
+`StaticRef<T,T data>` a compile-time reference to data, target data can be writable.
+
+`StaticText<CText&>` StaticRef alias for text.
+
+`Data<T>` runtime data.
+
+`Text` Data alias for text
+
+`Bool` Data alias for bool
+
+`Int` Data alias for int
+
+`Watch<W>` watch data for change (changed/sync)
+
+`StaticNumRange<N,N l,N h,Wraps>` compile-time numeric range limits.
+
+`NumRange<N>` runtime numeric range limits.
+
 ## Item components
 
 `Action<f>` associate an `f` function of type `bool(Sz)` to be called on enter.
@@ -40,17 +64,17 @@
 
 `CPtrArrayBody<T,T[],Sz>` C style array holding item pointers, `IItem*` allows diverse virtual types on the same array
 
-`StdBody<T>` use `std::` container as menu body
+`StdBody<T>` use `std` container as menu body
 
 ### fields
 
-*`ToggleBehave` behavior for toggle field base on `RecallNavPos`, no data stored
+*`ToggleBehave` behavior for toggle field based on `RecallNavPos`, no data stored (besides the navigation position)
 
 `ToggleFieldDef<T,B>` alias for a menu that behaves like a toggle field (toggles from an enumerated list)
 
 `SelectFieldDef<T,B,Wraps>` alias for a field of enumerated values, navigate in-place to select
 
-`ChooseFieldDef<T,B,Wraps>` alias for a field of enumerated values, navigate as a dub-menu to choose.
+`ChooseFieldDef<T,B,Wraps>` alias for a field of enumerated values, navigate as a sub-menu to choose.
 
 `NumFieldDef` alias for numeric field construction that includes some mandatory parts.
 
@@ -134,9 +158,13 @@ Changing the composition order will also change the printing order, omitting the
 
 `Root<T,T& menu>` holds a reference to an existing menu.
 
-`StaticRoot<M>` holds internal menu data
+> provides `root()` and `depth()` functions
+
+`StaticRoot<M>` holds menu data internally
 
 `TreeNav` controls the navigation over a menu tree.
+
+> provides functions like: `depth()`, `focus(Sz)`, `self()`, `parent()`, `level()`, `sel()`, `sync()`, `sync<Out>(Out)`, `changed()`, `changed<Out>(Out)`, `navPrint<Out>(Out)`, `doCmd(...)`, `doNav(...)`, `in<in>(In)`, `go(Sz,Depth)`, `navMode(NavMode)`, `padOpen()`, `open()`, `close()`
 
 ## Input components
 

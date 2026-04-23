@@ -76,9 +76,9 @@ void resume()
 
 ### Data API
 
-A precursor to Item API for internal consume, using data without the full API weight. 
+A precursor to Item API for internal consume, using data without the full `ItemAPI` weight. 
 
-#### Check state changed or synchronize it.
+#### Check value changed or synchronize it.
 
 ```c++
 bool changed() {return false;}

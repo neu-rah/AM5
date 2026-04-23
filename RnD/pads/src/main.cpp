@@ -100,7 +100,12 @@ auto menu=menuDef<Wraps::yes>(
     menuDef<Wraps::yes>(
       ItemDef<Text,ItemNav>{"Birth:"},
       staticBody(
-        ItemDef<EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1900,2050,Wraps::yes>,ItemNav,Watch<AsField<Default<int,2026>,Int>>>>{2026},
+        ItemDef<
+          EditField,ParentDraw,AsEditMode<>,
+          NumField<StaticNumRange<int,1900,2050,Wraps::yes>,
+          ItemNav,
+          Watch<AsField<Default<int,2026>,Int>>>
+        >{2026},
         ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,12,Wraps::yes>,ItemNav,Watch<AsField<Int>>>>{1},
         ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,31,Wraps::yes>,ItemNav,Watch<AsField<Int>>>>{1}
       )
