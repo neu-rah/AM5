@@ -40,7 +40,7 @@ This components should also be used by items
 
 `Id<i>` provide a compile-time Id, allows static compile-time reference link
 
-`ItemNav<Wraps>` _deprecated_ (just opens the item on `Cmd::Enter`)
+`ItemNav` _deprecated_ (just opens the item on `Cmd::Enter`)
 
 `ItemRef<R,R& ref>` complete redirection to other Item, _not tested yet_
 

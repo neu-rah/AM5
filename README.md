@@ -21,7 +21,7 @@ plain C++ (no macros)
 **using types**
 ```c++
 using MainMenu=MenuDef<
-  Title<ItemNav<Wraps::yes>,StaticText<&text::main_menu>>,
+  Title<ItemNav,
   StaticBody<//main menu static body
     ItemDef<Action<action::op1>,StaticText<&text::op1>>,
     ItemDef<Action<action::op2>,StaticText<&text::op2>>,
@@ -39,7 +39,7 @@ using MainMenu=MenuDef<
 **using mixed functions and types**
 ```c++
 auto tinyMenu=menuDef(
-  ItemDef<Text,ItemNav<Wraps::yes>>{"title"},
+  ItemDef<Text,ItemNav{"title"},
   staticBody(
     ItemDef<Text>{"op1"},
     ItemDef<Text,Action<action::quit>>{"exit"}

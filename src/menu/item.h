@@ -300,8 +300,8 @@ struct ItemNav {
   struct Part:I {
     using Base=I;
     using Base::Base;
-    static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ItemNav<>");
-    static_assert(I::template Excludes<Class<ParentDraw>>::value,"ParentDraw must preseed ItemNav<>");
+    static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ItemNav");
+    static_assert(I::template Excludes<Class<ParentDraw>>::value,"ParentDraw must preseed ItemNav");
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       bool r=Base::nav(n,cke,path);

@@ -35,17 +35,25 @@ struct ANSIFmt {
     void fmtStart(const Ctx& ctx) {
       if(!onPad(ctx)) switch(tag) {
         case Fmt::View: 
-          setColors(RED,BLUE);
+          // setColors(RED,BLUE);
           clear();
           break;
         case Fmt::Title: setColors(BLACK,MAGENTA);break;
-        case Fmt::Index:if(ctx.pad==Pad::no&&ctx.idx<9) put(ctx.idx+1);break;
+        // case Fmt::Index:if(ctx.pad==Pad::no&&ctx.idx<9) put(ctx.idx+1);break;
         case Fmt::NavCursor:
           if(ctx) {
             if(ctx.pad==Pad::no||ctx.mode==NavMode::Nav) put(ctx.enabled?'>':'-');
           } else if(ctx.pad==Pad::no) put(' ');
           break;
-        case Fmt::Item: itemColor(ctx);break;
+        case Fmt::Item: 
+          if(ctx.pad==Pad::no) dout<<xy<0,1><<colors<GREEN,BLACK><<ctx<<" "<<(cnt<>++)<<::padWith<10><<flush;
+          else dout<<xy<0,2><<colors<RED,BLACK><<ctx<<" "<<(cnt<>++)<<::padWith<10><<flush;
+          Base::resume();
+          // if(ctx.path>1) setColors(itemFg(false,ctx.enabled),itemBg(ctx));
+          // else setColors(itemFg(ctx,ctx.enabled),itemBg(ctx));
+          if(ctx.path.len<=1) itemColor(ctx);
+          else setColors(itemFg(false,ctx.enabled),itemBg(false));
+          break;
         case Fmt::Field: setColors(ctx?(ctx.enabled?WHITE:BLACK):(ctx.enabled?YELLOW:BLACK),itemBg(ctx));break;
         case Fmt::EditMode:
           setColors(RED,itemBg(ctx));
@@ -79,12 +87,12 @@ struct ANSIFmt {
           }
           break;
         case Fmt::Item:
-          if(ctx.pad==Pad::no) {
-          itemColor(ctx);
+          if(ctx.path==0) {
+            itemColor(ctx);
             padWith(freeX());
-            nl();
-            setColors(itemFg(false,true),itemBg(false));
           }
+          if(ctx.pad==Pad::no) nl();
+          setColors(itemFg(false,true),itemBg(false));
           break;
         case Fmt::Unit: itemColor(ctx);break;
         default:break;
