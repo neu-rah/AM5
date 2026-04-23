@@ -236,8 +236,8 @@ struct NumField {
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       if(n.navMode()==NavMode::Edit) switch(cke.cmd){
-        case Cmd::Up: Base::up(1,Base::wraps); return true;
-        case Cmd::Down: Base::down(1,Base::wraps); return true;
+        case Cmd::Up: Base::up(); return true;
+        case Cmd::Down: Base::down(); return true;
         default: break;
       }
       return Base::nav(n,cke,path);

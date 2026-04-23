@@ -117,10 +117,11 @@ struct Watch {
   };
 };
 
-template<typename N,N l,N h>
+template<typename N,N l,N h,Wraps w>
 struct StaticNumRange {
   template<typename O>
   struct Part:O {
+    // static constexpr const Wraps wraps{w};
     using Base=O;
     using Base::get;
     using Base::set;
@@ -128,11 +129,11 @@ struct StaticNumRange {
     using Base::Base;
     static constexpr bool valid(N o) {return o<=l&&o<=h;}
     static constexpr N clamp(N o) {return o<l?l:o>h?h:o;}
-    static constexpr N stepUp(N o,N s,Wraps w) {return h-o>s?o+s:w==Wraps::yes?l:h;}
-    static constexpr N stepDown(N s,N o,Wraps w) {return o-l>s?o-s:w==Wraps::yes?h:l;}
-    static constexpr N step(N s,N o,Wraps w) {return s<0?stepDown(-s,o,w):stepUp(s,o,w);}
-    void up(N s,Wraps w) {set(stepUp(s,get(),w));}
-    void down(N s,Wraps w) {set(stepDown(s,get(),w));}
+    static constexpr N stepUp(N o,N s) {return h-o>s?o+s:w==Wraps::yes?l:h;}
+    static constexpr N stepDown(N s,N o) {return o-l>s?o-s:w==Wraps::yes?h:l;}
+    static constexpr N step(N s,N o) {return s<0?stepDown(-s,o,w):stepUp(s,o,w);}
+    void up(N s=1) {set(stepUp(s,get()));}
+    void down(N s=1) {set(stepDown(s,get()));}
   };
 };
 
@@ -143,19 +144,18 @@ struct NumRange {
     using Base=O;
     using Base::get;
     using Type=N;
-    // using Base::Base;
     Type m_low;
     Type m_high;
-    // Wraps m_wraps;
+    Wraps wraps;
     template<typename... OO>
-    Part(Type l,Type h,OO&&... oo)
-      :Base{std::forward<OO>(oo)...},m_low{l},m_high{h}{}
+    Part(Type l,Type h,Wraps w,OO&&... oo)
+      :Base{std::forward<OO>(oo)...},m_low{l},m_high{h},wraps{w}{}
     constexpr bool valid(N o) const {return o<=m_low&&o<=m_high;}
     constexpr N clamp(N o) const {return o<m_low?m_low:o>m_high?m_high:o;}
-    constexpr N stepUp(N o,N s,Wraps w) {return m_high-o>=s?o+s:w==Wraps::yes?m_low:m_high;}
-    constexpr N stepDown(N s,N o,Wraps w) {return o-m_low>=s?o-s:w==Wraps::yes?m_high:m_low;}
-    void up(Wraps w,N s=1) {get()=stepUp(s,get(),w);}
-    void down(Wraps w,N s=1) {get()=stepDown(s,get(),w);}
+    constexpr N stepUp(N o,N s) {return m_high-o>=s?o+s:wraps==Wraps::yes?m_low:m_high;}
+    constexpr N stepDown(N s,N o) {return o-m_low>=s?o-s:wraps==Wraps::yes?m_high:m_low;}
+    void up(N s=1) {get()=stepUp(s,get());}
+    void down(N s=1) {get()=stepDown(s,get());}
   };
 };
 
