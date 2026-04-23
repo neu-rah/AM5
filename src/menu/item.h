@@ -16,7 +16,7 @@
 template<typename Def=Nil>
 struct ItemAPI:Def {
   constexpr ItemAPI() {}
-  static constexpr const Wraps wraps{Wraps::no};
+  // static constexpr const Wraps wraps{Wraps::no};
   template<typename> using Requires=std::false_type;
   template<typename> using Excludes=std::true_type;
   static constexpr Depth depth() {return 1;}

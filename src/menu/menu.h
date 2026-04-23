@@ -4,7 +4,7 @@
 #include "menu/sys/printers.h"
 #include "tinyTimeUtils.h"
 
-template <typename T, typename B>
+template <typename T, typename B,Wraps wraps=Wraps::no>
 struct Menu {
   template <typename I>
   struct Part : I {
@@ -61,7 +61,7 @@ struct Menu {
     bool nav(Nav& n,const CKE& cke,Path p) {
       if(p.len&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
       if (m_title.nav(n,cke,p)) return true;
-      return p.len?n.doNav(cke,size(),Title::wraps):false;
+      return p.len?n.doNav(cke,size(),wraps):false;
     }
 
     Body& body() {return m_body;}

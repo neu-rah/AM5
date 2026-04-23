@@ -83,6 +83,7 @@ struct Data {
     using Base::Base;
     Type data;
     template<typename... OO> Part(const Type& o,OO&&... oo):Base{std::forward<OO>(oo)...},data{o}{}
+    // template<typename... OO> Part(OO&&... oo):Base{std::forward<OO>(oo)...}{}
     // constexpr Type& get() {return data;} 
     const Type& get() const {return data;} 
     void set(const Type& o) {data=o;}
@@ -145,16 +146,16 @@ struct NumRange {
     // using Base::Base;
     Type m_low;
     Type m_high;
-    Wraps m_wraps;
+    // Wraps m_wraps;
     template<typename... OO>
-    Part(Type l,Type h,Wraps w,OO&&... oo)
-      :Base{std::forward<OO>(oo)...},m_low{l},m_high{h},m_wraps{w}{}
+    Part(Type l,Type h,OO&&... oo)
+      :Base{std::forward<OO>(oo)...},m_low{l},m_high{h}{}
     constexpr bool valid(N o) const {return o<=m_low&&o<=m_high;}
     constexpr N clamp(N o) const {return o<m_low?m_low:o>m_high?m_high:o;}
     constexpr N stepUp(N o,N s,Wraps w) {return m_high-o>=s?o+s:w==Wraps::yes?m_low:m_high;}
     constexpr N stepDown(N s,N o,Wraps w) {return o-m_low>=s?o-s:w==Wraps::yes?m_high:m_low;}
-    void up(N s=1) {get()=stepUp(s,get(),m_wraps);}
-    void down(N s=1) {get()=stepDown(s,get(),m_wraps);}
+    void up(Wraps w,N s=1) {get()=stepUp(s,get(),w);}
+    void down(Wraps w,N s=1) {get()=stepDown(s,get(),w);}
   };
 };
 

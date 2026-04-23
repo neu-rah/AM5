@@ -100,9 +100,9 @@ auto menu=menuDef(
     menuDef(
       ItemDef<Text,ItemNav<Wraps::yes>>{"Birth:"},
       staticBody<Wraps::yes>(
-        ItemDef<EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1900,2050>,ItemNav<Wraps::yes>,Data<int>>>{2026},
-        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,12>,ItemNav<Wraps::yes>,Data<int>>>{1},
-        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,31>,ItemNav<Wraps::yes>,Data<int>>>{1}
+        ItemDef<EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1900,2050>,ItemNav<Wraps::yes>,Watch<AsField<Default<int,2026>,Int>>>>{2026},
+        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,12>,ItemNav<Wraps::yes>,Watch<AsField<Int>>>>{1},
+        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,31>,ItemNav<Wraps::yes>,Watch<AsField<Int>>>>{1}
       )
     ),
     ItemDef<Text,Action<action::quit>>{"Exit"}

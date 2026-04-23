@@ -115,10 +115,10 @@ struct TreeNav {
     }
 
     bool doNav(CKE cke,Sz len,Wraps w) {
-      DataDef<NumRange<Sz>,Data<Sz&>> at(0,len-1,w,m_path.data[(int)level()]);
+      DataDef<NumRange<Sz>,Data<Sz&>> at(0,len-1,m_path.data[(int)level()]);
       switch(cke.cmd) {
-        case Cmd::Up: at.up();break;
-        case Cmd::Down: at.down();break;
+        case Cmd::Up: at.up(w);break;
+        case Cmd::Down: at.down(w);break;
         default:break;
       }
       return true;
