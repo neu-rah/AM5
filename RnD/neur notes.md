@@ -6,12 +6,12 @@ _just like that..._
 
 - enum Toggle & Select are not calling the action when done
 - clear info panel on focus change
-- ~~web/xml printing window?~~ works, formatting still sucks
-- XML format still messed up
+- XML formatting still sucks
 - ~~fix Pad update, check changed/sync system for pads~~
+- pad changed state should be based on draw and not on the changed() function
 - allow pad exit without `Esc` (either side?)
-- ~~device cursor is signaling cursor position with pad close...~~
-- disable main selection highlight whe pad is active
+- disable main selection highlight when pad is active
+
 
 ## Design
 

@@ -302,7 +302,6 @@ struct ItemNav {
     using Base::Base;
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ItemNav<>");
     static_assert(I::template Excludes<Class<ParentDraw>>::value,"ParentDraw must preseed ItemNav<>");
-    // static constexpr const Wraps wraps{w};
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       bool r=Base::nav(n,cke,path);
@@ -310,7 +309,6 @@ struct ItemNav {
         if(path.len==0) return n.open();
         else if(path.len==1) return n.close();
       }
-      // return false;
       return r;
     }
   };
@@ -329,13 +327,6 @@ struct Alias {
     using Base::Base;
     template<typename... OO>
     Part(Value&& v,OO&&... oo):value{v},Base{std::forward<OO&&>(oo)...}{}
-    // auto get() const ->decltype(value.get()) const {return value.get();}
-    // template<typename T> void set(Path p,const T o) {value.set(p,o);}
-    // template<typename T> void set(const T o) {value.set(o);}
-    // static constexpr auto defValue()->decltype(ItemDef<Value>::defValue()) 
-    //   {return ItemDef<Value>::defValue();}
-    // bool act() const {return value.act();}
-    // bool act(int i) const {return value.act(i);}
   };
 };
 
@@ -352,7 +343,6 @@ struct ItemRef {
     static constexpr bool enabled() {return ref.enable(); }
     static constexpr void enable(bool o=true) {ref.enable(o);}
     static constexpr bool changed() {return ref.changed();}
-    // template<typename Out> static constexpr bool changed(Out& out) {return ref.changed(out);}
     static constexpr void sync() {ref.sync();}
     static constexpr bool up() {return ref.up();}
     static constexpr bool down() {return ref.down();}
