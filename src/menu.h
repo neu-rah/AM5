@@ -21,6 +21,11 @@
 #include "menu/menu.h"
 #include "menu/nav.h"
 
-template<Wraps w,typename... OO> constexpr StaticBody<OO...> staticBody(OO&&... oo) {return StaticBody<OO...>{std::forward<OO>(oo)...};}
-template<typename T,typename B> constexpr MenuDef<T,B> menuDef(T&& t,B&& b) {return MenuDef<T,B>{std::forward<T>(t),std::forward<B>(b)};}
+template<typename... OO> constexpr 
+StaticBody<OO...> staticBody(OO&&... oo)
+  {return StaticBody<OO...>{std::forward<OO>(oo)...};}
+
+template<Wraps wraps,typename T,typename B> 
+constexpr MenuDef<T,B,wraps> menuDef(T&& t,B&& b)
+  {return MenuDef<T,B,wraps>{std::forward<T>(t),std::forward<B>(b)};}
 

@@ -295,7 +295,7 @@ struct ParentDraw {
 };
 
 /// @brief put nav focus on this item on Cmd::Enter
-template<Wraps w>
+// template<Wraps w>
 struct ItemNav {
   template<typename I>
   struct Part:I {
@@ -303,7 +303,7 @@ struct ItemNav {
     using Base::Base;
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ItemNav<>");
     static_assert(I::template Excludes<Class<ParentDraw>>::value,"ParentDraw must preseed ItemNav<>");
-    static constexpr const Wraps wraps{w};
+    // static constexpr const Wraps wraps{w};
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       bool r=Base::nav(n,cke,path);

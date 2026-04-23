@@ -93,16 +93,16 @@ namespace action {
   }
 }
 
-auto menu=menuDef(
-  ItemDef<Text,ItemNav<Wraps::yes>>{"AM5 R&D"},
-  staticBody<Wraps::yes>(
+auto menu=menuDef<Wraps::yes>(
+  ItemDef<Text,ItemNav>{"AM5 R&D"},
+  staticBody(
     ItemDef<Text>{"op1"},
-    menuDef(
-      ItemDef<Text,ItemNav<Wraps::yes>>{"Birth:"},
-      staticBody<Wraps::yes>(
-        ItemDef<EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1900,2050>,ItemNav<Wraps::yes>,Watch<AsField<Default<int,2026>,Int>>>>{2026},
-        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,12>,ItemNav<Wraps::yes>,Watch<AsField<Int>>>>{1},
-        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,31>,ItemNav<Wraps::yes>,Watch<AsField<Int>>>>{1}
+    menuDef<Wraps::yes>(
+      ItemDef<Text,ItemNav>{"Birth:"},
+      staticBody(
+        ItemDef<EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1900,2050>,ItemNav,Watch<AsField<Default<int,2026>,Int>>>>{2026},
+        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,12>,ItemNav,Watch<AsField<Int>>>>{1},
+        ItemDef<StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,NumField<StaticNumRange<int,1,31>,ItemNav,Watch<AsField<Int>>>>{1}
       )
     ),
     ItemDef<Text,Action<action::quit>>{"Exit"}

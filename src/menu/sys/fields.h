@@ -38,13 +38,13 @@ using ToggleFieldDef=ItemDef<ToggleBehave,Menu<T,B>>;
 template<typename T,typename B,Wraps w=Wraps::no>
 using SelectFieldDef=ItemDef<
   RecallNavPos,
-  Menu<typename T::template Ins<EditField,ParentDraw>::template App<ItemNav<w>>,B>
+  Menu<typename T::template Ins<EditField,ParentDraw>::template App<ItemNav>,B,w>
 >;
 
 template<typename T,typename B,Wraps w=Wraps::no>
 using ChooseFieldDef=ItemDef<
   RecallNavPos,
-  Menu<typename T::template App<ItemNav<w>>,B>
+  Menu<typename T::template App<ItemNav>,B,w>
 >;
 
 template<typename T,typename O,typename... OO>

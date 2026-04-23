@@ -89,8 +89,8 @@ struct Menu {
   };
 };
 
-template <typename T, typename B> using MenuDef=ItemDef<Menu<T,B>>;
-template <typename T, typename B> using IMenuDef=IItemDef<Menu<T,B>>;
+template <typename T, typename B,Wraps w=Wraps::no> using MenuDef=ItemDef<Menu<T,B,w>>;
+template <typename T, typename B,Wraps w=Wraps::no> using IMenuDef=IItemDef<Menu<T,B,w>>;
 
 template<typename... OO> using Title=ItemDef<OO...>; 
 template<typename... OO> using Label=ItemDef<AsLabel<OO...>>; 
