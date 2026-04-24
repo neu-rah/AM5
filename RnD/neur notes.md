@@ -8,11 +8,11 @@ _just like that..._
 - clear info panel on focus change
 - XML formatting still sucks
 - ~~fix Pad update, check changed/sync system for pads~~
-- pad changed state should be based on draw and not on the changed() function
+- ~~pad changed state should be based on draw and not on the changed() function~~
 - allow pad exit without `Esc` (either side?)
-- disable main selection highlight when pad is active
-- disable pad menu highlight when sibiling active! (see select field demo)
-
+- ~~disable main selection highlight when pad is active~~
+- disable pad menu highlight when sibling active! (see select field demo)
+- also correct other fmt files to account for pads as we did on ansi
 
 ## Design
 
@@ -21,9 +21,47 @@ _design decisions_
 - ~~make a bitmask out of Fmt, too many switches on format (and they will still work!)~~ **done**
 - ~~move Wraps setting out of ItemNav (rename?)~~,  
   only usefulness is to open on enter, former **CanNav**,  
-  ~~still have to rename or put the functionality somewhere else~~
+- use prefix/suffix items/components to implement separators?
+  and avoid the @⅜£⅜§ of navigating over them...
 
 >`Wraps` setting now on `Menu` and on numeric ranges
+
+#### still the pad and ansiFmt
+
+```c++
+enum Pad{no,yes};
+
+template<typename...> struct Menu {};
+template<typename...> struct Body {};
+template<typename...> struct Title {};
+template<typename...> struct Item {};
+
+//first pass
+Menu<Pad::no>{ //pad:false
+  Title<>
+  Body< //this is the body print that can change the Ctx
+    Item<>
+    Menu<Pad::yes>{ // pad:true can only be introduced by the body print  (new Ctx)
+      Title<>,
+      Body<
+        Item<>,
+        Item<>,
+        Item<>
+      >
+    }
+  >
+};
+
+//second pass
+Menu<Pad::yes>{ // pad:true can only be introduced by the parent body print (new Ctx)
+  Title<>,
+  Body<//pads here would be a continuation of the previous case
+    Item<>,
+    Item<>,
+    Item<>
+  >
+}
+```
 
 ## ToDo
 

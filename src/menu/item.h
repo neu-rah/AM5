@@ -21,6 +21,8 @@ struct ItemAPI:Def {
   template<typename> using Excludes=std::true_type;
   static constexpr Depth depth() {return 1;}
   static constexpr bool enabled() {return true;}
+  constexpr const bool wraps() {return false;}
+  constexpr const bool isPad() {return false;}
   static constexpr void enable(bool=true) {}
   static constexpr bool changed() {return false;}
   static constexpr void sync() {}
@@ -73,7 +75,7 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>{//::template Map<ItemLink> {
   template<typename Out> bool print(Out& out,Ctx& ctx) {
     // out.fmtStart(Fmt::Data,ctx);
     // out.put(Base::get());
-    Base::print(out,ctx);
+    Base::print(out,ctx);//<----------------------------------
     // out.fmtStop(Fmt::Data,ctx);
     return Base::changed();
   }
