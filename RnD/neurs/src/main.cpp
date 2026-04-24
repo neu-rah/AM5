@@ -403,6 +403,7 @@ bool action::op2(Sz) {
 bool run() {
   static TinyTimeUtils::FPS<60> fps;
   if(fps) {
+
     fps.reset();
     nav.in(in);
     // bool w=false;
@@ -412,18 +413,18 @@ bool run() {
     if(nav.changed(out)) {
 
       // w=true;
-      web.setColors(RED,WHITE);
-      web.clear();
-      web.resume();
-      nav.navPrint(web);
+      // web.setColors(RED,WHITE);
+      // web.clear();
+      // web.resume();
+      // nav.navPrint(web);
 
       o=true;
-      out.resume();
+      // out.resume();
       nav.navPrint(out);
       
     }
-    if(syslog.changed()) {s=true;syslog.print();}
-    if(s) syslog.sync();
+    // if(syslog.changed()) {s=true;syslog.print();}
+    // if(s) syslog.sync();
     if(o) nav.sync(out);
     // if(o) web.sync(web);
 
@@ -446,18 +447,21 @@ void setup(){
   #endif
 
   //initialize outputs
-  web.mode(LockMode::None);
-  web.setColors(BLUE,WHITE);
-  web.clear();
-  nav.navPrint(web);
-  footer.mode(LockMode::None);
-  footer.setColors(BLUE,BLACK);
-  footer.clear();
-  footer.put("footer");
-  syslog.mode(LockMode::None);
-  syslog.setColors(GREEN,BLACK);
-  syslog.clear();
-  syslog.put(".·•<::(log)::>•·.");
+  // web.mode(LockMode::None);
+  // web.setColors(BLUE,WHITE);
+  // web.clear();
+  // nav.navPrint(web);
+
+  // footer.mode(LockMode::None);
+  // footer.setColors(BLUE,BLACK);
+  // footer.clear();
+  // footer.put("footer");
+
+  // syslog.mode(LockMode::None);
+  // syslog.setColors(GREEN,BLACK);
+  // syslog.clear();
+  // syslog.put(".·•<::(log)::>•·.");
+  
   out.mode(LockMode::None);
   nav.navPrint(out);
 }

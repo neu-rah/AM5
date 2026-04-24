@@ -11,6 +11,7 @@ _just like that..._
 - pad changed state should be based on draw and not on the changed() function
 - allow pad exit without `Esc` (either side?)
 - disable main selection highlight when pad is active
+- disable pad menu highlight when sibiling active! (see select field demo)
 
 
 ## Design

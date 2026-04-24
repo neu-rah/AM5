@@ -35,12 +35,12 @@ struct StaticBody {
     {return i?m_body.printMenu(out,ctx,i-1):m_item.printMenu(out,ctx);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
-    out.printItem(m_item,ctx);
-    return m_body.printBody(out,ctx)||m_item.changed();
+    bool r=out.printItem(m_item,ctx);
+    return m_body.printBody(out,ctx)|r;
   }
 
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
-    {return i?m_body.printItem(out,ctx,i-1):(m_item.print(out,ctx),m_item.changed());}
+    {return i?m_body.printItem(out,ctx,i-1):m_item.print(out,ctx);}
 
   template<typename Nav>
   bool nav(Nav& n,const CKE& cke,Path path,Sz i)
@@ -95,13 +95,11 @@ struct StaticBody<O> {
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i) 
     {assert(i==0);return m_item.printMenu(out,ctx);}
 
-  template<typename Out> bool printBody(Out& out,Ctx& ctx) {
-    out.printItem(m_item,ctx);
-    return m_item.changed();
-  }
+  template<typename Out> bool printBody(Out& out,Ctx& ctx) 
+    {return out.printItem(m_item,ctx);}
 
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
-    {return m_item.print(out,ctx),m_item.changed();}
+    {return m_item.print(out,ctx);}
 
   template<typename Nav> bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
     {assert(i==0);return m_item.nav(n,cke,path);}
