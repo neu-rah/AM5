@@ -34,13 +34,30 @@ struct StaticBody {
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i)
     {return i?m_body.printMenu(out,ctx,i-1):m_item.printMenu(out,ctx);}
 
-  template<typename Out> bool printBody(Out& out,Ctx& ctx) {
-    bool r=out.printItem(m_item,ctx);
-    return m_body.printBody(out,ctx)|r;
+  template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx=0) {
+    dout.xy(0,1+bidx);
+    dout<<colors<RED,BLACK><<m_item.isPad()<<"|"<<cnt<>++<<padWith<10><<flush;out.resume();
+    bool r=false;
+    if(m_item.isPad()) {
+      Ctx padCtx{
+        ctx.printAt>0?ctx.path.next():ctx.path,
+        ctx.mode,
+        ctx.printAt-1,
+        0,
+        ctx.tops,
+        Pad::yes,
+        bidx//index of the pad on the parent body
+      };
+      r=out.printItem(m_item,padCtx);
+    } else r=out.printItem(m_item,ctx);
+    return m_body.printBody(out,ctx,bidx+1)||r;
   }
 
-  template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
-    {return i?m_body.printItem(out,ctx,i-1):m_item.print(out,ctx);}
+  template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i) {
+    ctx.pad=ctx&&m_item.isPad();
+    ctx.padIdx=size()-i;
+    return i?m_body.printItem(out,ctx,i-1):m_item.print(out,ctx);
+  }
 
   template<typename Nav>
   bool nav(Nav& n,const CKE& cke,Path path,Sz i)
@@ -95,8 +112,13 @@ struct StaticBody<O> {
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i) 
     {assert(i==0);return m_item.printMenu(out,ctx);}
 
-  template<typename Out> bool printBody(Out& out,Ctx& ctx) 
-    {return out.printItem(m_item,ctx);}
+  template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx) {
+    dout.xy(0,1+bidx);
+    dout<<colors<RED,BLACK><<m_item.isPad()<<"|"<<cnt<>++<<padWith<10><<flush;out.resume();
+    ctx.pad=m_item.isPad();
+    ctx.padIdx=bidx;
+    return out.printItem(m_item,ctx);
+  }
 
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
     {return m_item.print(out,ctx);}

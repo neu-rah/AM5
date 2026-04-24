@@ -228,6 +228,7 @@ struct Gate {
       return {Base::posX()-o.x,Base::posY()-o.y};
     }
     bool unlocked() const {return m_mode==LockMode::None/*||m_mode==LockMode::Update*/;}
+    bool updating() const {return m_mode==LockMode::Update;}
     bool locked() const {return !unlocked();}
     protected: LockMode m_mode{LockMode::Update};
   };
@@ -245,7 +246,7 @@ struct DeviceCursor {
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
       F::template fmtStart<tag>(ctx);
-      if(tag==Fmt::Item&&ctx&&(ctx.pad==Pad::no||ctx.path.len>0))
+      if(tag==Fmt::Item&&ctx&&(ctx.path.len>0||!ctx.pad))
         m_text_cursor_at=F::obj().pos();
     }
     template<Fmt tag>

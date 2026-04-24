@@ -30,7 +30,7 @@ struct ANSIFmt {
     int itemFg(bool sel,bool en) {return en?(sel?BLUE:GREEN):BLACK;}
     void itemColor(const Ctx& ctx) {setColors(itemFg(ctx,ctx.enabled),itemBg(ctx));}
     //TODO: consider fmt<Start/Stop> instead
-    static constexpr bool onPad(const Ctx& ctx) {return ctx.pad==Pad::yes&&ctx.path.len==0;}
+    static constexpr bool onPad(const Ctx& ctx) {return ctx.pad&&ctx.path.len==0;}
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
       if(!onPad(ctx)) switch(tag) {
@@ -39,11 +39,11 @@ struct ANSIFmt {
           clear();
           break;
         case Fmt::Title: setColors(BLACK,MAGENTA);break;
-        case Fmt::Index:if(ctx.pad==Pad::no&&ctx.idx<9) put(ctx.idx+1);break;
+        case Fmt::Index:if((!ctx.pad)&&ctx.idx<9) put(ctx.idx+1);break;
         case Fmt::NavCursor:
           if(ctx) {
-            if(ctx.pad==Pad::no||ctx.mode==NavMode::Nav) put(ctx.enabled?'>':'-');
-          } else if(ctx.pad==Pad::no) put(' ');
+            if((!ctx.pad)||ctx.mode==NavMode::Nav) put(ctx.enabled?'>':'-');
+          } else if(!ctx.pad) put(' ');
           break;
         case Fmt::Item: 
           // if(ctx.pad==Pad::no) dout<<xy<0,1><<colors<GREEN,BLACK><<ctx<<" "<<(cnt<>++)<<::padWith<10><<flush;
@@ -58,10 +58,10 @@ struct ANSIFmt {
         case Fmt::EditMode:
           setColors(RED,itemBg(ctx));
           if(ctx) switch(ctx.mode){
-            case NavMode::Nav: if(ctx.pad==Pad::no) put(':');break;
+            case NavMode::Nav: if(!ctx.pad) put(':');break;
             case NavMode::Edit: put('=');break;
             case NavMode::Tune: put("·");break;
-          } else if(ctx.pad==Pad::no) put(' ');
+          } else if(!ctx.pad) put(' ');
           itemColor(ctx);
           break;
         case Fmt::Unit: setColors(BLACK,itemBg(ctx));break;
@@ -73,7 +73,7 @@ struct ANSIFmt {
     void fmtStop(const Ctx& ctx) {
       if(!onPad(ctx)) switch(tag) {
         case Fmt::Title:
-          if(ctx.pad==Pad::no) {
+          if(!ctx.pad) {
             setColors(BLACK,MAGENTA);
             padWith(freeX());
             nl();
@@ -91,7 +91,7 @@ struct ANSIFmt {
             itemColor(ctx);
             padWith(freeX());
           }
-          if(ctx.pad==Pad::no) nl();
+          if(!ctx.pad) nl();
           setColors(itemFg(false,true),itemBg(false));
           break;
         case Fmt::Unit: itemColor(ctx);break;

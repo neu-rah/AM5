@@ -66,8 +66,8 @@ IOutDef<
     ConsoleOut,
     // Debug_MinimalDrawConsole,
   #endif
-  StaticPos<40,5>,
-  StaticArea<20,6>
+  StaticPos<30,5>,
+  StaticArea<30,6>
 > out;
 
 InDef<
@@ -380,8 +380,9 @@ auto mainMenu=menuDef<Wraps::yes>(
 auto tinyMenu=menuDef<Wraps::yes>(
   ItemDef<Text,ItemNav>{"title"},
   staticBody(
+    ItemDef<Text>{"yawn!"},
     padDef(
-      ItemDef<Text,ParentDraw,ItemNav>{"date:"},
+      ItemDef<Text,/*ParentDraw,*/ItemNav>{"date:"},
       staticBody(
         ItemDef<
           EditField,ParentDraw,AsEditMode<>,ItemNav,
@@ -400,6 +401,7 @@ auto tinyMenu=menuDef<Wraps::yes>(
         >{1}
       )
     ),
+    ItemDef<Text>{"wtf!"},
     ItemDef<Text,Action<action::quit>>{"exit"}
   )
 );
@@ -465,15 +467,15 @@ void setup(){
   // web.clear();
   // nav.navPrint(web);
 
-  footer.mode(LockMode::None);
-  footer.setColors(BLUE,BLACK);
-  footer.clear();
-  footer.put("footer");
+  // footer.mode(LockMode::None);
+  // footer.setColors(BLUE,BLACK);
+  // footer.clear();
+  // footer.put("footer");
 
-  syslog.mode(LockMode::None);
-  syslog.setColors(GREEN,BLACK);
-  syslog.clear();
-  syslog.put(".·•<::(log)::>•·.");
+  // syslog.mode(LockMode::None);
+  // syslog.setColors(GREEN,BLACK);
+  // syslog.clear();
+  // syslog.put(".·•<::(log)::>•·.");
 
   out.mode(LockMode::None);
   nav.navPrint(out);

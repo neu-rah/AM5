@@ -155,7 +155,8 @@ struct ItemPrinter {
         mode(LockMode::None);
         setPos(posX(),posY());
       }
-      ctx.enabled=i.enabled();
+      ctx.enabled =i.enabled();
+      // ctx.padIdx=ctx.idx;//if any pad then this is the parent
       Base::template fmtStart<Fmt::Item>(ctx);
       bool r=Base::printItem(i,ctx);
       Base::template fmtStop<Fmt::Item>(ctx);

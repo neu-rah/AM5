@@ -4,7 +4,7 @@
 #include "menu/sys/printers.h"
 #include "tinyTimeUtils.h"
 
-template <typename T, typename B,Wraps wraps=Wraps::no,Pad pad=Pad::no>
+template <typename T, typename B,Wraps w=Wraps::no,Pad pad=Pad::no>
 struct Menu {
   template <typename I>
   struct Part : I {
@@ -16,14 +16,16 @@ struct Menu {
     Title m_title{};
     Body m_body;
 
+    constexpr const bool wraps() {return w==Wraps::yes;}
     constexpr Part(Title&&t,B&&b):m_title{std::forward<Title>(t)},m_body{std::forward<B>(b)}{}
-    template<typename... OO>
-    constexpr Part(Title&&t,OO&&... oo):m_title{std::forward<Title>(t)},m_body{std::forward<OO>(oo)...}{}
+    template<typename... II>
+    constexpr Part(Title&&t,II&&... oo):m_title{std::forward<Title>(t)},m_body{std::forward<II>(oo)...}{}
 
     static constexpr const Depth depth() {return 1+Body::depth();}
 
     template<Sz n=0> static constexpr Sz cnt() {return Body::template cnt<n+1>();}
     constexpr Sz size() const {return m_body.size();}
+    constexpr const bool isPad() {return pad==Pad::yes;}
 
      bool changed() {//TODO: change this into a "simple" print with `LockMode::Changed` insted!
       bool r=m_title.changed();
@@ -34,8 +36,14 @@ struct Menu {
     template<typename Out> 
     void print(Out& out,Ctx& ctx) {
       m_title.print(out,ctx);
-      if(pad==Pad::yes) {
-        Ctx padCtx{ctx.path.next(),ctx.mode,ctx.printAt,ctx.prevSel,ctx.tops,Pad::yes};
+      if(pad==Pad::yes) {//<----- this is a pad.. lets print the body inplace, will need a new ctx thou, the original will be messed up
+        Ctx padCtx{
+          ctx.printAt>0?ctx.path.next():ctx.path,
+          ctx.mode,
+          ctx.printAt-1,
+          0,
+          ctx.tops
+        };
         m_body.printBody(out,padCtx);
       }
     }
@@ -47,7 +55,7 @@ struct Menu {
     bool printMenu(Out& out,Ctx& ctx) {
       // cout<<"Menu::printmenu "<<ctx.path<<" p_lvl:"<<ctx.printAt<<endl;
       ctx.idx=0;
-      ctx.pad=pad;
+      // ctx.pad=pad==Pad::yes;//this is to be set by the parent body, not here!
       out.resume();
       if(ctx.printAt){ //(ctx.len()>1) {
         Ctx tmp=ctx.next();
@@ -72,7 +80,7 @@ struct Menu {
     bool nav(Nav& n,const CKE& cke,Path p) {
       if(p.len&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
       if (m_title.nav(n,cke,p)) return true;
-      return p.len?n.doNav(cke,size(),wraps):false;
+      return p.len?n.doNav(cke,size(),w):false;
     }
 
     Body& body() {return m_body;}

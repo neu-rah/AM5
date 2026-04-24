@@ -16,15 +16,12 @@ _just like that..._
 
 ## Design
 
-_design decisions_
+### decisions
 
-- ~~make a bitmask out of Fmt, too many switches on format (and they will still work!)~~ **done**
-- ~~move Wraps setting out of ItemNav (rename?)~~,  
-  only usefulness is to open on enter, former **CanNav**,  
-- use prefix/suffix items/components to implement separators?
-  and avoid the @⅜£⅜§ of navigating over them...
+#### new menu structure (menu not deriving from Title)
 
->`Wraps` setting now on `Menu` and on numeric ranges
+- brings the problem of not being able to add parts to the menu (composition is closed).
+  This is a BIG problem, however this is also what allows us to have **menu generating functions** like `menuDef(...)`
 
 #### still the pad and ansiFmt
 
@@ -53,15 +50,25 @@ Menu<Pad::no>{ //pad:false
 };
 
 //second pass
-Menu<Pad::yes>{ // pad:true can only be introduced by the parent body print (new Ctx)
+Menu<Pad::yes>{ // pad:true was introduced by the parent body print (new Ctx)
   Title<>,
-  Body<//pads here would be a continuation of the previous case
+  Body< //pads here would be a continuation of the previous case
     Item<>,
     Item<>,
     Item<>
   >
 }
 ```
+
+### other design things
+
+- ~~make a bitmask out of Fmt, too many switches on format (and they will still work!)~~ **done**
+- ~~move Wraps setting out of ItemNav (rename?)~~,  
+  only usefulness is to open on enter, former **CanNav**,  
+- use prefix/suffix items/components to implement separators?
+  and avoid the @⅜£⅜§ of navigating over them...
+
+>`Wraps` setting now on `Menu` and on numeric ranges
 
 ## ToDo
 
