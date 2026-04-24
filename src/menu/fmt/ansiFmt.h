@@ -39,16 +39,16 @@ struct ANSIFmt {
           clear();
           break;
         case Fmt::Title: setColors(BLACK,MAGENTA);break;
-        // case Fmt::Index:if(ctx.pad==Pad::no&&ctx.idx<9) put(ctx.idx+1);break;
+        case Fmt::Index:if(ctx.pad==Pad::no&&ctx.idx<9) put(ctx.idx+1);break;
         case Fmt::NavCursor:
           if(ctx) {
             if(ctx.pad==Pad::no||ctx.mode==NavMode::Nav) put(ctx.enabled?'>':'-');
           } else if(ctx.pad==Pad::no) put(' ');
           break;
         case Fmt::Item: 
-          if(ctx.pad==Pad::no) dout<<xy<0,1><<colors<GREEN,BLACK><<ctx<<" "<<(cnt<>++)<<::padWith<10><<flush;
-          else dout<<xy<0,2><<colors<RED,BLACK><<ctx<<" "<<(cnt<>++)<<::padWith<10><<flush;
-          Base::resume();
+          // if(ctx.pad==Pad::no) dout<<xy<0,1><<colors<GREEN,BLACK><<ctx<<" "<<(cnt<>++)<<::padWith<10><<flush;
+          // else dout<<xy<0,2><<colors<RED,BLACK><<ctx<<" "<<(cnt<>++)<<::padWith<10><<flush;
+          // Base::resume();
           // if(ctx.path>1) setColors(itemFg(false,ctx.enabled),itemBg(ctx));
           // else setColors(itemFg(ctx,ctx.enabled),itemBg(ctx));
           if(ctx.path.len<=1) itemColor(ctx);

@@ -380,15 +380,34 @@ auto mainMenu=menuDef<Wraps::yes>(
 auto tinyMenu=menuDef<Wraps::yes>(
   ItemDef<Text,ItemNav>{"title"},
   staticBody(
-    ItemDef<Text>{"op1"},
+    padDef(
+      ItemDef<Text,ParentDraw,ItemNav>{"date:"},
+      staticBody(
+        ItemDef<
+          EditField,ParentDraw,AsEditMode<>,ItemNav,
+          NumField<StaticNumRange<int,1900,2050,Wraps::yes>,
+          Watch<AsField<Default<int,2026>,Int>>>
+        >{2026},
+        ItemDef<
+          StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+          NumField<StaticNumRange<int,1,12,Wraps::yes>,
+          Watch<AsField<Int>>>
+        >{1},
+        ItemDef<
+          StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+          NumField<StaticNumRange<int,1,31,Wraps::yes>,
+          Watch<AsField<Int>>>
+        >{1}
+      )
+    ),
     ItemDef<Text,Action<action::quit>>{"exit"}
   )
 );
 
 INavDef<
   TreeNav,
-  Root<decltype(mainMenu),mainMenu>
-  // Root<decltype(tinyMenu),tinyMenu>
+  // Root<decltype(mainMenu),mainMenu>
+  Root<decltype(tinyMenu),tinyMenu>
 > nav;
 
 bool action::op2(Sz) {
@@ -406,25 +425,19 @@ bool run() {
 
     fps.reset();
     nav.in(in);
-    // bool w=false;
     bool o=false;
-    bool s=false;
-    // if(nav.changed(web)) {}
     if(nav.changed(out)) {
+      o=true;
 
-      // w=true;
       // web.setColors(RED,WHITE);
       // web.clear();
       // web.resume();
       // nav.navPrint(web);
-
-      o=true;
       // out.resume();
       nav.navPrint(out);
       
     }
-    // if(syslog.changed()) {s=true;syslog.print();}
-    // if(s) syslog.sync();
+    if(syslog.changed()) {syslog.resume();syslog.print();syslog.sync();}
     if(o) nav.sync(out);
     // if(o) web.sync(web);
 
@@ -452,16 +465,16 @@ void setup(){
   // web.clear();
   // nav.navPrint(web);
 
-  // footer.mode(LockMode::None);
-  // footer.setColors(BLUE,BLACK);
-  // footer.clear();
-  // footer.put("footer");
+  footer.mode(LockMode::None);
+  footer.setColors(BLUE,BLACK);
+  footer.clear();
+  footer.put("footer");
 
-  // syslog.mode(LockMode::None);
-  // syslog.setColors(GREEN,BLACK);
-  // syslog.clear();
-  // syslog.put(".·•<::(log)::>•·.");
-  
+  syslog.mode(LockMode::None);
+  syslog.setColors(GREEN,BLACK);
+  syslog.clear();
+  syslog.put(".·•<::(log)::>•·.");
+
   out.mode(LockMode::None);
   nav.navPrint(out);
 }

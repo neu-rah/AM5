@@ -25,10 +25,10 @@ struct Menu {
     template<Sz n=0> static constexpr Sz cnt() {return Body::template cnt<n+1>();}
     constexpr Sz size() const {return m_body.size();}
 
-    //  bool changed() {//TODO: change this into a "simple" print with `LockMode::Changed` insted!
-    //   if(pad==Pad::no) return m_title.changed();
-    //   return m_body.changed();
-    // }
+     bool changed() {//TODO: change this into a "simple" print with `LockMode::Changed` insted!
+      bool r=m_title.changed();
+      return pad==Pad::yes?m_body.changed()||r:r;
+    }
 
 
     template<typename Out> 

@@ -65,7 +65,7 @@ struct TitlePrinter {
       O::template fmtStart<Fmt::Title>(ctx);
       i.print(O::obj(),ctx);//title
       O::template fmtStop<Fmt::Title>(ctx);
-      return O::printMenu(i,ctx);
+      return O::printMenu(i,ctx)||i.changed();
     }
   };
 };
@@ -249,14 +249,14 @@ template<Fmt tag,typename... OO>
 struct AsFmt {
   struct PartEnd {
     template<typename O>
-    struct Part:O {
+    struct Part:O {//TODO: put this content into Part::print and generalize PartEnd
       using IsPrinter=std::true_type;
       using Base=O;
       using Base::Base;
       template<typename Out>
       void print(Out& out,Ctx& ctx) {
-        out.template fmtStop<tag>(ctx);
-        Base::print(out,ctx);
+        // out.template fmtStop<tag>(ctx);
+        // Base::print(out,ctx);
       }
     };
   };
@@ -268,6 +268,7 @@ struct AsFmt {
     void print(Out& out,Ctx& ctx) {
       out.template fmtStart<tag>(ctx);
       Base::print(out,ctx);
+      O::print(out,ctx);
     }
   };
 };
