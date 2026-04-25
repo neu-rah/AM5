@@ -23,7 +23,7 @@ struct Menu {
 
     static constexpr const Depth depth() {return 1+Body::depth();}
 
-    template<Sz n=0> static constexpr Sz cnt() {return Body::template cnt<n+1>();}
+    // template<Sz n=0> static constexpr Sz cnt() {return Body::template cnt<n+1>();}
     constexpr Sz size() const {return m_body.size();}
     constexpr const bool isPad() {return pad==Pad::yes;}
 
@@ -32,18 +32,21 @@ struct Menu {
       return pad==Pad::yes?m_body.changed()||r:r;
     }
 
-
     template<typename Out> 
     void print(Out& out,Ctx& ctx) {
       m_title.print(out,ctx);
-      if(pad==Pad::yes) {//<----- this is a pad.. lets print the body inplace, will need a new ctx thou, the original will be messed up
+      if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
+        dout<<xy<0,23><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<"|"<<cnt<>++<<flush;out.resume();
         Ctx padCtx{
-          ctx.printAt>0?ctx.path.next():ctx.path,
+          ctx.path,//ctx.printAt>0?ctx.path.next():ctx.path,
           ctx.mode,
           ctx.printAt-1,
           0,
-          ctx.tops
+          ctx.tops,
+          true,
+          ctx.padIdx
         };
+        dout<<xy<0,24><<colors<YELLOW,BLACK><<"*padCtx:"<<ctx<<"|"<<cnt<>++<<flush;out.resume();
         m_body.printBody(out,padCtx);
       }
     }
@@ -108,8 +111,8 @@ struct Menu {
   };
 };
 
-template <typename T, typename B,Pad pad=Pad::no>
-using PadMenu=ItemDef<Menu<T,B,Wraps::no,pad>>;
+template <typename T, typename B,Wraps wraps=Wraps::no>
+using PadMenu=ItemDef<Menu<T,B,wraps,Pad::yes>>;
 
 template <typename T, typename B,Wraps w,Pad p> using MenuDef=ItemDef<Menu<T,B,w,p>>;
 template <typename T, typename B,Wraps w,Pad p> using IMenuDef=IItemDef<Menu<T,B,w,p>>;

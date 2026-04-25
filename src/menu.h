@@ -29,7 +29,7 @@ template<Wraps wraps,typename T,typename B>
 constexpr MenuDef<T,B,wraps,Pad::no> menuDef(T&& t,B&& b)
   {return {std::forward<T>(t),std::forward<B>(b)};}
 
-template<typename T,typename B> 
-constexpr PadMenu<T,B,Pad::yes> padDef(T&& t,B&& b)
+template<typename T,typename B,Wraps w=Wraps::no> 
+constexpr PadMenu<T,B,w> padDef(T&& t,B&& b)
   {return {std::forward<T>(t),std::forward<B>(b)};}
 
