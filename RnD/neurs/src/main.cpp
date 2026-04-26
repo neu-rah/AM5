@@ -66,7 +66,7 @@ IOutDef<
     ConsoleOut,
     // Debug_MinimalDrawConsole,
   #endif
-  StaticPos<30,5>,
+  StaticPos<10,10>,
   StaticArea<30,6>
 > out;
 
@@ -96,8 +96,8 @@ OutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<35,15>,
-  StaticArea<40,3>
+  StaticPos<5,30>,
+  StaticArea<80,16>
 > syslog;
 
 OutDef<
@@ -115,8 +115,8 @@ OutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<40,11>,
-  StaticArea<20,3>
+  StaticPos<10,11>,
+  StaticArea<60,16>
 > footer;
 
 IOutDef<
@@ -312,6 +312,29 @@ using Power=NumFieldDef<
   AsUnit<StaticText<text::percent>>//field unit
 >;
 
+auto dateField(const char*lbl) {
+  return padDef(
+    ItemDef<Text,ParentDraw,ItemNav>{lbl},
+    staticBody(
+      ItemDef<
+        EditField,ParentDraw,AsEditMode<>,ItemNav,
+        NumField<StaticNumRange<int,1900,2050,Wraps::yes>,
+        Watch<AsField<Default<int,2026>,Int>>>
+      >{2026},
+      ItemDef<
+        StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+        NumField<StaticNumRange<int,1,12,Wraps::yes>,
+        Watch<AsField<Int>>>
+      >{1},
+      ItemDef<
+        StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+        NumField<StaticNumRange<int,1,31,Wraps::yes>,
+        Watch<AsField<Int>>>
+      >{1}
+    )
+  );
+}
+
 auto mainMenu=menuDef<Wraps::yes>(
   ItemDef<Text,ItemNav>{"Main menu"},
   staticBody(
@@ -325,26 +348,7 @@ auto mainMenu=menuDef<Wraps::yes>(
         ToggleDemo{"Toggle","Maybe"},
         SelectDemo{},
         ChooseDemo{},
-        padDef(
-          ItemDef<Text,ParentDraw,ItemNav>{"date:"},
-          staticBody(
-            ItemDef<
-              EditField,ParentDraw,AsEditMode<>,ItemNav,
-              NumField<StaticNumRange<int,1900,2050,Wraps::yes>,
-              Watch<AsField<Default<int,2026>,Int>>>
-            >{2026},
-            ItemDef<
-              StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
-              NumField<StaticNumRange<int,1,12,Wraps::yes>,
-              Watch<AsField<Int>>>
-            >{1},
-            ItemDef<
-              StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
-              NumField<StaticNumRange<int,1,31,Wraps::yes>,
-              Watch<AsField<Int>>>
-            >{1}
-          )
-        ),
+        dateField("date:"),
         Back{}
       )
     ),
@@ -380,28 +384,9 @@ auto mainMenu=menuDef<Wraps::yes>(
 auto tinyMenu=menuDef<Wraps::yes>(
   ItemDef<Text,ItemNav>{"title"},
   staticBody(
-    ItemDef<Text>{"yawn!"},
-    padDef(
-      ItemDef<Text,/*ParentDraw,*/ItemNav>{"date:"},
-      staticBody(
-        ItemDef<
-          EditField,ParentDraw,AsEditMode<>,ItemNav,
-          NumField<StaticNumRange<int,1900,2050,Wraps::yes>,
-          Watch<AsField<Default<int,2026>,Int>>>
-        >{2026},
-        ItemDef<
-          StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
-          NumField<StaticNumRange<int,1,12,Wraps::yes>,
-          Watch<AsField<Int>>>
-        >{1},
-        ItemDef<
-          StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
-          NumField<StaticNumRange<int,1,31,Wraps::yes>,
-          Watch<AsField<Int>>>
-        >{1}
-      )
-    ),
-    ItemDef<Text>{"wtf!"},
+    // ItemDef<Text>{"yawn!"},
+    dateField("date:"),
+    // ItemDef<Text>{"wtf!"},
     ItemDef<Text,Action<action::quit>>{"exit"}
   )
 );
@@ -439,7 +424,7 @@ bool run() {
       nav.navPrint(out);
       
     }
-    if(syslog.changed()) {syslog.resume();syslog.print();syslog.sync();}
+    // if(syslog.changed()) {syslog.resume();syslog.print();syslog.sync();}
     if(o) nav.sync(out);
     // if(o) web.sync(web);
 
@@ -485,6 +470,7 @@ void setup(){
   void loop() {run();}
 #else
   int main() {
+    // nav.enter();
     setup();
     while(run());
     dout<<xy<0,24><<"end."<<endl;

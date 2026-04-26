@@ -36,17 +36,16 @@ struct Menu {
     void print(Out& out,Ctx& ctx) {
       m_title.print(out,ctx);
       if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
-        dout<<xy<0,23><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<"|"<<cnt<>++<<flush;out.resume();
+        dout<<xy<0,21><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
         Ctx padCtx{
           ctx.path,//ctx.printAt>0?ctx.path.next():ctx.path,
           ctx.mode,
           ctx.printAt-1,
           0,
           ctx.tops,
-          true,
-          ctx.padIdx
+          true
         };
-        dout<<xy<0,24><<colors<YELLOW,BLACK><<"*padCtx:"<<ctx<<"|"<<cnt<>++<<flush;out.resume();
+        dout<<xy<0,22><<colors<YELLOW,BLACK><<"*padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
         m_body.printBody(out,padCtx);
       }
     }
@@ -56,18 +55,26 @@ struct Menu {
 
     template<typename Out>
     bool printMenu(Out& out,Ctx& ctx) {
-      // cout<<"Menu::printmenu "<<ctx.path<<" p_lvl:"<<ctx.printAt<<endl;
       ctx.idx=0;
-      // ctx.pad=pad==Pad::yes;//this is to be set by the parent body, not here!
       out.resume();
-      if(ctx.printAt){ //(ctx.len()>1) {
+      if(ctx.printAt){
         Ctx tmp=ctx.next();
         return m_body.printMenu(out,tmp,ctx.sel());
       }
-      // ctx.padIdx=ctx.path.len>0?ctx.path.parent().last():0;
-      bool r=out.printMenu(/*obj()*/ *this,ctx);// print the target menu
-      // TinyTimeUtils::ms_delay(5000);
-      // out.mode(LockMode::Update);//return to update mode
+      if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
+        dout<<xy<0,23><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
+        Ctx padCtx{
+          ctx.path,//ctx.printAt>0?ctx.path.next():ctx.path,
+          ctx.mode,
+          ctx.printAt-1,
+          0,
+          ctx.tops,
+          true
+        };
+        dout<<xy<0,24><<colors<YELLOW,BLACK><<"*padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
+        m_body.printBody(out,padCtx);
+      }
+      bool r=out.printMenu(/*obj()*/*this,ctx);// print the target menu
       return r;
     }
 
@@ -77,7 +84,7 @@ struct Menu {
 
     template<typename Out> 
     bool printItem(Out& out,Ctx& ctx) const 
-      {return (Title::print(out,ctx),false);}
+      {return Title::print(out,ctx);}
     
     template<typename Nav> 
     bool nav(Nav& n,const CKE& cke,Path p) {

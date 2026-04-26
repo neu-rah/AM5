@@ -97,18 +97,16 @@ struct Ctx {
   Sz* tops{0};/// out device scroll pos (if used),
   bool pad{false};
   Sz idx{0};
-  Sz padIdx{0};//index of pad on parent
+  // Sz padIdx{0};//index of pad on parent
   bool enabled{true};
   Sz sel() const {return path.sel();}
   Depth len() const {return path.len;}
   Sz top() const {return tops?tops[0]:0;}
   void top(Sz i){if(tops) tops[0]=i;}
-  Ctx next() const {return Ctx{path,mode,printAt-1,0,&tops[1],pad,idx,padIdx,enabled};}
-  // Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr,Pad pad=Pad::no,Sz idx=0,Sz padIdx=0,bool en=true)
-  //   :path{p},mode{nm},printAt{pl},prevSel{ps},tops{t},pad{pad==Pad::yes},idx{idx},padIdx{padIdx},enabled{en}{}
-  Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr,bool pad=false,Sz idx=0,Sz padIdx=0,bool en=true)
-    :path{p},mode{nm},printAt{pl},prevSel{ps},tops{t},pad{pad},idx{idx},padIdx{padIdx},enabled{en}{}
-  operator bool() const {return path.len>0?idx==path.data[0]:idx==0;}
+  Ctx next() const {return Ctx{path,mode,printAt-1,0,&tops[1],pad,idx,enabled};}
+  Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr,bool pad=false,Sz idx=0,bool en=true)
+    :path{p},mode{nm},printAt{pl},prevSel{ps},tops{t},pad(pad),idx{idx},enabled{en}{}
+  operator bool() const {return path.len>0?idx==path.data[printAt<0?-printAt:0]:false;}
 };
 
 #ifdef MENU_DEBUG
@@ -130,10 +128,9 @@ struct Ctx {
     <<" printAt:"<<o.printAt
     // <<" prevSel:"<<o.prevSel
     // <<" tops:"<<o.tops
-    <<" idx:"<<o.idx
     <<" pad:"<<o.pad
-    <<" padIdx:"<<o.padIdx;
-    // <<" enabled:"<<o.enabled;
+    <<" idx:"<<o.idx
+    <<" en:"<<o.enabled;
   }
 #endif
 
