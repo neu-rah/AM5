@@ -25,39 +25,24 @@ _just like that..._
 
 #### still the pad and ansiFmt
 
-```c++
-enum Pad{no,yes};
+```text
+ctx bool operator: path.data[.printAt<0?-printAt:0]==idx
 
-template<typename...> struct Menu {};
-template<typename...> struct Body {};
-template<typename...> struct Title {};
-template<typename...> struct Item {};
+A) pad menu closed ======================================================
+.pad false/true
+.printAt =0/<0
+.path.len =1 
 
-//first pass
-Menu<Pad::no>{ //pad:false
-  Title<>
-  Body< //this is the body print that can change the Ctx
-    Item<>
-    Menu<Pad::yes>{ // pad:true can only be introduced by the body print  (new Ctx)
-      Title<>,
-      Body<
-        Item<>,
-        Item<>,
-        Item<>
-      >
-    }
-  >
-};
+B) pad menu open ======================================================
+.pad false/true
+.printAt =0/<0
+.path.len >1
 
-//second pass
-Menu<Pad::yes>{ // pad:true was introduced by the parent body print (new Ctx)
-  Title<>,
-  Body< //pads here would be a continuation of the previous case
-    Item<>,
-    Item<>,
-    Item<>
-  >
-}
+C) pad menu EDIT ======================================================
+.pad false/true
+.printAt =0/<0
+.path.len >2
+
 ```
 
 ### other design things

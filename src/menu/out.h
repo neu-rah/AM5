@@ -332,10 +332,10 @@ struct UseEditCursorFmt {
     //   // F::setColors(GREEN,BLUE);
     //   F::clear();
     // }
-    void nl() {
-      F::padWith(F::freeX(),'~');
-      F::nl();
-    }
+    // void nl() {
+    //   F::padWith(F::freeX(),'~');
+    //   F::nl();
+    // }
   };
 };
 

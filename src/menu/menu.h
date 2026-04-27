@@ -36,7 +36,7 @@ struct Menu {
     void print(Out& out,Ctx& ctx) {
       m_title.print(out,ctx);
       if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
-        dout<<xy<0,21><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
+        // dout<<xy<0,21><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
         Ctx padCtx{
           ctx.path,//ctx.printAt>0?ctx.path.next():ctx.path,
           ctx.mode,
@@ -45,7 +45,7 @@ struct Menu {
           ctx.tops,
           true
         };
-        dout<<xy<0,22><<colors<YELLOW,BLACK><<"*padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
+        // dout<<xy<0,22><<colors<YELLOW,BLACK><<"*padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
         m_body.printBody(out,padCtx);
       }
     }

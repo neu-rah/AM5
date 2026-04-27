@@ -37,8 +37,8 @@ using Printer=Chain<
   ViewPrinter,// outermost format envelope
   MenuPrinter<// calls printMenu
     TitlePrinter,// just print the title
-    ScrollBodyPrinter,//scroll till focus is visible
-    // BodyPrinter,//stream/serial print
+    // ScrollBodyPrinter,//scroll till focus is visible
+    BodyPrinter,//stream/serial print
     ItemPrinter<//calls printItem:
       IndexPrinter,// print item index 1-9
       NavCursorPrinter,// use a text cursor on selected item.
@@ -49,17 +49,18 @@ using Printer=Chain<
 
 IOutDef<
   Printer,//user defined format sequence
-  ANSIFmt,//add some ANSI colors and format to the output
+  // ANSIFmt,//add some ANSI colors and format to the output
+  TextFmt,
   // ClearFree,//clear free space after menu print
-  DataParser<>,//put all data into characters
-  CtrlChars,
-  UTF8,//bypass UTF8 surrogate codes
-  TextWrap,//long texts continue next line
-  Clip,//keep content inside area
-  ColorTrack<int>,//track color setting for device resume
-  Cursor,//account for cursor movement, single character only, tracks pos for resume also
-  Gate,//locks output for measuring and other operations
-  ANSIOut,//inject ansi codes into the next output device
+  // DataParser<>,//put all data into characters
+  // CtrlChars,
+  // UTF8,//bypass UTF8 surrogate codes
+  // TextWrap,//long texts continue next line
+  // Clip,//keep content inside area
+  // ColorTrack<int>,//track color setting for device resume
+  // Cursor,//account for cursor movement, single character only, tracks pos for resume also
+  // Gate,//locks output for measuring and other operations
+  // ANSIOut,//inject ansi codes into the next output device
   #ifdef ARDUINO
     SerialOut,
   #else
@@ -312,6 +313,7 @@ using Power=NumFieldDef<
   AsUnit<StaticText<text::percent>>//field unit
 >;
 
+// date field generating function
 auto dateField(const char*lbl) {
   return padDef(
     ItemDef<Text,ParentDraw,ItemNav>{lbl},
@@ -386,7 +388,7 @@ auto tinyMenu=menuDef<Wraps::yes>(
   staticBody(
     // ItemDef<Text>{"yawn!"},
     dateField("date:"),
-    // ItemDef<Text>{"wtf!"},
+    ItemDef<Text>{"wtf!"},
     ItemDef<Text,Action<action::quit>>{"exit"}
   )
 );
@@ -473,6 +475,6 @@ void setup(){
     // nav.enter();
     setup();
     while(run());
-    dout<<xy<0,24><<"end."<<endl;
+    // dout<<xy<0,24><<"end."<<endl;
   }
 #endif

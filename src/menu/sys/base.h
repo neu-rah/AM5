@@ -106,7 +106,8 @@ struct Ctx {
   Ctx next() const {return Ctx{path,mode,printAt-1,0,&tops[1],pad,idx,enabled};}
   Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr,bool pad=false,Sz idx=0,bool en=true)
     :path{p},mode{nm},printAt{pl},prevSel{ps},tops{t},pad(pad),idx{idx},enabled{en}{}
-  operator bool() const {return path.len>0?idx==path.data[printAt<0?-printAt:0]:false;}
+  operator bool() const {return path.len>0?idx==path.data[0]:false;}
+  bool focus() const {return path.len>(printAt<0?-printAt:0)?idx==path.data[printAt<0?-printAt:0]:false;}
 };
 
 #ifdef MENU_DEBUG
