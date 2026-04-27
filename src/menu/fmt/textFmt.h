@@ -26,14 +26,14 @@ struct TextFmt {
       switch(tag) {
         case Fmt::Index: if(!ctx.pad) put((char)(ctx.idx<9?'1'+ctx.idx:' '));break;
         case Fmt::NavCursor:
-          if(ctx.focus()&&((!ctx.pad)||(ctx.path.len>1)))
+          if(ctx.focus()&&((!ctx.pad)||(ctx.path.len>1&&ctx.mode==NavMode::Nav)))
             put(ctx.enabled?'>':'-');
           else if(!ctx.pad) put(' ');
           break;
         case Fmt::EditMode: switch(ctx.mode) {
-          case NavMode::Nav: put(':');break;
-          case NavMode::Edit: put('=');break;
-          case NavMode::Tune: put('.');break;
+          case NavMode::Nav: if(!ctx.pad)  put(':');break;
+          case NavMode::Edit: if(ctx.focus()) put('=');break;
+          case NavMode::Tune: if(ctx.focus()) put('.');break;
           default: break;
         };break;
         default: break;

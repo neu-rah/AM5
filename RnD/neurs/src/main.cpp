@@ -386,7 +386,7 @@ auto mainMenu=menuDef<Wraps::yes>(
 auto tinyMenu=menuDef<Wraps::yes>(
   ItemDef<Text,ItemNav>{"title"},
   staticBody(
-    // ItemDef<Text>{"yawn!"},
+    ItemDef<Text>{"yawn!"},
     dateField("date:"),
     ItemDef<Text>{"wtf!"},
     ItemDef<Text,Action<action::quit>>{"exit"}
