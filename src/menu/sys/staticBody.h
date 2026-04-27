@@ -48,6 +48,7 @@ struct StaticBody {
     //   dout.xy(0,2+bidx);dout<<colors<BLUE,BLACK><<padCtx<<"|"<<cnt<>++<<padWith<10><<flush;out.resume();
     //   r=out.printItem(m_item,padCtx);
     // } else 
+    // if(m_item.isPad()) {//first pass
       r=out.printItem(m_item,ctx);
     return m_body.printBody(out,ctx,bidx+1)||r;
   }

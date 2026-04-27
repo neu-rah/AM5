@@ -246,8 +246,7 @@ struct DeviceCursor {
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
       F::template fmtStart<tag>(ctx);
-      if(tag==Fmt::Item&&ctx&&ctx.path.len==1)
-        m_text_cursor_at=F::obj().pos();
+      if(tag==Fmt::Item&&ctx.focus()) m_text_cursor_at=F::obj().pos();
     }
     template<Fmt tag>
     void fmtStop(const Ctx& ctx) {
@@ -328,14 +327,6 @@ struct UseEditCursorFmt {
         F::flush();
       }
     }
-    // void clear() {
-    //   // F::setColors(GREEN,BLUE);
-    //   F::clear();
-    // }
-    // void nl() {
-    //   F::padWith(F::freeX(),'~');
-    //   F::nl();
-    // }
   };
 };
 

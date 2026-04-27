@@ -32,52 +32,35 @@ struct ANSIFmt {
     void itemColor(const Ctx& ctx) {setColors(itemFg(ctx,ctx.enabled),itemBg(ctx));}
     //TODO: consider fmt<Start/Stop> instead
     static constexpr bool onPad(const Ctx& ctx) {return ctx.pad;}
-    // static constexpr const padNav(const Ctx& ctx) {return}
+
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
-      if(tag==Fmt::Item) {
-        dout.xy(0,1+ctx.idx+3*ctx.pad);
-        dout.setColors(BLUE+ctx.idx,BLACK);
-        dout<<tag<<" Fmt ctx:"<<ctx<<::padWith<10><<flush;resume();
-      }
-      // if(!onPad(ctx)) 
+      // if(tag==Fmt::Item) {
+      //   dout.xy(0,1+ctx.idx+3*ctx.pad);
+      //   dout.setColors(BLUE+ctx.idx,BLACK);
+      //   dout<<tag<<":"<<ctx<<::padWith<10><<flush;resume();
+      // }
       switch(tag) {
-        case Fmt::View: 
-          clear();
-          break;
+        case Fmt::View: clear(); break;
         case Fmt::Title: setColors(BLACK,CYAN);break;
-        // case Fmt::Index:if((!ctx.pad)&&ctx.idx<9) put(ctx.idx+1);break;
-        case Fmt::NavCursor:
-          // if(ctx) {//<-- selected? --
-          //   if(!ctx.pad) put(ctx.enabled?'>':'-');
-          // } else if(!onPad(ctx)) put(' ');
+        case Fmt::Item:
+          if(ctx.pad) {
+            if(ctx.path.len>1) setColors(itemFg(ctx.focus(),ctx.enabled),itemBg(ctx.focus()));
+          } else setColors(itemFg(ctx,ctx.enabled),itemBg(ctx&&ctx.path.len==1));
           break;
-        case Fmt::Item: 
-        if(ctx.focus()) {
-          setColors(itemFg(ctx.focus(),ctx.enabled),itemBg((ctx.path.len==1&&!ctx.pad)||(ctx.pad&&ctx.printAt<0)));
-          if((ctx.path.len==1&&!ctx.pad)||(ctx.pad&&ctx.printAt<0)) {
-              // itemColor(ctx);
-              // setColors(itemFg(ctx,ctx.enabled),itemBg(ctx));
-              put('(');
-            }
-        } else {
-          setColors(itemFg(ctx&&ctx.pad,ctx.enabled),itemBg(ctx.pad&&ctx.path.len>1));
-          put('[');
-        }
-        break;
-        // case Fmt::Field:
-        //   if(!onPad(ctx)) setColors(ctx?(ctx.enabled?WHITE:BLACK):(ctx.enabled?YELLOW:BLACK),itemBg(ctx));break;
-        // case Fmt::EditMode:
-        //   if(!onPad(ctx)) setColors(RED,itemBg(ctx));
-        // if(ctx&&!onPad(ctx)) switch(ctx.mode){
-        //     case NavMode::Nav: if(!onPad(ctx)) put(':');break;
-        //     case NavMode::Edit: put('=');break;
-        //     case NavMode::Tune: put("·");break;
-        //   } else if(!onPad(ctx)) put(' ');
-        //   if(!onPad(ctx)) itemColor(ctx);
-        //   break;
-        // case Fmt::Unit: setColors(BLACK,itemBg(ctx));break;
-        default:break;
+        case Fmt::Index: if(!ctx.pad) put((char)(ctx.idx<9?'1'+ctx.idx:' '));break;
+        case Fmt::NavCursor:
+          if(ctx.focus()&&((!ctx.pad)||(ctx.path.len>1&&ctx.mode==NavMode::Nav)))
+            put(ctx.enabled?'>':'-');
+          else if(!ctx.pad) put(' ');
+          break;
+        case Fmt::EditMode: switch(ctx.mode) {
+          case NavMode::Nav: if(!ctx.pad) put(':');break;
+          case NavMode::Edit: if(ctx.focus()) put('=');break;
+          case NavMode::Tune: if(ctx.focus()) put('.');break;
+          default: break;
+        };break;
+        default: break;
       }
       Base::template fmtStart<tag>(ctx);
     }
@@ -88,30 +71,24 @@ struct ANSIFmt {
       switch(tag) {
         case Fmt::Title:
           setColors(BLACK,CYAN);
-          padWith(freeX(),'-');
+          padWith(freeX());
           nl();
           break;
         case Fmt::Menu:
           setColors(itemFg(false,false),itemBg(false));
-          put('#');
-          // nl();
+          // put('#');
           // while(freeY()>0) {
           //   padWith(freeX(),'*');
           //   nl();
           // }
           break;
         case Fmt::Item:
-          // itemColor(ctx);
-          put(']');
-          // if(ctx.path.len==0) {
-          //   // itemColor(ctx);
-          //   padWith(freeX(),'+');
-          //   // itemColor(ctx);
-          // }
-          if(!onPad(ctx)) nl();
-          // setColors(itemFg(ctx,true),itemBg(ctx));
+          if(!onPad(ctx)) {
+            padWith(freeX());
+            nl();
+          }
           break;
-        // case Fmt::Unit: itemColor(ctx);break;
+        case Fmt::Unit: itemColor(ctx);break;
         default:break;
       }
       Base::template fmtStop<tag>(ctx);
