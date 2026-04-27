@@ -49,18 +49,18 @@ using Printer=Chain<
 
 IOutDef<
   Printer,//user defined format sequence
-  // ANSIFmt,//add some ANSI colors and format to the output
-  TextFmt,
+  ANSIFmt,//add some ANSI colors and format to the output
+  // TextFmt,
   // ClearFree,//clear free space after menu print
-  // DataParser<>,//put all data into characters
-  // CtrlChars,
-  // UTF8,//bypass UTF8 surrogate codes
-  // TextWrap,//long texts continue next line
-  // Clip,//keep content inside area
-  // ColorTrack<int>,//track color setting for device resume
-  // Cursor,//account for cursor movement, single character only, tracks pos for resume also
-  // Gate,//locks output for measuring and other operations
-  // ANSIOut,//inject ansi codes into the next output device
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  ColorTrack<int>,//track color setting for device resume...
+  Cursor,//track cursor position for resume...
+  Gate,//locks output for measuring and other operations
+  ANSIOut,//inject ansi codes into the next output device
   #ifdef ARDUINO
     SerialOut,
   #else
@@ -386,9 +386,9 @@ auto mainMenu=menuDef<Wraps::yes>(
 auto tinyMenu=menuDef<Wraps::yes>(
   ItemDef<Text,ItemNav>{"title"},
   staticBody(
-    ItemDef<Text>{"yawn!"},
+    // ItemDef<Text>{"yawn!"},
     dateField("date:"),
-    ItemDef<Text>{"wtf!"},
+    // ItemDef<Text>{"wtf!"},
     ItemDef<Text,Action<action::quit>>{"exit"}
   )
 );
@@ -475,6 +475,6 @@ void setup(){
     // nav.enter();
     setup();
     while(run());
-    // dout<<xy<0,24><<"end."<<endl;
+    dout<<xy<0,24><<"end."<<endl;
   }
 #endif

@@ -38,7 +38,7 @@ struct Menu {
       if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
         // dout<<xy<0,21><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
         Ctx padCtx{
-          ctx.path,//ctx.printAt>0?ctx.path.next():ctx.path,
+          ctx.path,
           ctx.mode,
           ctx.printAt-1,
           0,

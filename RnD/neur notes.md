@@ -13,6 +13,7 @@ _just like that..._
 - ~~disable main selection highlight when pad is active~~
 - disable pad menu highlight when sibling active! (see select field demo)
 - also correct other fmt files to account for pads as we did on ansi
+- Body is reprinting the menu for each pad item
 
 ## Design
 
