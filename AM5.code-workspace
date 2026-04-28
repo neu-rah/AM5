@@ -4,8 +4,8 @@
       "path": "."
     },
     {
-      "name": "avr code size test",
-      "path": "RnD/avr code size test"
+      "name": "neurs",
+      "path": "RnD/neurs"
     }
   ]
 }
