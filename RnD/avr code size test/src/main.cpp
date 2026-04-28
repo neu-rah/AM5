@@ -1,3 +1,5 @@
+#include <menu.h>
+
 #ifdef __AVR__
   #include <streamFlow.h>
   using namespace StreamFlow;
@@ -20,23 +22,23 @@ struct Ctx {
 };
 
 #ifdef TMP
-  template<bool ss,Fmt tag> enable_if_t<tag==View> fmt(Ctx) {if(ss) cout<<"View start"; else cout<<"View stop";}
-  template<bool ss,Fmt tag> enable_if_t<tag==Menu> fmt(Ctx) {if(ss) cout<<"View start"; else cout<<"View stop";}
-  template<bool ss,Fmt tag> enable_if_t<tag==Item> fmt(Ctx) {if(ss) cout<<"View start"; else cout<<"View stop";}
-  template<bool ss,Fmt tag> enable_if_t<tag==Idx> fmt(Ctx) {if(ss) cout<<"View start"; else cout<<"View stop";}
+  template<Edge ss,Fmt tag> enable_if_t<tag==View> fmt(Ctx) {if(ss) cout<<"View start"; else cout<<"View stop";}
+  template<Edge ss,Fmt tag> enable_if_t<tag==Menu> fmt(Ctx) {if(ss) cout<<"View start"; else cout<<"View stop";}
+  template<Edge ss,Fmt tag> enable_if_t<tag==Item> fmt(Ctx) {if(ss) cout<<"View start"; else cout<<"View stop";}
+  template<Edge ss,Fmt tag> enable_if_t<tag==Idx>  fmt(Ctx) {if(ss) cout<<"View start"; else cout<<"View stop";}
 #endif
 
 #ifndef TMP
   #ifdef TFT
-    template<bool ss,Fmt tag>
+    template<Edge ss,Fmt tag>
     void fmt(Ctx) {
   #endif
   #ifdef TT
     template<Fmt tag>
-    void fmt(bool ss,Ctx) {
+    void fmt(Edge ss,Ctx) {
   #endif
   #ifdef SF
-    void fmt(bool ss,Fmt tag,Ctx) {
+    void fmt(Edge ss,Fmt tag,Ctx) {
   #endif
     if(ss) {
       switch(tag) {
@@ -65,40 +67,40 @@ void setup() {
 
 int main() {
   #ifdef TMP
-    fmt<true,View>({});
-    fmt<true,Menu>({});
-    fmt<true,Item>({});
+    fmt<start,View>({});
+    fmt<start,Menu>({});
+    fmt<start,Item>({});
     cout<<"printing data here!"<<endl;
-    fmt<false,Item>({});
-    fmt<false,Menu>({});
-    fmt<false,View>({});
+    fmt<stop,Item>({});
+    fmt<stop,Menu>({});
+    fmt<stop,View>({});
   #endif
   #ifdef TFT
-    fmt<true,View>({});
-    fmt<true,Menu>({});
-    fmt<true,Item>({});
+    fmt<start,View>({});
+    fmt<start,Menu>({});
+    fmt<start,Item>({});
     cout<<"printing data here!"<<endl;
-    fmt<false,Item>({});
-    fmt<false,Menu>({});
-    fmt<false,View>({});
+    fmt<stop,Item>({});
+    fmt<stop,Menu>({});
+    fmt<stop,View>({});
   #endif
   #ifdef TT
-    fmt<View>(true,{});
-    fmt<Menu>(true,{});
-    fmt<Item>(true,{});
+    fmt<View>(start,{});
+    fmt<Menu>(start,{});
+    fmt<Item>(start,{});
     cout<<"printing data here!"<<endl;
-    fmt<Item>(false,{});
-    fmt<Menu>(false,{});
-    fmt<View>(false,{});
+    fmt<Item>(stop,{});
+    fmt<Menu>(stop,{});
+    fmt<View>(stop,{});
   #endif
   #ifdef SF
-    fmt(true,View,{});
-    fmt(true,Menu,{});
-    fmt(true,Item,{});
+    fmt(start,View,{});
+    fmt(start,Menu,{});
+    fmt(start,Item,{});
     cout<<"printing data here!"<<endl;
-    fmt(false,Item,{});
-    fmt(false,Menu,{});
-    fmt(false,View,{});
+    fmt(stop,Item,{});
+    fmt(stop,Menu,{});
+    fmt(stop,View,{});
   #endif
   return 0;
 }

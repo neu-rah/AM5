@@ -11,7 +11,7 @@
 #pragma once
 
 #ifdef __AVR__
-  #include <menu/sys/platform/avr/avr_std.h>
+  #include <avr_std.h>
 #else
   #include <type_traits>
 #endif
