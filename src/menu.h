@@ -12,4 +12,5 @@
 #pragma once
 
 #include "menu/sys/base.h"
+#include "menu/out.h"
 

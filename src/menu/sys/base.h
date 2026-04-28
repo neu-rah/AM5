@@ -13,3 +13,148 @@
 
 #include <hapi.h>
 #include "menu/sys/enums.h"
+
+#ifdef ARDUINO
+#include <Arduino.h>
+#undef max
+#endif
+
+#ifdef __AVR__
+  #include <assert.h>
+  #include "menu/sys/platform/avr/avr_std.h"
+#else
+  #include <iostream>
+  #include <cstdint>
+  #include <cassert>
+  #include <type_traits>
+  #include <utility>
+  #include <cstring>
+  #include <cstdlib>
+  #include <cstdio>
+  #include <limits>
+  #include <algorithm>
+#endif
+
+using Sz=int;//must be signed
+#ifdef __AVR__
+  using Depth=char;//must be signed
+  using Key=unsigned char;
+#else
+  using Depth=int;//must be signed
+  using Key=unsigned int;
+#endif 
+
+/// @brief compile time `max(a,b)` function
+/// @tparam a value
+/// @tparam b value
+/// @return Sz
+template<const Sz a,const Sz b> constexpr Sz staticMax() {return a>b?a:b;}
+
+struct Nil{};
+
+struct IItem;
+struct IOut;
+struct INav;
+
+struct XY{Sz x;Sz y;};
+using Pos=XY;
+using Area=XY;
+ 
+struct CKE {
+  Cmd cmd;
+  Key key;
+  bool ext;
+};
+
+template<typename Cor> struct Colors{Cor fg;Cor bg;};
+
+struct Path {
+  Depth len;
+  Sz* data;
+};
+
+template<Depth depth> struct PathData {Sz data[depth]{0};};
+
+struct Ctx {
+  Path path{};//full path
+  NavMode mode{NavMode::Nav};
+  Depth pAt{0};//print level
+  bool enabled{true};
+  Sz* tops{nullptr};
+  //--------
+  Depth at{0};
+  Sz prev{0};
+  bool pad{false};
+  Sz idx{0};
+};
+
+#ifdef MENU_DEBUG
+  template<typename Out>
+  Out& operator<<(Out& out,const Path o) {
+    out<<"{";
+    for(Sz i=0;i<o.len;i++) {
+      if(i) out<<",";
+      out<<o.data[i];
+    }
+    return out<<"}";
+  }
+
+  template<typename Out>
+  Out& operator<<(Out& out,const Ctx& o) {
+  return out
+    <<"#"<<o.idx
+    <<" path:"<<o.path
+    <<" mode:"<<o.mode
+    <<" pAt:"<<o.pAt
+    <<" en:"<<o.enabled
+    // <<" tops:"<<o.tops
+    <<" prev:"<<o.prev
+    <<" pad:"<<o.pad;
+  }
+#endif
+
+//rule predicates------------------------------------------
+struct IsCursor {
+  template<typename Head,typename Base> using Requires=typename Base::IsCursor;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct RawDevice {
+  template<typename Head,typename Base> using Requires=typename Base::RawDevice;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsFormat {
+  template<typename Head,typename Base> using Requires=typename Base::IsFormat;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsPrinter {
+  template<typename Head,typename Base> using Requires=typename Base::IsPrinter;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsDataParser {
+  template<typename Head,typename Base> using Requires=typename Base::IsDataParser;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsParser {
+  template<typename Head,typename Base> using Requires=typename Base::IsParser;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsArea {
+  template<typename Head,typename Base> using Requires=typename Base::IsArea;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+struct IsBuffer {
+  template<typename Head,typename Base> using Requires=typename Base::IsBuffer;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
+
+//debug ---
+#include "menu/sys/debug.h"
+
+
