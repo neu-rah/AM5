@@ -1,4 +1,5 @@
 #include <menu.h>
+#include <menu/IO/streamOut.h>
 
 #ifdef __AVR__
   #include <streamFlow.h>
@@ -11,6 +12,12 @@
 #endif
 using namespace std;
 
+OutDef<
+  ConsoleOut
+> out;
+
 int main(){
+  out.put("AM5 R&D");
+  out.nl();
   return 0;
 }
