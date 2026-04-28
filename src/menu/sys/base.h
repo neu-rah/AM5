@@ -71,6 +71,8 @@ template<typename Cor> struct Colors{Cor fg;Cor bg;};
 struct Path {
   Depth len;
   Sz* data;
+  Sz sel(Depth i=0) const {return data[i];}
+  Sz last() const {return sel(len-1);}
 };
 
 template<Depth depth> struct PathData {Sz data[depth]{0};};
@@ -86,6 +88,11 @@ struct Ctx {
   Sz prev{0};
   bool pad{false};
   Sz idx{0};
+  Ctx next() const {return {path,mode,pAt,enabled,tops,at+1,0,pad,0};}
+  Sz sel() const {return path.sel(at);}
+  Sz top() const {return tops[at];}
+  Sz top(Sz i) {return tops[at]=i;}
+  operator bool() const {return sel()==idx;}
 };
 
 #ifdef MENU_DEBUG

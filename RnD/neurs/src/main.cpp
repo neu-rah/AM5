@@ -16,6 +16,8 @@ OutDef<
   ConsoleOut
 > out;
 
+
+
 int main(){
   out.put("AM5 R&D");
   out.nl();
