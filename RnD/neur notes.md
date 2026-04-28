@@ -4,15 +4,11 @@
 
 _just like that..._
 
+- entering a menu with idx out of range block the app!
 - enum Toggle & Select are not calling the action when done
 - clear info panel on focus change
 - XML formatting still sucks
-- ~~fix Pad update, check changed/sync system for pads~~
-- ~~pad changed state should be based on draw and not on the changed() function~~
 - allow pad exit without `Esc` (either side?)
-- ~~disable main selection highlight when pad is active~~
-- disable pad menu highlight when sibling active! (see select field demo)
-- also correct other fmt files to account for pads as we did on ansi
 - Body is reprinting the menu for each pad item
 
 ## Design
@@ -23,28 +19,6 @@ _just like that..._
 
 - brings the problem of not being able to add parts to the menu (composition is closed).
   This is a BIG problem, however this is also what allows us to have **menu generating functions** like `menuDef(...)`
-
-#### still the pad and ansiFmt
-
-```text
-ctx bool operator: path.data[.printAt<0?-printAt:0]==idx
-
-A) pad menu closed ======================================================
-.pad false/true
-.printAt =0/<0
-.path.len =1 
-
-B) pad menu open ======================================================
-.pad false/true
-.printAt =0/<0
-.path.len >1
-
-C) pad menu EDIT ======================================================
-.pad false/true
-.printAt =0/<0
-.path.len >2
-
-```
 
 ### other design things
 

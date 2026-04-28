@@ -58,7 +58,7 @@ struct Menu {
     bool printMenu(Out& out,Ctx& ctx) {
       ctx.idx=0;
       out.resume();
-      if(ctx.printAt){
+      if(ctx.printAt){//walk to print level
         Ctx tmp=ctx.next();
         return m_body.printMenu(out,tmp,ctx.sel());
       }

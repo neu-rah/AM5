@@ -42,7 +42,7 @@ using Printer=Chain<
     ItemPrinter<//calls printItem:
       IndexPrinter,// print item index 1-9
       NavCursorPrinter,// use a text cursor on selected item.
-      ItemBodyPrinter//→ printItem → printTo
+      ItemBodyPrinter//→ printItem → Item::print
     >
   >
 >;
@@ -67,8 +67,8 @@ IOutDef<
     ConsoleOut,
     // Debug_MinimalDrawConsole,
   #endif
-  StaticPos<10,10>,
-  StaticArea<30,6>
+  StaticPos<20,10>,
+  StaticArea<30,16>
 > out;
 
 InDef<
@@ -97,8 +97,8 @@ OutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<5,30>,
-  StaticArea<80,16>
+  StaticPos<5,35>,
+  StaticArea<80,20>
 > syslog;
 
 OutDef<
@@ -116,8 +116,8 @@ OutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<10,11>,
-  StaticArea<60,16>
+  StaticPos<20,26>,
+  StaticArea<30,4>
 > footer;
 
 IOutDef<
@@ -426,7 +426,7 @@ bool run() {
       nav.navPrint(out);
       
     }
-    // if(syslog.changed()) {syslog.resume();syslog.print();syslog.sync();}
+    if(syslog.changed()) {syslog.resume();syslog.print();syslog.sync();}
     if(o) nav.sync(out);
     // if(o) web.sync(web);
 
@@ -454,15 +454,15 @@ void setup(){
   // web.clear();
   // nav.navPrint(web);
 
-  // footer.mode(LockMode::None);
-  // footer.setColors(BLUE,BLACK);
-  // footer.clear();
-  // footer.put("footer");
+  footer.mode(LockMode::None);
+  footer.setColors(BLUE,BLACK);
+  footer.clear();
+  footer.put("footer");
 
-  // syslog.mode(LockMode::None);
-  // syslog.setColors(GREEN,BLACK);
-  // syslog.clear();
-  // syslog.put(".·•<::(log)::>•·.");
+  syslog.mode(LockMode::None);
+  syslog.setColors(GREEN,BLACK);
+  syslog.clear();
+  syslog.put(".·•<::(log)::>•·.");
 
   out.mode(LockMode::None);
   nav.navPrint(out);
@@ -472,6 +472,7 @@ void setup(){
   void loop() {run();}
 #else
   int main() {
+    // nav.go(4);
     // nav.enter();
     setup();
     while(run());

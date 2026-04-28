@@ -35,11 +35,11 @@ struct ANSIFmt {
 
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
-      // if(tag==Fmt::Item) {
-      //   dout.xy(0,1+ctx.idx+3*ctx.pad);
-      //   dout.setColors(BLUE+ctx.idx,BLACK);
-      //   dout<<tag<<":"<<ctx<<::padWith<10><<flush;resume();
-      // }
+      if(tag==Fmt::Item) {
+        dout.xy(0,1+ctx.idx+3*ctx.pad);
+        dout.setColors(BLUE+ctx.idx,BLACK);
+        dout<<tag<<":"<<ctx<<::padWith<10><<flush;resume();
+      }
       switch(tag) {
         case Fmt::View: clear(); break;
         case Fmt::Title: setColors(BLACK,CYAN);break;
