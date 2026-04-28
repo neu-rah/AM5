@@ -92,11 +92,13 @@ struct PathData {
 struct Ctx {
   Path path{};
   NavMode mode{NavMode::Nav};
-  Sz printAt{path.len};
+  Depth printAt{path.len};
+  Depth lvl{0};
   Sz prevSel{0};
   Sz* tops{0};/// out device scroll pos (if used),
   bool pad{false};
   Sz idx{0};
+
   // Sz padIdx{0};//index of pad on parent
   bool enabled{true};
   Sz sel() const {return path.sel();}
@@ -104,13 +106,11 @@ struct Ctx {
   Depth len() const {return path.len;}
   Sz top() const {return tops?tops[0]:0;}
   void top(Sz i){if(tops) tops[0]=i;}
-  Ctx next() const {return Ctx{path,mode,printAt-1,0,&tops[1],pad,idx,enabled};}
-  Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr,bool pad=false,Sz idx=0,bool en=true)
-    :path{p},mode{nm},printAt{pl},prevSel{ps},tops{t},pad(pad),idx{idx},enabled{en}{}
-  operator bool() const {return path.len>printAt?idx==path.data[printAt]:false;}
-  bool focus() const {
-    return path.len>(printAt<0?-printAt:path.len-1)?idx==path.data[printAt<0?-printAt:path.len-1]:false;
-  }
+  Ctx next() const {return Ctx{path,mode,printAt,(Depth)(lvl+1),0,&tops[1],pad,idx,enabled};}
+  Ctx(Path p,NavMode nm,Depth pl,Depth lvl=0,Sz ps=0,Sz* t=nullptr,bool pad=false,Sz idx=0,bool en=true)
+    :path{p},mode{nm},printAt{pl},lvl(lvl),prevSel{ps},tops{t},pad(pad),idx{idx},enabled{en}{}
+  operator bool() const {return path.len>lvl?idx==path.data[lvl]:false;}
+  bool focus() const {return path.len>lvl?idx==path.data[lvl]:false;}
 };
 
 #ifdef MENU_DEBUG

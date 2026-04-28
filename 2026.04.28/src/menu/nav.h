@@ -105,7 +105,7 @@ struct TreeNav {
     bool navPrint(Out& out) {
       ///track scroll top for each level, this is output device specific
       static Sz tops[root().depth()]{0};//TODO: check if ScrollBody is in output part, or store this there with an API call fallback.
-      Ctx ctx{m_path.focus(m_level+1),m_navMode,m_print_level ,m_prevSel,tops};
+      Ctx ctx{m_path.focus(m_level+1),m_navMode,m_print_level,0,m_prevSel,tops};
       return root().printMenu(out,ctx);
     }
 

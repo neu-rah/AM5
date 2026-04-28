@@ -40,7 +40,8 @@ struct Menu {
         Ctx padCtx{
           ctx.path,
           ctx.mode,
-          ctx.printAt-1,
+          ctx.printAt,
+          (Depth)((Depth)ctx.lvl+(Depth)1),
           0,
           ctx.tops,
           true
@@ -58,7 +59,7 @@ struct Menu {
     bool printMenu(Out& out,Ctx& ctx) {
       ctx.idx=0;
       out.resume();
-      if(ctx.printAt){//walk to print level
+      if(ctx.printAt==ctx.lvl){//walk to print level
         Ctx tmp=ctx.next();
         return m_body.printMenu(out,tmp,ctx.sel());
       }
@@ -67,7 +68,8 @@ struct Menu {
         Ctx padCtx{
           ctx.path,//ctx.printAt>0?ctx.path.next():ctx.path,
           ctx.mode,
-          ctx.printAt-1,
+          ctx.printAt,
+          (Depth)(ctx.lvl+1),
           0,
           ctx.tops,
           true

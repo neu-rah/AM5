@@ -45,7 +45,7 @@ struct ANSIFmt {
         case Fmt::Title: setColors(BLACK,CYAN);break;
         case Fmt::Item:
           // dout.xy(0,1+ctx.idx+11*ctx.pad);dout<<colors<BLACK,RED><<ctx<<::padWith<10><<flush;resume();
-          if(ctx.path.len-1==-ctx.printAt) {
+          if(ctx.lvl==ctx.printAt) {
             // if(ctx.focus()) {
               put('[');
               setColors(itemFg(ctx.focus(),ctx.enabled),itemBg(ctx.path.data[0]==ctx.idx));

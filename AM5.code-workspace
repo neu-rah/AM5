@@ -1,16 +1,7 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"name": "pads",
-			"path": "RnD/pads"
-		},
-		{
-			"name": "neurs",
-			"path": "RnD/neurs"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": "."
+    }
+  ]
 }
