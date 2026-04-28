@@ -35,22 +35,27 @@ struct ANSIFmt {
 
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
-      if(tag==Fmt::Item) {
-        dout.xy(0,1+ctx.idx+3*ctx.pad);
-        dout.setColors(BLUE+ctx.idx,BLACK);
-        dout<<tag<<":"<<ctx<<::padWith<10><<flush;resume();
-      }
+      // if(tag==Fmt::Item) {
+      //   dout.xy(0,1+ctx.idx+10*ctx.pad);
+      //   dout.setColors(BLUE+ctx.idx,BLACK);
+      //   dout<<tag<<":"<<ctx<<::padWith<10><<flush;resume();
+      // }
       switch(tag) {
         case Fmt::View: clear(); break;
         case Fmt::Title: setColors(BLACK,CYAN);break;
         case Fmt::Item:
-          if(ctx.pad) {
-            if(ctx.path.len>1) setColors(itemFg(ctx.focus(),ctx.enabled),itemBg(ctx.focus()));
-          } else setColors(itemFg(ctx,ctx.enabled),itemBg(ctx&&ctx.path.len==1));
+          // dout.xy(0,1+ctx.idx+11*ctx.pad);dout<<colors<BLACK,RED><<ctx<<::padWith<10><<flush;resume();
+          if(ctx.path.len-1==-ctx.printAt) {
+            // if(ctx.focus()) {
+              put('[');
+              setColors(itemFg(ctx.focus(),ctx.enabled),itemBg(ctx.path.data[0]==ctx.idx));
+              put(']');
+            // } else put('?');
+          } else setColors(itemFg(ctx.focus(),ctx.enabled),itemBg(ctx.focus()));
           break;
         case Fmt::Index: if(!ctx.pad) put((char)(ctx.idx<9?'1'+ctx.idx:' '));break;
         case Fmt::NavCursor:
-          if(ctx.focus()&&((!ctx.pad)||(ctx.path.len>1&&ctx.mode==NavMode::Nav)))
+          if(ctx.focus()&&((!ctx.pad)||(ctx.printAt<0&&ctx.mode==NavMode::Nav)))
             put(ctx.enabled?'>':'-');
           else if(!ctx.pad) put(' ');
           break;

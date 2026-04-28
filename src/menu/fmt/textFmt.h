@@ -26,9 +26,12 @@ struct TextFmt {
       switch(tag) {
         case Fmt::Index: if(!ctx.pad) put((char)(ctx.idx<9?'1'+ctx.idx:' '));break;
         case Fmt::NavCursor:
-          if(ctx.focus()&&((!ctx.pad)||(ctx.path.len>1&&ctx.mode==NavMode::Nav)))
-            put(ctx.enabled?'>':'-');
-          else if(!ctx.pad) put(' ');
+          if(ctx.focus()) {
+            put(ctx.path);
+            put("←");
+            if((ctx.path.len==1==1&&!ctx.pad)||(ctx.path.len>1&&ctx.mode==NavMode::Nav))
+              put(ctx.enabled?'>':'-');
+          } else if(!ctx.pad) put(' ');
           break;
         case Fmt::EditMode: switch(ctx.mode) {
           case NavMode::Nav: if(!ctx.pad)  put(':');break;
@@ -43,10 +46,12 @@ struct TextFmt {
     template<Fmt tag>
     void fmtStop(const Ctx& ctx) {
       switch(tag) {
-        case Fmt::Menu: Base::nl(); break;
+        case Fmt::Menu: 
+          Base::nl();
+          break;
         case Fmt::Title:
-        case Fmt::Item: 
-          if(!ctx.pad) Base::nl(); 
+        case Fmt::Item:
+          if(!ctx.pad) nl();
           break;
         default:break;
       }

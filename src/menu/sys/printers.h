@@ -79,6 +79,7 @@ struct BodyPrinter {
     using Base::obj;
     template<typename I>
     bool printMenu(I& i,Ctx& ctx) {
+      // dout<<xy<20,0><<colors<RED,BLACK><<"sel:"<<ctx.sel()<<" last:"<<ctx.last()<<padWith<10><<flush;
       Base::template fmtStart<Fmt::Body>(ctx);
       bool r=i.printBody(O::obj(),ctx);
       Base::template fmtStop<Fmt::Body>(ctx);
@@ -103,6 +104,7 @@ struct ScrollBodyPrinter {
       LockMode om=mode();
       Sz x=Base::posX();
       Sz y=Base::posY();
+      // dout<<xy<20,0><<colors<RED,BLACK><<"sel:"<<ctx.sel()<<" last:"<<ctx.last()<<padWith<10><<flush;
       if(ctx.sel()<ctx.top()) {
         ctx.top(ctx.sel());//--scroll down
         om=LockMode::None;//scroll => full redraw

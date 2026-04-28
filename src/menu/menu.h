@@ -47,7 +47,7 @@ struct Menu {
         };
         // dout<<xy<0,22><<colors<YELLOW,BLACK><<"padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
         m_body.printBody(out,padCtx);
-        if(ctx.path.len>1) out.template fmtStop<Fmt::Menu>(ctx);
+        // out.template fmtStop<Fmt::Menu>(ctx);
       }
     }
 

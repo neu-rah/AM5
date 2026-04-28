@@ -100,14 +100,17 @@ struct Ctx {
   // Sz padIdx{0};//index of pad on parent
   bool enabled{true};
   Sz sel() const {return path.sel();}
+  Sz last() const {assert(path.len);return path.data[path.len-1];}
   Depth len() const {return path.len;}
   Sz top() const {return tops?tops[0]:0;}
   void top(Sz i){if(tops) tops[0]=i;}
   Ctx next() const {return Ctx{path,mode,printAt-1,0,&tops[1],pad,idx,enabled};}
   Ctx(Path p,NavMode nm,Sz pl,Sz ps=0,Sz* t=nullptr,bool pad=false,Sz idx=0,bool en=true)
     :path{p},mode{nm},printAt{pl},prevSel{ps},tops{t},pad(pad),idx{idx},enabled{en}{}
-  operator bool() const {return path.len>0?idx==path.data[0]:false;}
-  bool focus() const {return path.len>(printAt<0?-printAt:0)?idx==path.data[printAt<0?-printAt:0]:false;}
+  operator bool() const {return path.len>printAt?idx==path.data[printAt]:false;}
+  bool focus() const {
+    return path.len>(printAt<0?-printAt:path.len-1)?idx==path.data[printAt<0?-printAt:path.len-1]:false;
+  }
 };
 
 #ifdef MENU_DEBUG
@@ -124,13 +127,13 @@ struct Ctx {
   template<typename Out>
   Out& operator<<(Out& out,const Ctx& o) {
   return out
-    <<"path:"<<o.path
+    <<"#"<<o.idx
+    <<" path:"<<o.path
     <<" mode:"<<o.mode
     <<" printAt:"<<o.printAt
     // <<" prevSel:"<<o.prevSel
     // <<" tops:"<<o.tops
     <<" pad:"<<o.pad
-    <<" idx:"<<o.idx
     <<" en:"<<o.enabled;
   }
 #endif

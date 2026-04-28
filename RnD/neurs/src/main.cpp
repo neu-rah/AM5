@@ -49,26 +49,26 @@ using Printer=Chain<
 
 IOutDef<
   Printer,//user defined format sequence
-  ANSIFmt,//add some ANSI colors and format to the output
-  // TextFmt,
+  TextFmt,
+  // ANSIFmt,//add some ANSI colors and format to the output
   // ClearFree,//clear free space after menu print
-  DataParser<>,//put all data into characters
-  CtrlChars,
-  UTF8,//bypass UTF8 surrogate codes
-  TextWrap,//long texts continue next line
-  Clip,//keep content inside area
-  ColorTrack<int>,//track color setting for device resume...
-  Cursor,//track cursor position for resume...
-  Gate,//locks output for measuring and other operations
-  ANSIOut,//inject ansi codes into the next output device
+  // DataParser<>,//put all data into characters
+  // CtrlChars,
+  // UTF8,//bypass UTF8 surrogate codes
+  // TextWrap,//long texts continue next line
+  // Clip,//keep content inside area
+  // ColorTrack<int>,//track color setting for device resume...
+  // Cursor,//track cursor position for resume...
+  // Gate,//locks output for measuring and other operations
+  // ANSIOut,//inject ansi codes into the next output device
   #ifdef ARDUINO
     SerialOut,
   #else
     ConsoleOut,
     // Debug_MinimalDrawConsole,
   #endif
-  StaticPos<20,10>,
-  StaticArea<30,16>
+  StaticPos<20,20>,
+  StaticArea<30,10>
 > out;
 
 InDef<
@@ -98,7 +98,7 @@ OutDef<
     ConsoleOut,
   #endif
   StaticPos<5,35>,
-  StaticArea<80,20>
+  StaticArea<80,10>
 > syslog;
 
 OutDef<
@@ -116,7 +116,7 @@ OutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<20,26>,
+  StaticPos<20,30>,
   StaticArea<30,4>
 > footer;
 
@@ -426,7 +426,7 @@ bool run() {
       nav.navPrint(out);
       
     }
-    if(syslog.changed()) {syslog.resume();syslog.print();syslog.sync();}
+    // if(syslog.changed()) {syslog.resume();syslog.print();syslog.sync();}
     if(o) nav.sync(out);
     // if(o) web.sync(web);
 
@@ -454,15 +454,15 @@ void setup(){
   // web.clear();
   // nav.navPrint(web);
 
-  footer.mode(LockMode::None);
-  footer.setColors(BLUE,BLACK);
-  footer.clear();
-  footer.put("footer");
+  // footer.mode(LockMode::None);
+  // footer.setColors(BLUE,BLACK);
+  // footer.clear();
+  // footer.put("footer");
 
-  syslog.mode(LockMode::None);
-  syslog.setColors(GREEN,BLACK);
-  syslog.clear();
-  syslog.put(".·•<::(log)::>•·.");
+  // syslog.mode(LockMode::None);
+  // syslog.setColors(GREEN,BLACK);
+  // syslog.clear();
+  // syslog.put(".·•<::(log)::>•·.");
 
   out.mode(LockMode::None);
   nav.navPrint(out);
@@ -476,6 +476,6 @@ void setup(){
     // nav.enter();
     setup();
     while(run());
-    dout<<xy<0,24><<"end."<<endl;
+    dout<<xy<0,50><<"end."<<endl;
   }
 #endif
