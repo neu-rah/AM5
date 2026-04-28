@@ -47,8 +47,8 @@ struct OutAPI:Cfg {
   static constexpr void flush() {}
   static constexpr void resume() {}
   template<typename T> static constexpr void put(const T&) {}
-  // template<Fmt tag> static constexpr void fmtStart(const Ctx& ctx) {}
-  // template<Fmt tag> static constexpr void fmtStop(const Ctx& ctx) {}
+  template<Fmt tag> static constexpr void fmtStart(const Ctx& ctx) {}
+  template<Fmt tag> static constexpr void fmtStop(const Ctx& ctx) {}
   template<typename Item> static constexpr bool printItem(Item& item,Ctx& ctx) {return false;}
   template<typename Item> static constexpr bool printMenu(Item& item,Ctx& ctx) {return false;}
 };

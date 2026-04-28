@@ -27,15 +27,15 @@ enum class Fmt:int {
   Field=1<<8,Label=1<<9,EditMode=1<<10,EditCursor=1<<11,Data=1<<12,Unit=1<<13
 };
 
-inline int operator|(Fmt a,Fmt b){return (int)a|(int)b;}
-inline int operator|(int a,Fmt b){return (int)a|(int)b;}
-inline int operator|(Fmt a,int b){return (int)a|(int)b;}
-inline int operator&(Fmt a,Fmt b){return (int)a&(int)b;}
-inline int operator&(int a,Fmt b){return (int)a&(int)b;}
-inline int operator&(Fmt a,int b){return (int)a&(int)b;}
-inline int operator^(Fmt a,Fmt b){return (int)a^(int)b;}
-inline int operator^(int a,Fmt b){return (int)a^(int)b;}
-inline int operator^(Fmt a,int b){return (int)a^(int)b;}
+inline constexpr int operator|(Fmt a,Fmt b){return (int)a|(int)b;}
+inline constexpr int operator|(int a,Fmt b){return (int)a|(int)b;}
+inline constexpr int operator|(Fmt a,int b){return (int)a|(int)b;}
+inline constexpr int operator&(Fmt a,Fmt b){return (int)a&(int)b;}
+inline constexpr int operator&(int a,Fmt b){return (int)a&(int)b;}
+inline constexpr int operator&(Fmt a,int b){return (int)a&(int)b;}
+inline constexpr int operator^(Fmt a,Fmt b){return (int)a^(int)b;}
+inline constexpr int operator^(int a,Fmt b){return (int)a^(int)b;}
+inline constexpr int operator^(Fmt a,int b){return (int)a^(int)b;}
 
 /// @brief lock/unlock print output
 enum class LockMode {

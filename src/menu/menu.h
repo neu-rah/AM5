@@ -61,7 +61,7 @@ struct Menu {
     bool printMenu(Out& out,Ctx& ctx) {
       ctx.idx=0;
       out.resume();
-      if(ctx.pAt==ctx.at){//walk to print level
+      if(ctx.pAt!=ctx.at){//walk to print level
         Ctx tmp=ctx.next();
         return m_body.printMenu(out,tmp,ctx.path.data[ctx.at]);
       }
@@ -71,9 +71,10 @@ struct Menu {
           ctx.path,//ctx.printAt>0?ctx.path.next():ctx.path,
           ctx.mode,
           ctx.pAt,
+          ctx.enabled,
+          ctx.tops,
           ctx.at+1,
           0,
-          ctx.tops,
           true
         };
         // dout<<xy<0,24><<colors<YELLOW,BLACK><<"*padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();

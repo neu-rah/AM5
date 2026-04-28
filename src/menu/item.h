@@ -62,7 +62,8 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>{//::template Map<ItemLink> {
   using Base::printMenu;
   using Base::enabled;
   using Base::print;
-  template<typename Out> void printMenu(Out& out,Ctx&& ctx) {Base::printMenu(out,ctx);}
+  template<typename Out> void printMenu(Out& out,Ctx&& ctx)
+    {Base::printMenu(out,ctx);}
   void enter(Path path) {nav({Cmd::Enter},path);}
 
   template<typename Nav>
