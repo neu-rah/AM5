@@ -73,6 +73,7 @@ struct Path {
   Sz* data;
   Sz sel(Depth i=0) const {return data[i];}
   Sz last() const {return sel(len-1);}
+  Path next() {assert(len>0);return {len-1,&data[1]};}
 };
 
 template<Depth depth> struct PathData {

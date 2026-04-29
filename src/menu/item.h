@@ -391,7 +391,7 @@ struct Put {
       using Base::Base;
       template<typename Out> 
       void print(Out& out,Ctx& ctx) {
-        if(!(out.mode()==LockMode::None||out.mode()==LockMode::Update)) return;
+        if(!(out.lockMode()==LockMode::None||out.lockMode()==LockMode::Update)) return;
         alt.resume();
         if(clr==Clear::yes) alt.clear();
         Base::print(alt,ctx);
