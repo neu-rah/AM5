@@ -10,12 +10,11 @@
 */
 
 #include "menu/sys/base.h"
-
-#include <type_traits>
+#include "menu/sys/formats.h"
 
 struct TextFmt {
   template<typename O>
-  struct Part:O {
+  struct Part:Formats<O>,UseEditCursorFmt::template Part<O> {
     using Base=O;
     using Base::nl;
     using Base::fmtStart;
