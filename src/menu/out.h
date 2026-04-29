@@ -246,6 +246,7 @@ struct DeviceCursor {
     // static_assert(F::template Excludes<Class<class Gate>>::value,"Gate must be above DeviceCursor");
     // static_assert(F::Obj::template Requires<Class<Gate>>::value,"Gate must be above DeviceCursor");
     using F::fmtStart;
+    using F::fmtStop;
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::Item> fmtStart(const Ctx& ctx) {
       F::template fmtStart<tag>(ctx);
@@ -257,6 +258,10 @@ struct DeviceCursor {
       m_editing=true;
       m_text_cursor_at=F::obj().pos();
     }
+    // template<Fmt tag>
+    // std::enable_if_t<tag&(~Fmt::EditCursor)> fmtStop(const Ctx& ctx) {
+    //   Base::template fmtStop<tag>(ctx);
+    // }
   protected:
     Pos m_text_cursor_at{0,0};
     bool m_editing{false};
@@ -288,9 +293,9 @@ struct StaticPos {
 /// @brief provides raw access to the output device
 struct Raw {
   template<typename O>
-  struct Part:Gate::template Part<O> {
+  struct Part:O {
     using RawDevice=std::true_type;
-    using Base=typename Gate::template Part<O>;
+    using Base=O;
     static_assert(Base::template Excludes<IsFormat>::value,"formats must preseed the raw device");
     static_assert(Base::template Excludes<IsCursor>::value,"Cursor must preseed the raw device");
     static_assert(Base::template Excludes<IsPrinter>::value,"Printers must preseed the raw device");
@@ -310,6 +315,9 @@ struct Raw {
 struct UseEditCursorFmt {
   template<typename F>
   struct Part:F {
+    using Base=F;
+    using Base::fmtStart;
+    using Base::fmtStop;
     //force renew of editing state before printing, if still valid
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::EditCursor> fmtStart(const Ctx& ctx) {
@@ -321,7 +329,7 @@ struct UseEditCursorFmt {
     void fmtStop(const Ctx& ctx) {
       F::template fmtStop<tag>(ctx);
       if(tag==Fmt::View) {
-        if(F::locked()) F::mode(LockMode::Update);
+        if(F::locked()) F::lockMode(LockMode::Update);
         F::setPos(F::m_text_cursor_at);
         F::flush();
       }
@@ -516,7 +524,7 @@ struct Buffer {
     using Base::freeX;
     // using Base::freeY;
     using Base::obj;
-    Part() {Base::mode(LockMode::Measure);}
+    Part() {Base::lockMode(LockMode::Measure);}
     void erase() {
       memset(buffer,c,height()*width());
       Base::clear();

@@ -1,6 +1,8 @@
 #include <menu.h>
 #include <menu/IO/streamOut.h>
+#include <menu/IO/ansiOut.h>
 #include <menu/fmt/textFmt.h>
+#include <menu/fmt/ansiFmt.h>
 #include <menu/IO/pcKbdIn.h>
 #include <menu/IO/linuxKeyIn.h>
 
@@ -14,6 +16,27 @@
   #include <type_traits>
 #endif
 using namespace std;
+
+OutDef<
+  TextFmt,
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  // UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  Buffer<>,
+  ColorTrack<int>,
+  Cursor,//track and report cursor movement
+  Gate,//locks output for measuring and other operations
+  ANSIOut,//inject ansi codes into the next output device
+  #ifdef __AVR__
+    SerialOut,
+  #else
+    ConsoleOut,
+  #endif
+  StaticPos<5,35>,
+  StaticArea<80,10>
+> syslog;
 
 bool running=true;
 
@@ -50,26 +73,44 @@ using Printer=Chain<
 OutDef<
   Printer,
   TextFmt,
+  ANSIFmt,//add some ANSI colors and format to the output
+  // ClearFree,//clear free space after menu print
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  ColorTrack<int>,//track color setting for device resume...
+  Cursor,//track cursor position for resume...
+  Gate,
+  ANSIOut,//inject ansi codes into the next output device
   #ifdef __AVR__
     SerialOut,
   #else
     ConsoleOut,
   #endif
-  StaticPos<0,20>,
-  StaticArea<100,20>
+  StaticPos<20,10>,
+  StaticArea<30,16>
 > out;
 
 OutDef<
-  TextFmt,
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  ColorTrack<int>,//track color setting for device resume...
+  Cursor,//track cursor position for resume...
+  Gate,
+  ANSIOut,//inject ansi codes into the next output device
   #ifdef __AVR__
     SerialOut,
   #else
     ConsoleOut,
   #endif
-  StaticPos<20,30>,
+  StaticPos<20,26>,
   StaticArea<30,4>
 > footer;
-
 
 namespace text {
   static constexpr const CText main_menu{"Main menu"};
@@ -155,15 +196,26 @@ bool run() {
 
 void setup() {
   cout<<"AM5 R&D"<<endl;
+
+  syslog.lockMode(LockMode::None);
+  syslog.setColors(GREEN,BLACK);
+  syslog.clear();
+  syslog.put(".·•<::(log)::>•·.");
+
+  footer.lockMode(LockMode::None);
+  footer.setColors(BLUE,BLACK);
+  footer.clear();
+  footer.put("footer");
+
   out.lockMode(LockMode::None);
+  out.setColors(WHITE,BLACK);
+  out.clear();
   nav.printTo(out);
 }
 
 int main(){
   setup();
-  // nav.go(2);
-  // nav.enter();
   while(run());
-  cout<<"end."<<endl;
+  out<<xy<0,50><<"end."<<endl;
   return 0;
 }
