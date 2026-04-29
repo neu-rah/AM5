@@ -12,7 +12,7 @@
 #pragma once
 
 #include "menu/sys/base.h"
-#include "menu/body/static.h"
+#include "menu/body/staticBody.h"
 #include "menu/sys/data.h"
 #include "menu/sys/printers.h"
 #include "menu/in.h"
