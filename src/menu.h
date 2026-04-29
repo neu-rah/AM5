@@ -18,6 +18,7 @@
 #include "menu/out.h"
 #include "menu/item.h"
 #include "menu/menu.h"
+#include "menu/nav.h"
 
 template<typename... OO> constexpr 
 StaticBody<OO...> staticBody(OO&&... oo)

@@ -50,10 +50,16 @@ auto tinyMenu=menuDef<Wraps::yes>(
   )
 );
 
+NavDef<
+  TreeNav,
+  Root<decltype(tinyMenu),tinyMenu>
+> nav;
+
 int main(){
   out.put("AM5 R&D");
   out.nl();
-  tinyMenu.printMenu(out,{});
+  // tinyMenu.printMenu(out,{});
+  nav.printTo(out);
   cout<<"end."<<endl;
   return 0;
 }

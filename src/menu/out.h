@@ -1,7 +1,7 @@
 /**
  * @file out.h
  * @author Rui Azevedo (neu-rah) (ruihfazevedo@gmail.com)
- * @brief 
+ * @brief output API
  * @version 5
  * @date 2026-04-17
  * 

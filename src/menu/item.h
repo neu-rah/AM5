@@ -1,7 +1,7 @@
 /**
  * @file item.h
  * @author Rui Azevedo (ruihfazevedo@gmail.com)
- * @brief 
+ * @brief item API
  * @version 5
  * @date 2026-04-17
  * 

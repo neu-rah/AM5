@@ -75,7 +75,10 @@ struct Path {
   Sz last() const {return sel(len-1);}
 };
 
-template<Depth depth> struct PathData {Sz data[depth]{0};};
+template<Depth depth> struct PathData {
+  Sz data[depth]{0};
+  Path focusAt(Depth at) {return {at,data};}
+};
 
 struct Ctx {
   Path path{};//full path
@@ -89,7 +92,7 @@ struct Ctx {
   bool pad{false};
   Sz idx{0};
   Ctx next() const {return {path,mode,pAt,enabled,tops,at+1,0,pad,0};}
-  Sz sel() const {return path.sel(at);}
+  Sz sel() const {assert(at<path.len);return path.sel(at);}
   Sz top() const {return tops[at];}
   Sz top(Sz i) {return tops[at]=i;}
   operator bool() const {return sel()==idx;}

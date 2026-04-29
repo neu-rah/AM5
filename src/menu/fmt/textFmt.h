@@ -1,7 +1,7 @@
 /**
  * @file textFmt.h
  * @author Rui Azevedo (neu-rah) (ruihfazevedo@gmail.com)
- * @brief 
+ * @brief text format
  * @version 5
  * @date 2026-04-28
  * 
@@ -20,6 +20,14 @@ struct TextFmt {
     using Base::nl;
     using Base::fmtStart;
     using Base::fmtStop;
+    using Base::put;
+
+    template<Fmt tag>
+    std::enable_if_t<tag&Fmt::NavCursor>
+    fmtStart(const Ctx& ctx) {
+      put(ctx?ctx.enabled?'>':'-':' ');
+    }
+
     template<Fmt tag>
     std::enable_if_t<tag&(Fmt::View|Fmt::Title|Fmt::Item)>
     fmtStop(const Ctx&) {Base::nl();}
