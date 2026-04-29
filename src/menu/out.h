@@ -24,6 +24,7 @@ struct OutAPI:Cfg {
   using IsPrinter=std::false_type;
   using RawDevice=std::false_type;
   using IsCursor=std::false_type;
+  using HasGate=std::false_type;
   template<typename> using Requires=std::false_type;
   template<typename> using Excludes=std::true_type;
   using Cfg::obj;
@@ -38,8 +39,8 @@ struct OutAPI:Cfg {
   static constexpr Sz orgX() {return 0;}
   static constexpr Sz orgY() {return 0;}
   static constexpr Pos org() {return {orgX(),orgY()};}
-  static constexpr LockMode mode() {return LockMode::None;}
-  static constexpr void mode(LockMode) {}
+  // static constexpr LockMode lockMode() {return LockMode::None;}
+  // static constexpr void lockMode(LockMode) {}
   template<typename Cor> static void setColors(Cor,Cor) {}
 
   static constexpr void clear() {}
@@ -210,27 +211,29 @@ struct Gate {
   template<typename O>
   struct Part:O {
     using IsParser=std::true_type;
+    using HasGate=std::true_type;
     static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed Gate");
     static_assert(O::template Excludes<IsFormat>::value,"formats must be above Gate");
     using Base=O;
+    // using Base::lockMode;
     void nl() {if(unlocked()) Base::nl();}
     void clear() {if(unlocked()) Base::clear();}
     template<typename T>
     void put(const T o) {if(unlocked()) Base::put(o);}
-    LockMode mode() const {return m_mode;}
-    void mode(LockMode m) {m_mode=m;}
     Pos measure() {
-      m_mode=LockMode::Measure;
+      lockMode(LockMode::Measure);
       return Base::getPos();
     }
     Area measure(Pos o) {
-      m_mode=LockMode::Update;
+      lockMode(LockMode::Update);
       return {Base::posX()-o.x,Base::posY()-o.y};
     }
-    bool unlocked() const {return m_mode==LockMode::None/*||m_mode==LockMode::Update*/;}
-    bool updating() const {return m_mode==LockMode::Update;}
+    bool unlocked() const {return lockMode()==LockMode::None;}
+    bool updating() const {return lockMode()==LockMode::Update;}
     bool locked() const {return !unlocked();}
-    protected: LockMode m_mode{LockMode::Update};
+    LockMode lockMode() const {return m_lock_mode;}
+    void lockMode(LockMode m) {m_lock_mode=m;}
+    protected: LockMode m_lock_mode{LockMode::None};
   };
 };
 
@@ -286,17 +289,26 @@ struct StaticPos {
   };
 };
 
+// struct Locker {
+//   template<typename O>
+//   struct Part:O {
+//     using Base=O;
+//     static constexpr void nl() {}
+//     static constexpr void clear() {}
+//   };
+// };
+
 /// @brief provides raw access to the output device
 struct Raw {
-  template<typename OutPart>
-  struct Part:OutPart {
-    static_assert(OutPart::template Excludes<IsFormat>::value,"formats must preseed the raw device");
-    static_assert(OutPart::template Excludes<IsCursor>::value,"Cursor must preseed the raw device");
-    static_assert(OutPart::template Excludes<IsPrinter>::value,"Printers must preseed the raw device");
-    static_assert(OutPart::template Excludes<IsParser>::value,"Parsers must preseed the raw device");
-    static_assert(OutPart::template Excludes<IsDataParser>::value,"DataParser<> must preseed the raw device");
+  template<typename O>
+  struct Part:Gate::template Part<O> {
     using RawDevice=std::true_type;
-    using Base=OutPart;
+    using Base=typename Gate::template Part<O>;
+    static_assert(Base::template Excludes<IsFormat>::value,"formats must preseed the raw device");
+    static_assert(Base::template Excludes<IsCursor>::value,"Cursor must preseed the raw device");
+    static_assert(Base::template Excludes<IsPrinter>::value,"Printers must preseed the raw device");
+    static_assert(Base::template Excludes<IsParser>::value,"Parsers must preseed the raw device");
+    static_assert(Base::template Excludes<IsDataParser>::value,"DataParser<> must preseed the raw device");
     static void _nl() {Base::nl();}
     static void _flush() {Base::flush();}
     template<typename T> static void _put(const T o) {Base::put(o);}

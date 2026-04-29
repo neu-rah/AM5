@@ -1,6 +1,8 @@
 #include <menu.h>
 #include <menu/IO/streamOut.h>
 #include <menu/fmt/textFmt.h>
+#include <menu/IO/pcKbdIn.h>
+#include <menu/IO/linuxKeyIn.h>
 
 #ifdef __AVR__
   #include <streamFlow.h>
@@ -13,12 +15,23 @@
 #endif
 using namespace std;
 
+bool running=true;
+
 namespace action {
   bool quit(Sz) {
-    // running=false;
+    running=false;
     return true;
   }
 };
+
+InDef<
+  #ifdef ARDUINO
+    SerialIn,
+  #else
+    LinuxKeyIn,
+  #endif
+  PCKbd
+> in;
 
 using Printer=Chain<
   ViewPrinter,// outermost format envelope
@@ -55,11 +68,29 @@ NavDef<
   Root<decltype(tinyMenu),tinyMenu>
 > nav;
 
-int main(){
-  out.put("AM5 R&D");
-  out.nl();
-  // tinyMenu.printMenu(out,{});
+bool run() {
+  static TinyTimeUtils::FPS<60> fps;
+  if(fps) {
+    fps.reset();
+    nav.in(in);
+    if(nav.changed(out)) {
+      nav.printTo(out);
+      nav.sync(out);
+    }
+  }
+  return running;
+}
+
+void setup() {
+  cout<<"AM5 R&D"<<endl;
+  out.lockMode(LockMode::None);
   nav.printTo(out);
+}
+
+int main(){
+  setup();
+  // cout<<"nav changed:"<<nav.changed(out)<<endl;
+  while(run());
   cout<<"end."<<endl;
   return 0;
 }

@@ -64,11 +64,43 @@ struct TreeNav {
     using Base::root;
     using Base::depth;
 
-    Path focus(Sz i) const {return m_path.focus(i);}
+    Path focus(Sz i) {return m_path.focusAt(i);}
     Depth level() const {return m_level;}
+    Sz sel() const {return m_path[m_level];}
 
     void navMode(NavMode m) {m_navMode.set(m);}
     const NavMode navMode() const {return m_navMode.get();}
+
+    void sync() {
+      m_level.sync();
+      m_navMode.sync();
+      m_prevSel=sel();
+    }
+
+    template<typename Out>
+    void sync(Out& out) {
+      sync();
+      LockMode om=out.lockMode();
+      out.lockMode(LockMode::Sync);
+      printTo(out);
+      out.lockMode(om);
+    }
+
+    bool changed() const {
+      return m_level.changed()
+        ||m_navMode.changed()
+        ||m_prevSel!=sel();
+    }
+
+    template<typename Out>
+    bool changed(Out& out) {
+      if(changed()) return true;
+      LockMode om=out.lockMode();
+      out.lockMode(LockMode::Changed);
+      bool r=printTo(out);
+      out.lockMode(om);
+      return r;
+    }
 
     template<typename Out>
     bool printTo(Out& out) {

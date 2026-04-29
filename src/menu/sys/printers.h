@@ -94,14 +94,14 @@ struct ScrollBodyPrinter {
   struct Part:BodyPrinter::Part<P> {
     using IsPrinter=std::true_type;
     using Base=typename BodyPrinter::Part<P>;
-    using Base::mode;
+    using Base::lockMode;
     using Base::pos;
     using Base::freeY;
     using Base::setPos;
 
     template<typename I>
     bool printMenu(I& i,Ctx& ctx) {
-      LockMode om=mode();
+      LockMode om=lockMode();
       Sz x=Base::posX();
       Sz y=Base::posY();
       // dout<<xy<20,0><<colors<RED,BLACK><<"sel:"<<ctx.sel()<<" last:"<<ctx.last()<<padWith<10><<flush;
@@ -109,7 +109,7 @@ struct ScrollBodyPrinter {
         ctx.top(ctx.sel());//--scroll down
         om=LockMode::None;//scroll => full redraw
       } else for(;;) {
-        mode(LockMode::Measure);
+        lockMode(LockMode::Measure);
         Base::printMenu(i,ctx);//body measure
         Sz f=freeY();
         Sz ci=ctx.idx;
@@ -119,7 +119,7 @@ struct ScrollBodyPrinter {
         ctx.top(ctx.top()+1);//--scroll up
         om=LockMode::None;//scroll => full redraw
       };
-      mode(om);
+      lockMode(om);
       setPos(x,y);
       bool r=Base::printMenu(i,ctx);
       return r;
@@ -145,16 +145,16 @@ struct ItemPrinter {
     using Base=typename Chain<OO...>::template Part<O>;
     using Base::fmtStart;
     using Base::fmtStop;
-    using Base::mode;
+    using Base::lockMode;
     using Base::setPos;
     using Base::posX;
     using Base::posY;
     template<typename I>
     bool printItem(I& i,Ctx& ctx) {
-      if(mode()==LockMode::Update
+      if(lockMode()==LockMode::Update
         &&(i.changed()||(ctx.prev!=ctx.sel()&&(ctx.idx==ctx.prev||ctx.idx==ctx.sel())))
       ) {
-        mode(LockMode::None);
+        lockMode(LockMode::None);
         setPos(posX(),posY());
       }
       ctx.enabled =i.enabled();
@@ -163,7 +163,7 @@ struct ItemPrinter {
       bool r=Base::printItem(i,ctx);
       Base::template fmtStop<Fmt::Item>(ctx);
       ctx.idx++;
-      if(mode()==LockMode::Sync) i.sync();
+      if(lockMode()==LockMode::Sync) i.sync();
       return r;
     }
   };

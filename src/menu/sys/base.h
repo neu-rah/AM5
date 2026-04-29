@@ -77,7 +77,8 @@ struct Path {
 
 template<Depth depth> struct PathData {
   Sz data[depth]{0};
-  Path focusAt(Depth at) {return {at,data};}
+  Path focusAt(Depth at)  {assert(at<depth);return {at,data};}
+  Sz operator[](Depth i) const {assert(i<depth);return data[i];}
 };
 
 struct Ctx {

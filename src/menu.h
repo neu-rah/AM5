@@ -15,6 +15,7 @@
 #include "menu/body/static.h"
 #include "menu/sys/data.h"
 #include "menu/sys/printers.h"
+#include "menu/in.h"
 #include "menu/out.h"
 #include "menu/item.h"
 #include "menu/menu.h"
