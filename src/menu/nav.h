@@ -63,6 +63,13 @@ struct TreeNav {
     using Root=typename Base::Root;
     using Base::root;
     using Base::depth;
+
+    Path focus(Sz i) const {return m_path.focus(i);}
+    Depth level() const {return m_level;}
+
+    void navMode(NavMode m) {m_navMode.set(m);}
+    const NavMode navMode() const {return m_navMode.get();}
+
     template<typename Out>
     bool printTo(Out& out) {
       ///track scroll top for each level, this is output device specific
@@ -70,6 +77,52 @@ struct TreeNav {
       Ctx ctx{m_path.focusAt(m_level+1),m_navMode,m_print_level,true,tops};
       return root().printMenu(out,ctx);
     }
+    bool doCmd(Cmd cmd,Key k=0, bool e=false) {
+      if(cmd==Cmd::Esc) return close();//preemptive esc=>close
+      return root().nav(Base::obj(),{cmd,k,e},focus(m_level+1));
+    }
+
+    bool doNav(CKE cke,Sz len,Wraps w) {
+      DataDef<NumRange<Sz>,Data<Sz&>> at(0,len-1,w,m_path.data[(int)level()]);
+      switch(cke.cmd) {
+        case Cmd::Up: at.up();break;
+        case Cmd::Down: at.down();break;
+        default:break;
+      }
+      return true;
+    }
+
+    template<typename In>  bool in(In& in) {return in.cmd(Base::obj());}
+
+    void go(Sz i,Depth delta=0) {
+      assert(m_level+delta<depth());
+      m_path.data[m_level+delta]=i;
+    }
+
+    bool padOpen() {
+      if(m_level.get()<depth()) {
+        m_level.set(m_level+1);
+        m_path.data[m_level]=0;
+        if(m_level.get()<m_print_level) m_print_level=m_level;
+        return true;
+      } else return false;
+    }
+    bool open() {
+      if(padOpen()) {
+        m_print_level=m_level;
+        return true;
+      } else return false;
+    }
+    
+    bool close() {
+      navMode(NavMode::Nav);
+      if(m_level) {
+        m_level.set(m_level-1);
+        if(m_print_level>m_level) m_print_level=m_level;
+        return true;
+      } else return false;
+    }
+
   protected: 
     Sz m_prevSel{};
     PathData<depth()> m_path{};
