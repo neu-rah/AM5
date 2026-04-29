@@ -54,7 +54,7 @@ OutDef<
 > out;
 
 auto tinyMenu=menuDef<Wraps::yes>(
-  ItemDef<Text,ItemNav>{"title"},
+  ItemDef<Text,ItemNav>{"Title"},
   staticBody(
     ItemDef<Text>{"yawn!"},
     // dateField("date:"),

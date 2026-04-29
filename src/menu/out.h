@@ -240,32 +240,28 @@ struct Gate {
 /// @brief use device cursor, must be placed on top of the device
 /// will record the edit cursor position upon Fmt::TextEditCursor start
 /// for ´ANSIEditFmt´ (or similar) to restore upon Fmt::Viewport stop
-// struct DeviceCursor {
-//   template<typename F>
-//   struct Part:F {
-//     static_assert(F::template Excludes<Class<class Gate>>::value,"Gate must be above DeviceCursor");
-//     // static_assert(F::Obj::template Requires<Class<Gate>>::value,"Gate must be above DeviceCursor");
-//     using F::fmtStart;
-//     template<Fmt tag>
-//     void fmtStart(const Ctx& ctx) {
-//       F::template fmtStart<tag>(ctx);
-//       if(tag==Fmt::Item&&ctx.focus()) m_text_cursor_at=F::obj().pos();
-//     }
-//     template<Fmt tag>
-//     void fmtStop(const Ctx& ctx) {
-//       // if(F::obj().unlocked()) {
-//         F::template fmtStop<tag>(ctx);
-//         if(tag==Fmt::EditCursor) {
-//           m_editing=true;
-//           m_text_cursor_at=F::obj().pos();
-//         }
-//       // }
-//     }
-//   protected:
-//     Pos m_text_cursor_at{0,0};
-//     bool m_editing{false};
-//   };
-// };
+struct DeviceCursor {
+  template<typename F>
+  struct Part:F {
+    // static_assert(F::template Excludes<Class<class Gate>>::value,"Gate must be above DeviceCursor");
+    // static_assert(F::Obj::template Requires<Class<Gate>>::value,"Gate must be above DeviceCursor");
+    using F::fmtStart;
+    template<Fmt tag>
+    std::enable_if_t<tag&Fmt::Item> fmtStart(const Ctx& ctx) {
+      F::template fmtStart<tag>(ctx);
+      if(ctx) m_text_cursor_at=F::obj().pos();
+    }
+    template<Fmt tag>
+    std::enable_if_t<tag&Fmt::EditCursor> fmtStop(const Ctx& ctx) {
+      F::template fmtStop<tag>(ctx);
+      m_editing=true;
+      m_text_cursor_at=F::obj().pos();
+    }
+  protected:
+    Pos m_text_cursor_at{0,0};
+    bool m_editing{false};
+  };
+};
 
 template<int w,int h>
 struct StaticArea {
@@ -288,15 +284,6 @@ struct StaticPos {
     static constexpr Pos org() {return {orgX(),orgY()};}
   };
 };
-
-// struct Locker {
-//   template<typename O>
-//   struct Part:O {
-//     using Base=O;
-//     static constexpr void nl() {}
-//     static constexpr void clear() {}
-//   };
-// };
 
 /// @brief provides raw access to the output device
 struct Raw {
@@ -325,8 +312,8 @@ struct UseEditCursorFmt {
   struct Part:F {
     //force renew of editing state before printing, if still valid
     template<Fmt tag>
-    void fmtStart(const Ctx& ctx) {
-      if(tag==Fmt::EditCursor&&!F::locked()) F::m_editing=false;
+    std::enable_if_t<tag&Fmt::EditCursor> fmtStart(const Ctx& ctx) {
+      if(!F::locked()) F::m_editing=false;
       F::template fmtStart<tag>(ctx);
     }
     //restores meaningful cursor position after printing done
