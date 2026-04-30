@@ -22,10 +22,8 @@ struct StaticBody {
   Item m_item;
   Body m_body;
   constexpr StaticBody() {}
-  template<typename... II>
-  constexpr StaticBody(Item&& i,II&&... ii):m_item{std::forward<Item>(i)},m_body{std::forward<II>(ii)...}{}
-  template<typename... II>
-  constexpr StaticBody(II&&... ii):m_body{std::forward<II>(ii)...}{}
+  template<typename... II> constexpr StaticBody(Item&& i,II&&... ii):m_item{std::forward<Item>(i)},m_body{std::forward<II>(ii)...}{}
+  // template<typename... II> constexpr StaticBody(II&&... ii):m_body{std::forward<II>(ii)...}{}
   static constexpr const Depth depth() {return staticMax<Item::depth(),Body::depth()>();}
   static constexpr Sz size() {return 1+Body::size();}
 

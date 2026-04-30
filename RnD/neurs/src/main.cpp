@@ -159,7 +159,7 @@ using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>,Desc<Stat
 
 auto fieldsMenu() {
   return menuDef<Wraps::yes>(
-    ItemDef<Text,ItemNav>{"Fields"},
+    Title<Text>{"Fields"},
     staticBody(
       Back{}
     )
@@ -167,12 +167,21 @@ auto fieldsMenu() {
 }
 
 auto tinyMenu=menuDef<Wraps::yes>(
-  ItemDef<Text,ItemNav>{"Title"},
+  ItemDef<Text>{"Title"},
   staticBody(
     ItemDef<Text>{"yawn!"},
     ItemDef<Text>{"wtf!"},
     fieldsMenu(),
-    ItemDef<Text,Action<action::quit>>{"exit"}
+    ItemDef<Menu<
+      Title<Text>,
+      StaticBody<
+        ItemDef<Text>,
+        ItemDef<Text>
+      >,
+      Wraps::no,
+      Pad::no
+    >>{{"Sub-menu"},{"just testing","..."}},
+    Quit{}
   )
 );
 
@@ -215,6 +224,8 @@ void setup() {
 
 int main(){
   setup();
+  nav.go(3);
+  nav.enter();
   while(run());
   out<<xy<0,50><<"end."<<endl;
   return 0;

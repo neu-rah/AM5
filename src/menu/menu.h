@@ -17,8 +17,8 @@
 template <typename T, typename B,Wraps w=Wraps::no,Pad pad=Pad::no>
 struct Menu {
   template <typename I>
-  struct Part : I {
-    using Base = I;
+  struct Part:I {
+    using Base=I;
     using This=Part<I>;
     using Title=T;
     using Body = B;
@@ -104,7 +104,7 @@ struct Menu {
     
     template<typename Nav> 
     bool nav(Nav& n,const CKE& cke,Path p) {
-      if(p.len&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
+      if(p.len>0&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
       if (m_title.nav(n,cke,p)) return true;
       return p.len?n.doNav(cke,size(),w):false;
     }
@@ -140,5 +140,5 @@ using PadMenu=ItemDef<Menu<T,B,wraps,Pad::yes>>;
 template <typename T, typename B,Wraps w,Pad p> using MenuDef=ItemDef<Menu<T,B,w,p>>;
 template <typename T, typename B,Wraps w,Pad p> using IMenuDef=IItemDef<Menu<T,B,w,p>>;
 
-template<typename... OO> using Title=ItemDef<OO...>; 
-template<typename... OO> using Label=ItemDef<AsLabel<OO...>>; 
+template<typename... OO> using Title=ItemDef<OO...,ItemNav>; 
+template<typename... OO> using Label=ItemDef<OO...>; 
