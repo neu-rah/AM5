@@ -180,7 +180,7 @@ auto tinyMenu=menuDef<Wraps::yes>(
       >,
       Wraps::no,
       Pad::no
-    >,ItemNav>{{"Sub-menu"},{"just testing","..."}},
+    >>{{"Sub-menu"},{"just testing","..."}},
     Quit{}
   )
 );
@@ -223,7 +223,7 @@ void setup() {
 }
 
 int main(){
-  setup();
+ setup();
   nav.go(3);
   nav.enter();
   while(run());
