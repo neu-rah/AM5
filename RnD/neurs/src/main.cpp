@@ -180,7 +180,7 @@ auto tinyMenu=menuDef<Wraps::yes>(
       >,
       Wraps::no,
       Pad::no
-    >>{{"Sub-menu"},{"just testing","..."}},
+    >,ItemNav>{{"Sub-menu"},{"just testing","..."}},
     Quit{}
   )
 );
