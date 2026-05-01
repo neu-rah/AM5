@@ -53,24 +53,16 @@ namespace std {
       typedef _Tp                           value_type;
       typedef integral_constant<_Tp, __v>   type;
       constexpr operator value_type() const noexcept { return value; }
-#if __cplusplus > 201103L
 
-
-// #define __cpp_lib_integral_constant_callable 201304
-
-      constexpr value_type operator()() const noexcept { return value; }
-#endif
+      #if __cplusplus > 201103L
+        // #define __cpp_lib_integral_constant_callable 201304
+        constexpr value_type operator()() const noexcept { return value; }
+      #endif
     };
 
-  template<typename _Tp, _Tp __v>
-    constexpr _Tp integral_constant<_Tp, __v>::value;
+  template<typename _Tp, _Tp __v> constexpr _Tp integral_constant<_Tp, __v>::value;
 
-    /// @cond undocumented
-  /// bool_constant for C++11
-  template<bool __v>
-    using __bool_constant = integral_constant<bool, __v>;
-  template<bool v> using bool_constant= __bool_constant<v>;
-  /// @endcond
+  template<bool v> using bool_constant= integral_constant<bool, v>;
 
   /// The type used as a compile-time boolean with true value.
   using true_type =  bool_constant<true>;
@@ -264,7 +256,7 @@ namespace std {
   /// is_function
   template<typename _Tp>
     struct is_function
-    : public __bool_constant<!is_const<const _Tp>::value> { };
+    : public bool_constant<!is_const<const _Tp>::value> { };
 
   template<typename _Tp>
     struct is_function<_Tp&>

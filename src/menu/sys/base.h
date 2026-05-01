@@ -71,15 +71,15 @@ template<typename Cor> struct Colors{Cor fg;Cor bg;};
 struct Path {
   Depth len;
   Sz* data;
-  Sz sel(Depth i=0) const {return data[i];}
+  Sz sel(Depth i=0) const {return data[(int)i];}
   Sz last() const {return sel(len-1);}
-  Path next() {assert(len>0);return {len-1,&data[1]};}
+  Path next() {assert(len>0);return {(Depth)(len-1),&data[1]};}
 };
 
 template<Depth depth> struct PathData {
   Sz data[depth]{0};
   Path focusAt(Depth at)  {assert(at<depth);return {at,data};}
-  Sz operator[](Depth i) const {assert(i<depth);return data[i];}
+  Sz operator[](Depth i) const {assert(i<depth);return data[(int)i];}
 };
 
 struct Ctx {
@@ -93,10 +93,30 @@ struct Ctx {
   Sz prev{0};
   bool pad{false};
   Sz idx{0};
-  Ctx next() const {return {path,mode,pAt,enabled,tops,at+1,0,pad,0};}
+  Ctx(
+    Path path,
+    NavMode mode={NavMode::Nav},
+    Depth pAt={0},
+    bool enabled={true},
+    Sz* tops={nullptr},
+    Depth at={0},
+    Sz prev={0},
+    bool pad={false},
+    Sz idx={0}
+  ):path{path},
+    mode{mode},
+    pAt{pAt},
+    enabled{enabled},
+    tops{tops},
+    at{at},
+    prev{prev},
+    pad{pad},
+    idx{idx}
+  {}
+  Ctx next() const {return Ctx{path,mode,pAt,enabled,tops,(Depth)(at+1),0,pad,0};}
   Sz sel() const {assert(at<path.len);return path.sel(at);}
-  Sz top() const {return tops[at];}
-  Sz top(Sz i) {return tops[at]=i;}
+  Sz top() const {return tops[(int)at];}
+  Sz top(Sz i) {return tops[(int)at]=i;}
   operator bool() const {return sel()==idx;}
 };
 
@@ -124,6 +144,14 @@ struct Ctx {
     <<" pad:"<<o.pad;
   }
 #endif
+
+// rule build ------------------------------------------
+
+//rules system, requires/excludes simple class (will use std::same_as<>) from the derivation chain
+template<typename O> struct Class {
+  template<typename Head,typename Base> using Requires=std::bool_constant<std::is_same<O,Head>::value||Base::template Requires<Class<O>>::value>;
+  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
+};
 
 //rule predicates------------------------------------------
 struct IsCursor {

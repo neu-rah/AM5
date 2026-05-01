@@ -39,8 +39,8 @@ struct OutAPI:Cfg {
   static constexpr Sz orgX() {return 0;}
   static constexpr Sz orgY() {return 0;}
   static constexpr Pos org() {return {orgX(),orgY()};}
-  // static constexpr LockMode lockMode() {return LockMode::None;}
-  // static constexpr void lockMode(LockMode) {}
+  static constexpr LockMode lockMode() {return LockMode::None;}
+  static constexpr void lockMode(LockMode) {}
   template<typename Cor> static void setColors(Cor,Cor) {}
 
   static constexpr void clear() {}
@@ -243,8 +243,7 @@ struct Gate {
 struct DeviceCursor {
   template<typename F>
   struct Part:F {
-    // static_assert(F::template Excludes<Class<class Gate>>::value,"Gate must be above DeviceCursor");
-    // static_assert(F::Obj::template Requires<Class<Gate>>::value,"Gate must be above DeviceCursor");
+    static_assert(F::template Excludes<Class<class Gate>>::value,"Gate must be above DeviceCursor");
     using F::fmtStart;
     using F::fmtStop;
     template<Fmt tag>
@@ -310,7 +309,7 @@ struct Raw {
   };
 };
 
-/// @brief restores text edit cursor position at printing end, 
+/// @brief restores (nav|text edit) cursor position at printing end, 
 /// base chain class F must have `DeviceCursor`
 struct UseEditCursorFmt {
   template<typename F>
@@ -456,6 +455,16 @@ struct CtrlChars {
   struct Part:O {
     using Base=O;
     void put(const char o) {o=='\n'?Base::nl():Base::put(o);}
+  };
+};
+
+struct ClearFree {
+  template<typename O>
+  struct Part:O {
+    static_assert(O::template Requires<IsCursor>::value,"ClearFree needs a valid Cursor (IsCursor class) not the API default fallback");
+    using Base=O;
+    void clearLine() {Base::padWith(Base::freeX());Base::nl();}
+    void clearFree() {do clearLine(); while(Base::freeY());}
   };
 };
 

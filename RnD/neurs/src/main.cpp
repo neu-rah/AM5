@@ -1,41 +1,45 @@
-#include <menu.h>
-#include <menu/IO/streamOut.h>
-#include <menu/IO/ansiOut.h>
-#include <menu/fmt/textFmt.h>
-#include <menu/fmt/ansiFmt.h>
-#include <menu/IO/pcKbdIn.h>
-#include <menu/IO/linuxKeyIn.h>
-
-#ifdef __AVR__
-  #include <streamFlow.h>
-  using namespace StreamFlow;
-  #define cout Serial
-  #include <avr_std.h>
-#else
-  #include <iostream>
-  #include <type_traits>
-#endif
-using namespace std;
+// includes --
+  #include <menu.h>
+  #include <menu/IO/ansiOut.h>
+  // #include <menu/fmt/ansiFuncsFmt.h>
+  // #include <menu/fmt/textFmt.h>
+  #include <menu/fmt/ansiFmt.h>
+  #include <menu/IO/pcKbdIn.h>
+  
+  #ifdef __AVR__
+    #include <menu/IO/arduino/serialOut.h>
+    #include <menu/IO/arduino/serialIn.h>
+    #include <streamFlow.h>
+    using namespace StreamFlow;
+    #define cout Serial
+    // #include <menu/sys/platform/avr/avr_std.h>
+  #else
+    #include <menu/IO/streamOut.h>
+    #include <menu/IO/linuxKeyIn.h>
+    // #include <iostream>
+    // #include <type_traits>
+  #endif
+  using namespace std;
 
 OutDef<
-  TextFmt,
-  DataParser<>,//put all data into characters
-  CtrlChars,
-  // UTF8,//bypass UTF8 surrogate codes
-  TextWrap,//long texts continue next line
-  Clip,//keep content inside area
-  Buffer<>,
-  ColorTrack<int>,
-  Cursor,//track and report cursor movement
-  Gate,//locks output for measuring and other operations
-  ANSIOut,//inject ansi codes into the next output device
-  #ifdef __AVR__
-    SerialOut,
-  #else
-    ConsoleOut,
-  #endif
-  StaticPos<5,35>,
-  StaticArea<80,10>
+  // TextFmt,
+  // DataParser<>,//put all data into characters
+  // CtrlChars,
+  // // UTF8,//bypass UTF8 surrogate codes
+  // TextWrap,//long texts continue next line
+  // Clip,//keep content inside area
+  // Buffer<>,
+  // ColorTrack<int>,
+  // Cursor,//track and report cursor movement
+  // Gate,//locks output for measuring and other operations
+  // ANSIOut,//inject ansi codes into the next output device
+  // #ifdef __AVR__
+  //   SerialOut,
+  // #else
+  //   ConsoleOut,
+  // #endif
+  // StaticPos<5,35>,
+  // StaticArea<80,10>
 > syslog;
 
 bool running=true;
@@ -72,23 +76,26 @@ using Printer=Chain<
 
 OutDef<
   Printer,
-  TextFmt,
   ANSIFmt,//add some ANSI colors and format to the output
-  // ClearFree,//clear free space after menu print
+  // ANSICaseFmt,
+  // ANSIFuncsFmt,
+  // TextFmt,
   DataParser<>,//put all data into characters
   CtrlChars,
   UTF8,//bypass UTF8 surrogate codes
   TextWrap,//long texts continue next line
   Clip,//keep content inside area
   ColorTrack<int>,//track color setting for device resume...
+  ClearFree,//clear free space
   Cursor,//track cursor position for resume...
   Gate,
   ANSIOut,//inject ansi codes into the next output device
   #ifdef __AVR__
-    SerialOut,
+  SerialOut,
   #else
-    ConsoleOut,
+  ConsoleOut,
   #endif
+  FmtFuncsAPI,
   StaticPos<20,10>,
   StaticArea<30,16>
 > out;
@@ -157,7 +164,13 @@ template<typename... OO> using Desc=OnFocus<typename Put<OO...>::template ToOut<
 using Back=ItemDef</*CloseOnSelect,*/StaticText<text::back>,Desc<StaticText<desc::back>>>;
 using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>,Desc<StaticText<desc::quit>>>>;
 
-auto fieldsMenu() {
+decltype(menuDef<Wraps::yes>(
+    Title<Text>{"Fields"},
+    staticBody(
+      Back{}
+    )
+  )
+) fieldsMenu() {
   return menuDef<Wraps::yes>(
     Title<Text>{"Fields"},
     staticBody(
@@ -224,9 +237,9 @@ void setup() {
 
 int main(){
  setup();
-  nav.go(3);
-  nav.enter();
   while(run());
-  out<<xy<0,50><<"end."<<endl;
+  out.setPos({0,50});
+  out.put("end.");
+  out.nl();
   return 0;
 }

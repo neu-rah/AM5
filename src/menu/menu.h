@@ -53,7 +53,7 @@ struct Menu {
           ctx.pAt,
           ctx.enabled,
           ctx.tops,
-          ctx.at+1,
+          (Depth)(ctx.at+1),
           0,
           true,
           0
@@ -73,7 +73,7 @@ struct Menu {
       out.resume();
       if(ctx.pAt!=ctx.at){//walk to print level
         Ctx tmp=ctx.next();
-        return m_body.printMenu(out,tmp,ctx.path.data[ctx.at]);
+        return m_body.printMenu(out,tmp,ctx.path.data[(int)ctx.at]);
       }
       if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
         // dout<<xy<0,23><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
@@ -83,7 +83,7 @@ struct Menu {
           ctx.pAt,
           ctx.enabled,
           ctx.tops,
-          ctx.at+1,
+          (Depth)(ctx.at+1),
           0,
           true
         };

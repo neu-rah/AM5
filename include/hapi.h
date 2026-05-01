@@ -10,12 +10,6 @@
 
 #pragma once
 
-#ifdef __AVR__
-  #include <avr_std.h>
-#else
-  #include <type_traits>
-#endif
-
 //HAPI--
 // non empty composition
 template<typename O,typename... OO>
@@ -67,13 +61,5 @@ struct CRTP {
   using Obj=O;
   Obj& obj() {return *(O*)this;}
   const Obj& obj() const {return *this;}
-};
-
-//rule predicates------------------------------------------
-
-//rules system, requires/excludes simple class (will use std::same_as<>) from the derivation chain
-template<typename O> struct Class {
-  template<typename Head,typename Base> using Requires=std::bool_constant<std::is_same<O,Head>::value||Base::template Requires<Class<O>>::value>;
-  template<typename Head,typename Base> using Excludes=std::bool_constant<!Requires<Head,Base>::value>;
 };
 
