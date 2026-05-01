@@ -84,7 +84,6 @@ struct Data {
     Type data;
     template<typename... OO> Part(const Type& o,OO&&... oo):Base{std::forward<OO>(oo)...},data{o}{}
     // template<typename... OO> Part(OO&&... oo):Base{std::forward<OO>(oo)...}{}
-    // constexpr Type& get() {return data;} 
     const Type& get() const {return data;} 
     void set(const Type& o) {data=o;}
     operator Type&() {return data;}
