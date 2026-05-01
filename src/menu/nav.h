@@ -111,7 +111,6 @@ struct TreeNav {
     }
     bool doCmd(Cmd cmd,Key k=0, bool e=false) {
       if(cmd==Cmd::Esc) return close();//preemptive esc=>close
-      dout<<xy<0,2><<colors<BLUE,WHITE><<focus(m_level+1)<<padWith<10><<flush;
       return root().nav(Base::obj(),{cmd,k,e},focus(m_level+1));
     }
 
@@ -133,22 +132,14 @@ struct TreeNav {
     }
 
     bool padOpen() {
-      dout<<xy<0,4><<colors<RED,BLACK><<"Nav::padOpen ";
       if(m_level.get()<depth()) {
-        dout<<(int)m_level<<"->"<<flush;
         m_level.set(m_level+1);
         m_path.data[m_level]=0;
         if(m_level.get()<m_print_level) m_print_level=m_level;
-        dout<<(int)m_level<<"... "<<flush;
-        dout<<"|"<<cnt<>++<<padWith<10><<flush;
         return true;
-      } else {
-        dout<<"|"<<cnt<>++<<padWith<10><<flush;
-        return false;
-      }
+      } else return false;
     }
     bool open() {
-      dout<<xy<0,3><<colors<RED,BLACK><<"Nav::open |"<<cnt<>++<<padWith<10><<flush;
       if(padOpen()) {
         m_print_level=m_level;
         return true;
