@@ -17,6 +17,7 @@
 * and them to be called in chain, because we can have th same tag to appear on multiple conditions
 ********************************/
 
+// F0 -----------------------------------------------------------------
 struct OldANSIFmt {
   template<typename O>
   struct Part:Formats::template Part<O> {
@@ -61,6 +62,7 @@ struct OldANSIFmt {
   };
 };
 
+// F1 -----------------------------------------------------------------
 struct ViewFmt {
   template<typename O>
   struct Part:Formats::template Part<O> {
@@ -132,9 +134,9 @@ struct NavCursorFmt {
   };
 };
 
-using ANSIFmt=Chain<ViewFmt,TitleFmt,ItemFmt,NavCursorFmt>;
+using ANSIChainFmt=Chain<ViewFmt,TitleFmt,ItemFmt,NavCursorFmt>;
 
-//---------------------
+// F2 -----------------------------------------------------------------
 struct ANSIFuncsFmt {
   template<typename O>
   struct PartOf:Formats::template Part<O> {
@@ -165,6 +167,7 @@ struct ANSIFuncsFmt {
   template<typename O> using Part=UseFmtFuncs::template Part<PartOf<O>>;
 };
 
+// F3 -----------------------------------------------------------------
 struct ANSICaseFmt {
   template<typename O>
   struct Part:O {
@@ -208,3 +211,51 @@ struct ANSICaseFmt {
     }
   };
 };
+
+// F4 -----------------------------------------------------------------
+struct ANSI_RTPFmt {
+  template<typename O>
+  struct Part:O {
+    using Base=O;
+    using Base::setColors;
+    using Base::clear;
+    using Base::nl;
+    using Base::clearLine;
+    using Base::clearFree;
+    using Base::put;
+
+    template<Fmt tag> void fmtStart(const Ctx& ctx) {fmtStop(tag,ctx);}
+    template<Fmt tag> void fmtStop (const Ctx& ctx) {fmtStop(tag,ctx);}
+
+
+    // start ---
+    void fmtStart(const Fmt tag,const Ctx& ctx) {
+      switch(tag) {
+        case Fmt::View:
+          setColors(WHITE,BLUE);
+          clear();
+          break;
+        case Fmt::Title:setColors(BLUE,WHITE);break;
+        case Fmt::Item:setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);break;
+        case Fmt::NavCursor: put(ctx?ctx.enabled?'>':'-':' ');break;
+        default:break;
+      }
+    }
+
+    // stop --
+    void fmtStop(const Fmt tag,const Ctx& ctx) {
+      switch(tag) {
+        case Fmt::NavCursor: put(ctx?ctx.enabled?'>':'-':' ');break;
+        case Fmt::Item:
+          clearLine();
+          setColors(WHITE,BLUE);
+          break;
+        case Fmt::View:
+        case Fmt::Title:
+          clearLine();
+        default:break;
+      }
+    }
+  };
+};
+

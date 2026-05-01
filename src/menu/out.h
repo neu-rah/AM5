@@ -466,6 +466,14 @@ struct ClearFree {
     void clearLine() {Base::padWith(Base::freeX());Base::nl();}
     void clearFree() {do clearLine(); while(Base::freeY());}
   };
+  // #ifdef F0
+  //   template<Fmt tag>
+  //   std::enable_if_t<tag&Fmt::View>
+  //   fmtStart(const Ctx& ctx) {
+  //     setColors(WHITE,BLUE);
+  //     clear();
+  //   }
+  // #endif
 };
 
 struct Cursor {

@@ -77,16 +77,21 @@ using Printer=Chain<
 OutDef<
   Printer,
   #ifdef F0
-  ANSIFmt,//add some ANSI colors and format to the output
+    OldANSIFmt,
   #endif
   #ifdef F1
-    ANSICaseFmt,
+    ANSIChainFmt,
   #endif
   #ifdef F2
     ANSIFuncsFmt,
-  #ifdef F3
-    TextFmt,
   #endif
+  #ifdef F3
+    ANSICaseFmt,
+  #endif
+  #ifdef F4
+    ANSI_RTPFmt,
+  #endif
+  // TextFmt,
   DataParser<>,//put all data into characters
   CtrlChars,
   UTF8,//bypass UTF8 surrogate codes
@@ -107,24 +112,24 @@ OutDef<
   StaticArea<30,16>
 > out;
 
-// OutDef<
-//   DataParser<>,//put all data into characters
-//   CtrlChars,
-//   UTF8,//bypass UTF8 surrogate codes
-//   TextWrap,//long texts continue next line
-//   Clip,//keep content inside area
-//   ColorTrack<int>,//track color setting for device resume...
-//   Cursor,//track cursor position for resume...
-//   Gate,
-//   ANSIOut,//inject ansi codes into the next output device
-//   #ifdef __AVR__
-//     SerialOut,
-//   #else
-//     ConsoleOut,
-//   #endif
-//   StaticPos<20,26>,
-//   StaticArea<30,4>
-// > footer;
+OutDef<
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  ColorTrack<int>,//track color setting for device resume...
+  Cursor,//track cursor position for resume...
+  Gate,
+  ANSIOut,//inject ansi codes into the next output device
+  #ifdef __AVR__
+    SerialOut,
+  #else
+    ConsoleOut,
+  #endif
+  StaticPos<20,26>,
+  StaticArea<30,4>
+> footer;
 
 namespace text {
   static constexpr const CText main_menu{"Main menu"};
@@ -226,15 +231,15 @@ bool run() {
 void setup() {
   cout<<"AM5 R&D"<<endl;
 
-  syslog.lockMode(LockMode::None);
-  syslog.setColors(GREEN,BLACK);
-  syslog.clear();
-  syslog.put(".·•<::(log)::>•·.");
+  // syslog.lockMode(LockMode::None);
+  // syslog.setColors(GREEN,BLACK);
+  // syslog.clear();
+  // syslog.put(".·•<::(log)::>•·.");
 
-  footer.lockMode(LockMode::None);
-  footer.setColors(BLUE,BLACK);
-  footer.clear();
-  footer.put("footer");
+  // footer.lockMode(LockMode::None);
+  // footer.setColors(BLUE,BLACK);
+  // footer.clear();
+  // footer.put("footer");
 
   out.lockMode(LockMode::None);
   out.setColors(WHITE,BLACK);
