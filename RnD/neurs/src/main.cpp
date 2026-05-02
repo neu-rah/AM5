@@ -1,10 +1,11 @@
 // includes --
   #include <menu.h>
   #include <menu/IO/ansiOut.h>
-  // #include <menu/fmt/ansiFuncsFmt.h>
-  // #include <menu/fmt/textFmt.h>
+  #include <menu/fmt/textFmt.h>
   #include <menu/fmt/ansiFmt.h>
   #include <menu/IO/pcKbdIn.h>
+  #include <menu/body/cArrayBody.h>
+  #include <menu/body/stdBody.h>
   
   #ifdef __AVR__
     #include <menu/IO/arduino/serialOut.h>
@@ -12,44 +13,35 @@
     #include <streamFlow.h>
     using namespace StreamFlow;
     #define cout Serial
-    // #include <menu/sys/platform/avr/avr_std.h>
   #else
+    #include <vector>
     #include <menu/IO/streamOut.h>
     #include <menu/IO/linuxKeyIn.h>
-    // #include <iostream>
-    // #include <type_traits>
   #endif
   using namespace std;
 
 OutDef<
-  // TextFmt,
-  // DataParser<>,//put all data into characters
-  // CtrlChars,
-  // // UTF8,//bypass UTF8 surrogate codes
-  // TextWrap,//long texts continue next line
-  // Clip,//keep content inside area
-  // Buffer<>,
-  // ColorTrack<int>,
-  // Cursor,//track and report cursor movement
-  // Gate,//locks output for measuring and other operations
-  // ANSIOut,//inject ansi codes into the next output device
-  // #ifdef __AVR__
-  //   SerialOut,
-  // #else
-  //   ConsoleOut,
-  // #endif
-  // StaticPos<5,35>,
-  // StaticArea<80,10>
+  TextFmt,
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  // UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  Buffer<>,
+  ColorTrack<int>,
+  Cursor,//track and report cursor movement
+  Gate,//locks output for measuring and other operations
+  ANSIOut,//inject ansi codes into the next output device
+  #ifdef __AVR__
+    SerialOut,
+  #else
+    ConsoleOut,
+  #endif
+  StaticPos<5,35>,
+  StaticArea<80,10>
 > syslog;
 
 bool running=true;
-
-namespace action {
-  bool quit(Sz) {
-    running=false;
-    return true;
-  }
-};
 
 InDef<
   #ifdef ARDUINO
@@ -89,32 +81,31 @@ OutDef<
   Gate,
   ANSIOut,//inject ansi codes into the next output device
   #ifdef __AVR__
-  SerialOut,
+    SerialOut,
   #else
-  ConsoleOut,
+    ConsoleOut,
   #endif
-  FmtFuncsAPI,
   StaticPos<20,10>,
   StaticArea<30,16>
 > out;
 
 OutDef<
-  // DataParser<>,//put all data into characters
-  // CtrlChars,
-  // UTF8,//bypass UTF8 surrogate codes
-  // TextWrap,//long texts continue next line
-  // Clip,//keep content inside area
-  // ColorTrack<int>,//track color setting for device resume...
-  // Cursor,//track cursor position for resume...
-  // Gate,
-  // ANSIOut,//inject ansi codes into the next output device
-  // #ifdef __AVR__
-  //   SerialOut,
-  // #else
-  //   ConsoleOut,
-  // #endif
-  // StaticPos<20,26>,
-  // StaticArea<30,4>
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  ColorTrack<int>,//track color setting for device resume...
+  Cursor,//track cursor position for resume...
+  Gate,
+  ANSIOut,//inject ansi codes into the next output device
+  #ifdef __AVR__
+    SerialOut,
+  #else
+    ConsoleOut,
+  #endif
+  StaticPos<20,26>,
+  StaticArea<30,4>
 > footer;
 
 namespace text {
@@ -158,45 +149,238 @@ namespace desc {
   static constexpr const CText sub_sbody{"std::container with virtual items"};
 };
 
+enum ids {op3,power,container};
+
+namespace action {
+  bool op1(Sz) {
+    // syslog.setColors(GREEN,BLACK);
+    // syslog.clear();
+    syslog<<"option #1 action called."<<endl;
+    return true;
+  }
+  bool op2(Sz);
+  bool op3(Sz) {
+    // syslog.setColors(GREEN,BLACK);
+    // syslog.clear();
+    syslog<<"option #3 action called."<<endl;
+    return true;
+  }
+  bool quit(Sz) {
+    syslog.setColors(RED,BLACK);
+    syslog.erase();
+    syslog<<"Bye!"<<endl;
+    running=false;
+    return true;
+  }
+  bool subIdx(Sz i) {
+    // syslog.setColors(GREEN,BLACK);
+    // syslog.clear();
+    syslog<<"sub option #"<<i<<" selected."<<endl;
+    return false;
+  }
+}
+
 template<typename... OO> using Desc=OnFocus<typename Put<OO...>::template ToOut<decltype(footer),footer,Clear::yes>>;
+
 using Back=ItemDef</*CloseOnSelect,*/StaticText<text::back>,Desc<StaticText<desc::back>>>;
 using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>,Desc<StaticText<desc::quit>>>>;
 
-decltype(menuDef<Wraps::yes>(
-    Title<Text>{"Fields"},
-    staticBody(Back{})
-  )
-) fieldsMenu() {
-  return menuDef<Wraps::yes>(
-    Title<Text>{"Fields"},
-    staticBody(Back{})
+using CItem=ItemDef<Text>;
+
+CItem cBody[]{
+  "..",
+  ".pio/",
+  "src/",
+  "all of the same type.txt",
+  "platformio.ini",
+  "README.md"
+};
+
+bool stay(int i) {return true;}
+
+IItem* iBody[]{
+  new IItemDef<StaticText<text::op1>>{},
+  new IItemDef<StaticText<text::op2>>{},
+  new IItemDef<StaticText<text::op3>>{},
+  new IItemDef<Text>{"what else..."},
+  new IItemDef<Text,Desc<Text>,Action<stay>>{"Stay","select and stay!"},
+  new IItemDef<StaticText<text::back>>{}
+  // new Back::As<IItemDef>{}
+};
+
+using ChooseDemo=ChooseFieldDef<
+  Title<
+    StaticText<text::choose_demo>,
+    AsEditMode<>,//edit mode indicator
+    BodyAction<action::subIdx>
+  >,
+  StaticBody<//sub menu static body
+    ItemDef<AsField<StaticText<text::sub1>,AsUnit<StaticText<text::percent>>>>,
+    ItemDef<AsField<StaticText<text::sub2>,AsUnit<StaticText<text::percent>>>>,
+    ItemDef<AsField<StaticText<text::sub3>,AsUnit<StaticText<text::percent>>>>,
+    ItemDef<AsField<StaticText<text::sub4>,AsUnit<StaticText<text::percent>>>>,
+    ItemDef<AsField<StaticText<text::sub5>,AsUnit<StaticText<text::percent>>>>
+    //,Back <--//TODO: extend the enter nav to this level and respect the handling (same as esc)
+  >,
+  Wraps::yes
+>;
+
+using SelectDemo=SelectFieldDef<
+  Title<
+    AsLabel<StaticText<text::select_demo>>,
+    AsEditMode<>,//edit mode indicator
+    BodyAction<action::subIdx>
+  >,
+  StaticBody<//sub menu static body
+    ItemDef<AsField<StaticText<text::sub1>>>,
+    ItemDef<AsField<StaticText<text::sub2>>>,
+    ItemDef<AsField<StaticText<text::sub3>>>,
+    ItemDef<AsField<StaticText<text::sub4>>>,
+    ItemDef<AsField<StaticText<text::sub5>>>
+  >,
+  Wraps::yes
+>;
+
+//a Map operation, this operation will fit Map<> and will insert OO... components into the chain
+template<typename... OO> struct Ins {template<typename M>  using Map=typename M::template Ins<OO...>;};
+template<typename... OO> struct App {template<typename M>  using Map=typename M::template App<OO...>;};
+
+using ToggleDemo=ToggleFieldDef<
+  ItemDef<BodyAction<action::subIdx>,Text,AsEditMode<>>,
+  StaticBody<
+    ItemDef<AsField<StaticText<text::no>>>,
+    ItemDef<AsField<StaticText<text::yes>>>,
+    ItemDef<AsField<Text>>
+  >
+>;
+
+using Power=NumFieldDef<
+  Chain<
+    Id<ids::power>,
+    AsLabel<StaticText<text::power>>//field label
+  >,
+  NumField<//use range to change the data
+    StaticNumRange<int,0,100,Wraps::no>,//valid range
+    ItemNav,
+    Watch<AsField<Default<int,55>,Int>>//use `int` and `change watch` as field (data)
+  >,
+  AsUnit<StaticText<text::percent>>//field unit
+>;
+
+// date field generating function
+auto dateField(const char*lbl) {
+  return padDef(
+    ItemDef<Text,ParentDraw,ItemNav>{lbl},
+    staticBody(
+      ItemDef<
+        EditField,ParentDraw,AsEditMode<>,ItemNav,
+        NumField<StaticNumRange<int,1900,2050,Wraps::yes>,
+        Watch<AsField<Default<int,2026>,Int>>>
+      >{2026},
+      ItemDef<
+        StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+        NumField<StaticNumRange<int,1,12,Wraps::yes>,
+        Watch<AsField<Int>>>
+      >{1},
+      ItemDef<
+        StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+        NumField<StaticNumRange<int,1,31,Wraps::yes>,
+        Watch<AsField<Int>>>
+      >{1}
+    )
   );
 }
 
-auto tinyMenu=menuDef<Wraps::yes>(
-  ItemDef<Text>{"Title"},
+auto mainMenu=menuDef<Wraps::yes>(
+  ItemDef<Text,ItemNav>{"Main menu"},
   staticBody(
-    ItemDef<Text>{"yawn!"},
-    ItemDef<Text>{"wtf!"},
-    fieldsMenu(),
-    ItemDef<Menu<
-      Title<Text>,
-      StaticBody<
-        ItemDef<Text>,
-        ItemDef<Text>
-      >,
-      Wraps::no,
-      Pad::no
-    >>{{"Sub-menu"},{"just testing","..."}},
+    ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
+    ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
+    ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
+    menuDef<Wraps::yes>(
+      Title<ItemNav,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
+      staticBody(
+        Power{},
+        ToggleDemo{"Toggle","Maybe"},
+        // SelectDemo{},
+        // ChooseDemo{},
+        dateField("date:"),
+        Back{}
+      )
+    ),
+    // MenuDef<//sub menu with C array body (all items of the same type)
+    //   Title<
+    //     BodyAction<action::subIdx>,
+    //     ItemNav,
+    //     StaticText<text::array_sub_menu>,
+    //     Desc<StaticText<desc::array_sub_menu>>
+    //   >,
+    //   CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>,
+    //   Wraps::no,
+    //   Pad::no
+    // >{},
+    // #ifndef __AVR__
+    //   MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
+    //     Title<BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
+    //     CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>,
+    //     Wraps::yes,
+    //     Pad::no
+    //   >{},
+    //   MenuDef<
+    //     Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
+    //     StdBody<vector<IItem*>>,
+    //     Wraps::yes,
+    //     Pad::no
+    //   >{},
+    // #endif
     Quit{}
   )
 );
 
+// decltype(menuDef<Wraps::yes>(
+//     Title<Text>{"Fields"},
+//     staticBody(Back{})
+//   )
+// ) fieldsMenu() {
+//   return menuDef<Wraps::yes>(
+//     Title<Text>{"Fields"},
+//     staticBody(Back{})
+//   );
+// }
+
+// auto tinyMenu=menuDef<Wraps::yes>(
+//   ItemDef<Text>{"Title"},
+//   staticBody(
+//     ItemDef<Text>{"yawn!"},
+//     ItemDef<Text>{"wtf!"},
+//     fieldsMenu(),
+//     ItemDef<Menu<
+//       Title<Text>,
+//       StaticBody<
+//         ItemDef<Text>,
+//         ItemDef<Text>
+//       >,
+//       Wraps::no,
+//       Pad::no
+//     >>{{"Sub-menu"},{"just testing","..."}},
+//     Quit{}
+//   )
+// );
+
 NavDef<
   TreeNav,
-  Root<decltype(tinyMenu),tinyMenu>
+  Root<decltype(mainMenu),mainMenu>
 > nav;
 
+bool action::op2(Sz) {
+  // syslog.setColors(GREEN,BLACK);
+  // syslog.clear();
+  syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
+  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  return true;
+}
+
+//================================================================================================--
 bool run() {
   static TinyTimeUtils::FPS<60> fps;
   if(fps) {
@@ -214,15 +398,15 @@ bool run() {
 void setup() {
   cout<<"AM5 R&D"<<endl;
 
-  // syslog.lockMode(LockMode::None);
-  // syslog.setColors(GREEN,BLACK);
-  // syslog.clear();
-  // syslog.put(".·•<::(log)::>•·.");
+  syslog.lockMode(LockMode::None);
+  syslog.setColors(GREEN,BLACK);
+  syslog.clear();
+  syslog.put(".·•<::(log)::>•·.");
 
-  // footer.lockMode(LockMode::None);
-  // footer.setColors(BLUE,BLACK);
-  // footer.clear();
-  // footer.put("footer");
+  footer.lockMode(LockMode::None);
+  footer.setColors(BLUE,BLACK);
+  footer.clear();
+  footer.put("footer");
 
   out.lockMode(LockMode::None);
   out.setColors(WHITE,BLACK);
@@ -231,7 +415,8 @@ void setup() {
 }
 
 int main(){
- setup();
+  setup();
+  nav.go(3);
   while(run());
   out.setPos({0,50});
   out.put("end.");

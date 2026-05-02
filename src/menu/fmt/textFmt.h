@@ -14,8 +14,8 @@
 
 struct TextFmt {
   template<typename O>
-  struct Part:Formats<O>,UseEditCursorFmt::template Part<O> {
-    using Base=typename UseEditCursorFmt::template Part<O>;
+  struct Part:Formats::template Part<O> {
+    using Base=typename Formats::template Part<O>;
     using Base::nl;
     using Base::fmtStart;
     using Base::fmtStop;

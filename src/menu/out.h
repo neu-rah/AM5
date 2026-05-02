@@ -101,8 +101,8 @@ template<typename... OO>
 struct OutDef:DefinedOut<OutAPI<CRTP<OutDef<OO...>>>,OO...>{};
 
 struct IOut {
-  virtual void mode(LockMode)=0;
-  virtual LockMode mode()=0;
+  virtual void lockMode(LockMode)=0;
+  virtual LockMode lockMode()=0;
   virtual void resume()=0;
   virtual void fmtStart(Fmt,const Ctx&)=0;
   virtual void fmtStop(Fmt,const Ctx&)=0;
@@ -128,8 +128,8 @@ template<typename... OO>
 struct IOutDef:IOut,DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>{
   using IOut::pos;
   using Base=DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>;
-  virtual void mode(LockMode m) {Base::mode(m);}
-  virtual LockMode mode() {return Base::mode();}
+  virtual void lockMode(LockMode m) {Base::lockMode(m);}
+  virtual LockMode lockMode() {return Base::lockMode();}
   virtual void resume() override {Base::resume();}
   using Base::fmtStart;
   using Base::fmtStop;
@@ -574,7 +574,7 @@ struct Buffer {
     void sync() {m_changed=false;}
 
     void print() {
-      Base::mode(LockMode::None);
+      Base::lockMode(LockMode::None);
       Base::clear();
       Base::resume();
       Sz at=0;
@@ -582,7 +582,7 @@ struct Buffer {
         for(Sz x=0;x<width();x++,at++) Base::put(buffer[at]);
         Base::nl();
       }
-      Base::mode(LockMode::Measure);
+      Base::lockMode(LockMode::Measure);
     }
     protected:
       bool m_changed{true};
