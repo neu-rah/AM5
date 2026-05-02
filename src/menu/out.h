@@ -76,8 +76,8 @@ struct OutLink:N {
 template<typename API,typename... OO> struct DefinedOut;
 
 template<typename API,typename O,typename... OO>
-struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>::template Map<OutLink>{
-  using Base=typename APIOf<API,O,OO...>::template Map<OutLink>;
+struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>{//::template Map<OutLink>{
+  using Base=APIOf<API,O,OO...>;//::template Map<OutLink>;
   using Base::printItem;
   using Base::obj;
   static_assert(Base::template Excludes<IsCursor>::value||Base::template Requires<IsDataParser>::value,"Cursor requires preseeding DataParser<>");

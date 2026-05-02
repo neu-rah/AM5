@@ -36,44 +36,36 @@ struct OldANSIFmt {
     fmtStart(const Ctx& ctx) {
       setColors(WHITE,BLUE);
       clear();
-      // Base::template fmtStart<tag>(ctx);
+      Base::template fmtStart<tag>(ctx);
     }
 
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::Title>
     fmtStart(const Ctx& ctx) {
       setColors(BLUE,WHITE);
-      // Base::template fmtStart<tag>(ctx);
+      Base::template fmtStart<tag>(ctx);
     }
 
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::Item>
     fmtStart(const Ctx& ctx) {
       setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);
-      // Base::template fmtStart<tag>(ctx);
+      Base::template fmtStart<tag>(ctx);
     }
 
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::NavCursor>
     fmtStart(const Ctx& ctx) {
       put(ctx?ctx.enabled?'>':'-':' ');
-      // Base::template fmtStart<tag>(ctx);
+      Base::template fmtStart<tag>(ctx);
     }
 
     // stop ---
-    // template<Fmt tag>
-    // std::enable_if_t<tag&(Fmt::View)>
-    // fmtStop(const Ctx& ctx) {
-    //   Base::clearFree();
-    //   // Base::template fmtStop<tag>(ctx);
-    // }
-
     template<Fmt tag>
     std::enable_if_t<tag&(Fmt::Title|Fmt::Item)>
     fmtStop(const Ctx& ctx) {
-      // Base::clearLine();
       setColors(WHITE,BLUE);
-      // Base::template fmtStop<tag>(ctx);
+      Base::template fmtStop<tag>(ctx);
     }
 
   };
@@ -95,12 +87,13 @@ struct TitleFmt {
     std::enable_if_t<tag&Fmt::Title>
     fmtStart(const Ctx& ctx) {
       setColors(BLUE,WHITE);
-      // Base::template fmtStart<tag>(ctx);
+      Base::template fmtStart<tag>(ctx);
     }
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::Title>
     fmtStop(const Ctx& ctx) {
       setColors(WHITE,BLUE);
+      Base::template fmtStop<tag>(ctx);
     }
   };
 };
@@ -120,11 +113,13 @@ struct ItemFmt {
     std::enable_if_t<tag&Fmt::Item>
     fmtStart(const Ctx& ctx) {
       setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);
+      Base::template fmtStart<tag>(ctx);
     }
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::Item>
     fmtStop(const Ctx& ctx) {
       setColors(WHITE,BLUE);
+      Base::template fmtStop<tag>(ctx);
     }
   };
 };
@@ -144,7 +139,7 @@ struct NavCursorFmt {
     std::enable_if_t<tag&Fmt::NavCursor>
     fmtStart(const Ctx& ctx) {
       put(ctx?ctx.enabled?'>':'-':' ');
-      // Base::template fmtStart<tag>(ctx);
+      Base::template fmtStart<tag>(ctx);
     }
   };
 };
@@ -205,7 +200,7 @@ struct ANSICaseFmt {
         case Fmt::NavCursor: put(ctx?ctx.enabled?'>':'-':' ');break;
         default:break;
       }
-      // Base::template fmtStart<tag>(ctx);
+      Base::template fmtStart<tag>(ctx);
     }
 
     // stop --
@@ -222,7 +217,7 @@ struct ANSICaseFmt {
           clearLine();
         default:break;
       }
-      // Base::template fmtStop<tag>(ctx);
+      Base::template fmtStop<tag>(ctx);
     }
   };
 };
@@ -241,11 +236,11 @@ struct ANSI_RTPFmt {
 
     template<Fmt tag> void fmtStart(const Ctx& ctx) {
       fmtStart(tag,ctx);
-      // Base::template fmtStart<tag>(ctx);
+      Base::template fmtStart<tag>(ctx);
     }
     template<Fmt tag> void fmtStop (const Ctx& ctx) {
       fmtStop(tag,ctx);
-      // Base::template fmtStop<tag>(ctx);
+      Base::template fmtStop<tag>(ctx);
     }
 
 
@@ -281,4 +276,4 @@ struct ANSI_RTPFmt {
 };
 
 //--
-using ANSIFmt=ANSIFuncsFmt;
+// using ANSIFmt=ANSIFuncsFmt;
