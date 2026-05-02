@@ -66,11 +66,11 @@ using Printer=Chain<
   >
 >;
 
-OutDef<
+IOutDef<
   Printer,
   ANSIFmt,//add some ANSI colors and format to the output
   // TextFmt,
-  ClearFreeFmt,
+  ClearFreeFmt,//this can take a lot of burden away from user format
   DataParser<>,//put all data into characters
   CtrlChars,
   UTF8,//bypass UTF8 surrogate codes
@@ -153,16 +153,16 @@ enum ids {op3,power,container};
 
 namespace action {
   bool op1(Sz) {
-    // syslog.setColors(GREEN,BLACK);
-    // syslog.clear();
+    syslog.resume();
     syslog<<"option #1 action called."<<endl;
+    out.resume();
     return true;
   }
   bool op2(Sz);
   bool op3(Sz) {
-    // syslog.setColors(GREEN,BLACK);
-    // syslog.clear();
+    syslog.resume();
     syslog<<"option #3 action called."<<endl;
+    out.resume();
     return true;
   }
   bool quit(Sz) {
@@ -173,9 +173,9 @@ namespace action {
     return true;
   }
   bool subIdx(Sz i) {
-    // syslog.setColors(GREEN,BLACK);
-    // syslog.clear();
+    syslog.resume();
     syslog<<"sub option #"<<i<<" selected."<<endl;
+    out.resume();
     return false;
   }
 }
@@ -308,73 +308,41 @@ auto mainMenu=menuDef<Wraps::yes>(
         Back{}
       )
     ),
-    // MenuDef<//sub menu with C array body (all items of the same type)
-    //   Title<
-    //     BodyAction<action::subIdx>,
-    //     ItemNav,
-    //     StaticText<text::array_sub_menu>,
-    //     Desc<StaticText<desc::array_sub_menu>>
-    //   >,
-    //   CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>,
-    //   Wraps::no,
-    //   Pad::no
-    // >{},
-    // #ifndef __AVR__
-    //   MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
-    //     Title<BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
-    //     CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>,
-    //     Wraps::yes,
-    //     Pad::no
-    //   >{},
-    //   MenuDef<
-    //     Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
-    //     StdBody<vector<IItem*>>,
-    //     Wraps::yes,
-    //     Pad::no
-    //   >{},
-    // #endif
+    MenuDef<//sub menu with C array body (all items of the same type)
+      Title<
+        BodyAction<action::subIdx>,
+        ItemNav,
+        StaticText<text::array_sub_menu>,
+        Desc<StaticText<desc::array_sub_menu>>
+      >,
+      CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>,
+      Wraps::no,
+      Pad::no
+    >{},
+    #ifndef __AVR__
+      MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
+        Title<BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
+        CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>,
+        Wraps::yes,
+        Pad::no
+      >{},
+      MenuDef<
+        Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
+        StdBody<vector<IItem*>>,
+        Wraps::yes,
+        Pad::no
+      >{},
+    #endif
     Quit{}
   )
 );
 
-// decltype(menuDef<Wraps::yes>(
-//     Title<Text>{"Fields"},
-//     staticBody(Back{})
-//   )
-// ) fieldsMenu() {
-//   return menuDef<Wraps::yes>(
-//     Title<Text>{"Fields"},
-//     staticBody(Back{})
-//   );
-// }
-
-// auto tinyMenu=menuDef<Wraps::yes>(
-//   ItemDef<Text>{"Title"},
-//   staticBody(
-//     ItemDef<Text>{"yawn!"},
-//     ItemDef<Text>{"wtf!"},
-//     fieldsMenu(),
-//     ItemDef<Menu<
-//       Title<Text>,
-//       StaticBody<
-//         ItemDef<Text>,
-//         ItemDef<Text>
-//       >,
-//       Wraps::no,
-//       Pad::no
-//     >>{{"Sub-menu"},{"just testing","..."}},
-//     Quit{}
-//   )
-// );
-
-NavDef<
+INavDef<
   TreeNav,
   Root<decltype(mainMenu),mainMenu>
 > nav;
 
 bool action::op2(Sz) {
-  // syslog.setColors(GREEN,BLACK);
-  // syslog.clear();
   syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
   mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
@@ -398,6 +366,13 @@ bool run() {
 void setup() {
   cout<<"AM5 R&D"<<endl;
 
+  #ifndef __AVR__
+    //populate std container menu
+    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
+    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
+    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
+  #endif
+
   syslog.lockMode(LockMode::None);
   syslog.setColors(GREEN,BLACK);
   syslog.clear();
@@ -416,7 +391,8 @@ void setup() {
 
 int main(){
   setup();
-  nav.go(3);
+  // nav.go(3);
+  // nav.enter();
   while(run());
   out.setPos({0,50});
   out.put("end.");

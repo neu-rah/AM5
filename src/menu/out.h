@@ -464,20 +464,6 @@ struct CtrlChars {
   };
 };
 
-// struct ClearFree {
-//   template<typename O>
-//   struct Part:O {
-//     static_assert(O::template Requires<IsCursor>::value,"ClearFree needs a valid Cursor (IsCursor class) not the API default fallback");
-//     using Base=O;
-//   };
-//     // template<Fmt tag>
-//     // std::enable_if_t<tag&Fmt::View>
-//     // fmtStart(const Ctx& ctx) {
-//     //   setColors(WHITE,BLUE);
-//     //   clear();
-//     // }
-// };
-
 struct Cursor {
   template<typename O>
   struct Part:O {
@@ -489,8 +475,8 @@ struct Cursor {
     using Base::obj;
     using Base::height;
     using Base::width;
-    void clearLine() {Base::padWith(Base::freeX());Base::nl();}
-    void clearFree() {do clearLine(); while(Base::freeY());}
+    void clearLine() {Base::padWith(freeX());nl();}
+    void clearFree() {do clearLine(); while(freeY());}
     Sz fieldWidth() const {return m_fieldWidth;}
     Pos pos() const {return m_at;}
     Sz posX() const {return m_at.x;}

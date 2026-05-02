@@ -85,13 +85,13 @@ template<Depth depth> struct PathData {
 struct Ctx {
   Path path{};//full path
   NavMode mode{NavMode::Nav};
-  Depth pAt{0};//print level
-  bool enabled{true};
-  Sz* tops{nullptr};
+  Depth pAt{0};//print level mark
+  bool enabled{true};//collected from target item
+  Sz* tops{nullptr};//given by nav (nav+output specialized)
   //--------
-  Depth at{0};
+  Depth at{0};//depth level counter
   Sz prev{0};
-  bool pad{false};
+  bool pad{false};//pad printing?
   Sz idx{0};
   Ctx(
     Path path,

@@ -53,7 +53,7 @@ struct Menu {
           ctx.pAt,
           ctx.enabled,
           ctx.tops,
-          (Depth)(ctx.at+1),
+          ctx.at,//(Depth)(ctx.at+1),
           0,
           true,
           0
@@ -76,18 +76,18 @@ struct Menu {
         return m_body.printMenu(out,tmp,ctx.path.data[(int)ctx.at]);
       }
       if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
-        // dout<<xy<0,23><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
+        dout<<xy<0,23><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
         Ctx padCtx{
           ctx.path,//ctx.printAt>0?ctx.path.next():ctx.path,
           ctx.mode,
           ctx.pAt,
           ctx.enabled,
           ctx.tops,
-          (Depth)(ctx.at+1),
+          ctx.at,//(Depth)(ctx.at+1),
           0,
           true
         };
-        // dout<<xy<0,24><<colors<YELLOW,BLACK><<"*padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
+        dout<<xy<0,24><<colors<YELLOW,BLACK><<"*padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
         m_body.printBody(out,padCtx);
       }
       bool r=out.printMenu(/*obj()*/*this,ctx);// print the target menu

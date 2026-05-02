@@ -17,11 +17,15 @@ struct ClearFreeFmt {
     using Base=O;
     using Base::fmtStart;
     using Base::fmtStop;
-    void clearLine() {Base::padWith(Base::freeX());Base::nl();}
-    void clearFree() {do clearLine(); while(Base::freeY());}
-    template<Fmt tag> void fmtStop(const Ctx& ctx) {
-      if(tag&Fmt::View)clearFree();
-      else if(tag&(Fmt::Title|Fmt::Item))clearLine();
+    using Base::clear;
+    using Base::clearLine;
+    using Base::clearFree;
+    using Base::setColors;
+    template<Fmt tag> 
+    std::enable_if_t<tag&(Fmt::Title|Fmt::Item)>
+    fmtStop(const Ctx& ctx) {
+      clearLine();
+      Base::template fmtStop<tag>(ctx);
     }
   };
 };
