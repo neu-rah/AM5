@@ -62,14 +62,14 @@ struct OutLink:N {
   struct Part:N::template Part<O> {
     using Base=typename N::template Part<O>;
     using Base::Base;
-    template<Fmt tag> void fmtStart(const Ctx& ctx) {
-      Base::template fmtStart<tag>(ctx);
-      O::template fmtStart<tag>(ctx);
-    }
-    template<Fmt tag> void fmtStop(const Ctx& ctx) {
-      O::template fmtStop<tag>(ctx);
-      Base::template fmtStop<tag>(ctx);
-    }
+    // template<Fmt tag> void fmtStart(const Ctx& ctx) {
+    //   Base::template fmtStart<tag>(ctx);
+    //   O::template fmtStart<tag>(ctx);
+    // }
+    // template<Fmt tag> void fmtStop(const Ctx& ctx) {
+    //   O::template fmtStop<tag>(ctx);
+    //   Base::template fmtStop<tag>(ctx);
+    // }
   };
 };
 

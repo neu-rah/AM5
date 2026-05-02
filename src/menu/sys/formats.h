@@ -19,8 +19,10 @@ struct ClearFreeFmt {
     using Base::fmtStop;
     void clearLine() {Base::padWith(Base::freeX());Base::nl();}
     void clearFree() {do clearLine(); while(Base::freeY());}
-    template<Fmt tag> std::enable_if_t<tag&Fmt::View> fmtStop(const Ctx& ctx) {clearFree();}
-    template<Fmt tag> std::enable_if_t<tag&(Fmt::Title|Fmt::Item)> fmtStop(const Ctx& ctx) {clearLine();}
+    template<Fmt tag> void fmtStop(const Ctx& ctx) {
+      if(tag&Fmt::View)clearFree();
+      else if(tag&(Fmt::Title|Fmt::Item))clearLine();
+    }
   };
 };
 

@@ -92,8 +92,8 @@ struct TitleFmt {
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::Title>
     fmtStop(const Ctx& ctx) {
-      setColors(WHITE,BLUE);
       Base::template fmtStop<tag>(ctx);
+      setColors(WHITE,BLUE);
     }
   };
 };
@@ -118,8 +118,8 @@ struct ItemFmt {
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::Item>
     fmtStop(const Ctx& ctx) {
-      setColors(WHITE,BLUE);
       Base::template fmtStop<tag>(ctx);
+      setColors(WHITE,BLUE);
     }
   };
 };
@@ -165,9 +165,7 @@ struct ANSIFuncsFmt {
     }
     void titleStart(const Ctx& ctx) {setColors(BLUE,WHITE);}
     void itemStart(const Ctx& ctx) {setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);}
-
-    void navCursorStart(const Ctx& ctx) 
-      {put(ctx?ctx.enabled?'>':'-':' ');}
+    void navCursorStart(const Ctx& ctx) {put(ctx?ctx.enabled?'>':'-':' ');}
 
     // stop --
     void itemStop(const Ctx& ctx) {setColors(WHITE,BLUE);}
@@ -206,18 +204,8 @@ struct ANSICaseFmt {
     // stop --
     template<Fmt tag>
     void fmtStop(const Ctx& ctx) {
-      switch(tag) {
-        case Fmt::NavCursor: put(ctx?ctx.enabled?'>':'-':' ');break;
-        case Fmt::Item:
-          clearLine();
-          setColors(WHITE,BLUE);
-          break;
-        case Fmt::View:
-        case Fmt::Title:
-          clearLine();
-        default:break;
-      }
       Base::template fmtStop<tag>(ctx);
+      if(tag==Fmt::Item) setColors(WHITE,BLUE);
     }
   };
 };
@@ -239,8 +227,8 @@ struct ANSI_RTPFmt {
       Base::template fmtStart<tag>(ctx);
     }
     template<Fmt tag> void fmtStop (const Ctx& ctx) {
-      fmtStop(tag,ctx);
       Base::template fmtStop<tag>(ctx);
+      fmtStop(tag,ctx);
     }
 
 
@@ -259,21 +247,9 @@ struct ANSI_RTPFmt {
     }
 
     // stop --
-    void fmtStop(const Fmt tag,const Ctx& ctx) {
-      switch(tag) {
-        case Fmt::NavCursor: put(ctx?ctx.enabled?'>':'-':' ');break;
-        case Fmt::Item:
-          clearLine();
-          setColors(WHITE,BLUE);
-          break;
-        case Fmt::View:
-        case Fmt::Title:
-          clearLine();
-        default:break;
-      }
-    }
+    void fmtStop(const Fmt tag,const Ctx& ctx) {if(tag==Fmt::Item) setColors(WHITE,BLUE);}
   };
 };
 
 //--
-// using ANSIFmt=ANSIFuncsFmt;
+using ANSIFmt=ANSICaseFmt;
