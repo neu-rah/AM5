@@ -91,14 +91,15 @@ OutDef<
   #ifdef F4
     ANSI_RTPFmt,
   #endif
+  // ANSIFmt,
   // TextFmt,
+  ClearFreeFmt,//clear free space
   DataParser<>,//put all data into characters
   CtrlChars,
   UTF8,//bypass UTF8 surrogate codes
   TextWrap,//long texts continue next line
   Clip,//keep content inside area
   ColorTrack<int>,//track color setting for device resume...
-  ClearFree,//clear free space
   Cursor,//track cursor position for resume...
   Gate,
   ANSIOut,//inject ansi codes into the next output device
@@ -216,7 +217,7 @@ NavDef<
 > nav;
 
 bool run() {
-  static TinyTimeUtils::FPS<60> fps;
+  static TinyTimeUtils::FPS<600> fps;
   if(fps) {
     fps.reset();
     nav.in(in);

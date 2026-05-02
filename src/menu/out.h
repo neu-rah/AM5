@@ -50,6 +50,8 @@ struct OutAPI:Cfg {
   template<typename T> static constexpr void put(const T&) {}
   template<Fmt tag> static constexpr void fmtStart(const Ctx& ctx) {}
   template<Fmt tag> static constexpr void fmtStop(const Ctx& ctx) {}
+  // static constexpr void fmtStart(Fmt tag,const Ctx& ctx) {}
+  // static constexpr void fmtStop (Fmt tag,const Ctx& ctx) {}
   template<typename Item> static constexpr bool printItem(Item& item,Ctx& ctx) {return false;}
   template<typename Item> static constexpr bool printMenu(Item& item,Ctx& ctx) {return false;}
 };
@@ -60,14 +62,22 @@ struct OutLink:N {
   struct Part:N::template Part<O> {
     using Base=typename N::template Part<O>;
     using Base::Base;
+    template<Fmt tag> void fmtStart(const Ctx& ctx) {
+      Base::template fmtStart<tag>(ctx);
+      O::template fmtStart<tag>(ctx);
+    }
+    template<Fmt tag> void fmtStop(const Ctx& ctx) {
+      O::template fmtStop<tag>(ctx);
+      Base::template fmtStop<tag>(ctx);
+    }
   };
 };
 
 template<typename API,typename... OO> struct DefinedOut;
 
 template<typename API,typename O,typename... OO>
-struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>{//}::template Map<OutLink>{
-  using Base=APIOf<API,O,OO...>;//::template Map<OutLink>;
+struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>::template Map<OutLink>{
+  using Base=typename APIOf<API,O,OO...>::template Map<OutLink>;
   using Base::printItem;
   using Base::obj;
   static_assert(Base::template Excludes<IsCursor>::value||Base::template Requires<IsDataParser>::value,"Cursor requires preseeding DataParser<>");
@@ -257,10 +267,6 @@ struct DeviceCursor {
       m_editing=true;
       m_text_cursor_at=F::obj().pos();
     }
-    // template<Fmt tag>
-    // std::enable_if_t<tag&(~Fmt::EditCursor)> fmtStop(const Ctx& ctx) {
-    //   Base::template fmtStop<tag>(ctx);
-    // }
   protected:
     Pos m_text_cursor_at{0,0};
     bool m_editing{false};
@@ -426,7 +432,7 @@ struct Clip {
     using IsParser=std::true_type;
     static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed Clip");
     static_assert(O::template Requires<IsCursor>::value,"Clip needs Cursor");
-    static_assert(O::template Requires<Class<Gate>>::value,"Clip needs Gate following");
+    // static_assert(O::template Requires<Class<Gate>>::value,"Clip needs Gate following");
     using Base=O;
     using This=Part<O>;
     using Base::put;
@@ -458,23 +464,19 @@ struct CtrlChars {
   };
 };
 
-struct ClearFree {
-  template<typename O>
-  struct Part:O {
-    static_assert(O::template Requires<IsCursor>::value,"ClearFree needs a valid Cursor (IsCursor class) not the API default fallback");
-    using Base=O;
-    void clearLine() {Base::padWith(Base::freeX());Base::nl();}
-    void clearFree() {do clearLine(); while(Base::freeY());}
-  };
-  // #ifdef F0
-  //   template<Fmt tag>
-  //   std::enable_if_t<tag&Fmt::View>
-  //   fmtStart(const Ctx& ctx) {
-  //     setColors(WHITE,BLUE);
-  //     clear();
-  //   }
-  // #endif
-};
+// struct ClearFree {
+//   template<typename O>
+//   struct Part:O {
+//     static_assert(O::template Requires<IsCursor>::value,"ClearFree needs a valid Cursor (IsCursor class) not the API default fallback");
+//     using Base=O;
+//   };
+//     // template<Fmt tag>
+//     // std::enable_if_t<tag&Fmt::View>
+//     // fmtStart(const Ctx& ctx) {
+//     //   setColors(WHITE,BLUE);
+//     //   clear();
+//     // }
+// };
 
 struct Cursor {
   template<typename O>
@@ -487,6 +489,8 @@ struct Cursor {
     using Base::obj;
     using Base::height;
     using Base::width;
+    void clearLine() {Base::padWith(Base::freeX());Base::nl();}
+    void clearFree() {do clearLine(); while(Base::freeY());}
     Sz fieldWidth() const {return m_fieldWidth;}
     Pos pos() const {return m_at;}
     Sz posX() const {return m_at.x;}

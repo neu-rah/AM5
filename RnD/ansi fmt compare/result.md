@@ -16,21 +16,21 @@ Building in release mode
 
 Processing F0 (board: uno; platform: atmelavr; framework: arduino)
 RAM:   [==        ]  20.0% (used 409 bytes from 2048 bytes)
-Flash: [==        ]  19.4% (used 6266 bytes from 32256 bytes)
+Flash: [==        ]  19.9% (used 6430 bytes from 32256 bytes)
 
 Processing F1 (board: uno; platform: atmelavr; framework: arduino)
 RAM:   [==        ]  20.0% (used 409 bytes from 2048 bytes)
-Flash: [==        ]  19.8% (used 6372 bytes from 32256 bytes)
+Flash: [==        ]  20.0% (used 6456 bytes from 32256 bytes)
 
 Processing F2 (board: uno; platform: atmelavr; framework: arduino)
 RAM:   [==        ]  20.0% (used 409 bytes from 2048 bytes)
-Flash: [==        ]  19.4% (used 6266 bytes from 32256 bytes)
+Flash: [==        ]  19.9% (used 6414 bytes from 32256 bytes)
 
 Processing F3 (board: uno; platform: atmelavr; framework: arduino)
 RAM:   [==        ]  20.0% (used 409 bytes from 2048 bytes)
-Flash: [==        ]  19.5% (used 6290 bytes from 32256 bytes)
+Flash: [==        ]  20.0% (used 6466 bytes from 32256 bytes)
 
 Processing F4 (board: uno; platform: atmelavr; framework: arduino)
 RAM:   [==        ]  20.0% (used 409 bytes from 2048 bytes)
-Flash: [==        ]  18.8% (used 6060 bytes from 32256 bytes)
+Flash: [==        ]  20.7% (used 6662 bytes from 32256 bytes)
 ```
