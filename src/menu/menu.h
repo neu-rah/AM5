@@ -108,7 +108,7 @@ struct Menu {
     template<typename Nav> 
     bool nav(Nav& n,const CKE& cke,Path p) {
       if(p.len>0&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
-      // if (m_title.nav(n,cke,p)) return true;
+      if (m_title.nav(n,cke,p)) return true;
       if(Base::nav(n,cke,p)) return true;
       return p.len?n.doNav(cke,size(),w):false;
     }

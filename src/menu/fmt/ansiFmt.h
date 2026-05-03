@@ -33,9 +33,10 @@ struct ANSIFmt {
           setColors(WHITE,BLUE);
           clear();
           break;
+        case Fmt::Field: setColors(YELLOW,BLUE);break;
         case Fmt::Title: setColors(BLUE,WHITE);break;
         case Fmt::Item: 
-          dout.xy(0,1+ctx.idx);dout<<colors<RED,BLACK><<ctx<<padWith<10><<flush;resume();
+          // dout.xy(0,1+ctx.idx);dout<<colors<RED,BLACK><<ctx<<padWith<10><<flush;resume();
           setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);
           break;
         case Fmt::NavCursor: put(ctx?ctx.enabled?'>':'-':' ');break;
@@ -49,7 +50,11 @@ struct ANSIFmt {
     template<Fmt tag>
     void fmtStop(const Ctx& ctx) {
       Base::template fmtStop<tag>(ctx);
-      if(tag==Fmt::Item) setColors(WHITE,BLUE);
+      switch(tag) {
+        case Fmt::Field:
+        case Fmt::Item: setColors(WHITE,BLUE);break;
+        default:break;
+      }
     }
   };
 };

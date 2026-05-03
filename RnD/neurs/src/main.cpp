@@ -390,12 +390,9 @@ void setup() {
 }
 
 int main(){
-  setup();
-  // nav.go(3);
-  // nav.enter();
-  while(run());
-  out.setPos({0,50});
-  out.put("end.");
-  out.nl();
+  // setup();
+  // while(run());
+  dout<<xy<0,50><<"end."<<endl;
+  cout<<decltype(dateField("what?"))::depth()<<endl;
   return 0;
 }

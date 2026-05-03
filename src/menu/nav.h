@@ -133,6 +133,7 @@ struct TreeNav {
 
     bool padOpen() {
       if(m_level.get()<depth()) {
+        // dout<<xy<0,2><<colors<BLUE,BLACK><<"padOpen |"<<cnt<>++<<padWith<10><<flush;
         m_level.set(m_level+1);
         m_path.data[m_level]=0;
         if(m_level.get()<m_print_level) m_print_level=m_level;
@@ -141,6 +142,7 @@ struct TreeNav {
     }
     bool open() {
       if(padOpen()) {
+        // dout<<xy<0,1><<colors<BLUE,BLACK><<"open |"<<cnt<>++<<padWith<10><<flush;
         m_print_level=m_level;
         return true;
       } else return false;

@@ -9,7 +9,7 @@
 /// is implicitly: a RecallDraw and Recall
 struct ToggleBehave {
   template<typename I>
-  struct Part:RecallNavPos::Part<I> {
+  struct Part:RecallNavPos::template Part<I> {
     using Base=typename RecallNavPos::template Part<I>;
     using Base::Base;
     static constexpr const Wraps wraps{Wraps::yes};
@@ -33,7 +33,10 @@ struct ToggleBehave {
 };
 
 template<typename T,typename B>
-using ToggleFieldDef=ItemDef<ToggleBehave,Menu<T,B,Wraps::yes>>;
+using ToggleFieldDef=ItemDef<
+  ToggleBehave,
+  Menu<T,B,Wraps::yes>
+>;
 
 template<typename T,typename B,Wraps w=Wraps::yes>
 using SelectFieldDef=ItemDef<
