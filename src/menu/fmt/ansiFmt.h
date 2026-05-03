@@ -23,6 +23,7 @@ struct ANSIFmt {
     using Base::clearLine;
     using Base::clearFree;
     using Base::put;
+    using Base::resume;
 
       // start ---
     template<Fmt tag>
@@ -33,9 +34,12 @@ struct ANSIFmt {
           clear();
           break;
         case Fmt::Title: setColors(BLUE,WHITE);break;
-        case Fmt::Item: setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);break;
+        case Fmt::Item: 
+          dout.xy(0,1+ctx.idx);dout<<colors<RED,BLACK><<ctx<<padWith<10><<flush;resume();
+          setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);
+          break;
         case Fmt::NavCursor: put(ctx?ctx.enabled?'>':'-':' ');break;
-        case Fmt::Index: put(ctx.idx<9?1+ctx.idx:' ');break;
+        case Fmt::Index: if(!ctx.pad) put(ctx.idx<9?1+ctx.idx:' ');break;
         default:break;
       }
       Base::template fmtStart<tag>(ctx);

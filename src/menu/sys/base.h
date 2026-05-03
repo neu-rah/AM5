@@ -93,6 +93,8 @@ struct Ctx {
   Sz prev{0};
   bool pad{false};//pad printing?
   Sz idx{0};
+  Sz pIdx{0};
+
   Ctx(
     Path path,
     NavMode mode={NavMode::Nav},
@@ -102,22 +104,15 @@ struct Ctx {
     Depth at={0},
     Sz prev={0},
     bool pad={false},
-    Sz idx={0}
-  ):path{path},
-    mode{mode},
-    pAt{pAt},
-    enabled{enabled},
-    tops{tops},
-    at{at},
-    prev{prev},
-    pad{pad},
-    idx{idx}
-  {}
+    Sz idx={0},
+    Sz pIdx={0}
+  ):path{path},mode{mode},pAt{pAt},enabled{enabled},tops{tops},at{at},prev{prev},pad{pad},idx{idx},pIdx{pIdx}{}
+
   Ctx next() const {return Ctx{path,mode,pAt,enabled,tops,(Depth)(at+1),0,pad,0};}
   Sz sel() const {assert(at<path.len);return path.sel(at);}
   Sz top() const {return tops[(int)at];}
   Sz top(Sz i) {return tops[(int)at]=i;}
-  operator bool() const {return sel()==idx;}
+  operator bool() const {return path.sel(at)==idx&&!pad;}
 };
 
 #ifdef MENU_DEBUG
@@ -138,6 +133,8 @@ struct Ctx {
     <<" path:"<<o.path
     <<" mode:"<<o.mode
     <<" pAt:"<<o.pAt
+    <<" at:"<<o.at
+    <<" pIdx:"<<o.pIdx
     <<" en:"<<o.enabled
     // <<" tops:"<<o.tops
     <<" prev:"<<o.prev

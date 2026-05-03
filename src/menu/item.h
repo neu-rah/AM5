@@ -288,7 +288,8 @@ struct ParentDraw {
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ParentDraw");
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
-      if(cke.cmd==Cmd::Enter) return path.len?n.close():n.padOpen();
+      if(cke.cmd==Cmd::Enter) 
+        return path.len?n.close():n.padOpen();
       return  I::nav(n,cke,path);
     }
   };

@@ -37,7 +37,7 @@ struct Menu {
     constexpr Sz size() const {return m_body.size();}
     constexpr const bool isPad() {return pad==Pad::yes;}
 
-     bool changed() {//TODO: change this into a "simple" print with `LockMode::Changed` insted!
+    bool changed() {//TODO: change this into a "simple" print with `LockMode::Changed` insted!
       bool r=m_title.changed();
       return pad==Pad::yes?m_body.changed()||r:r;
     }
@@ -53,10 +53,11 @@ struct Menu {
           ctx.pAt,
           ctx.enabled,
           ctx.tops,
-          ctx.at,//(Depth)(ctx.at+1),
+          (Depth)(ctx.at+1),
           0,
           true,
-          0
+          0,
+          ctx.idx//parent index
         };
         // dout<<xy<0,22><<colors<YELLOW,BLACK><<"padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
         m_body.printBody(out,padCtx);
@@ -85,7 +86,9 @@ struct Menu {
           ctx.tops,
           ctx.at,//(Depth)(ctx.at+1),
           0,
-          true
+          true,
+          0,
+          ctx.idx
         };
         dout<<xy<0,24><<colors<YELLOW,BLACK><<"*padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
         m_body.printBody(out,padCtx);

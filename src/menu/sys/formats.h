@@ -24,7 +24,7 @@ struct ClearFreeFmt {
     template<Fmt tag> 
     std::enable_if_t<tag&(Fmt::Title|Fmt::Item)>
     fmtStop(const Ctx& ctx) {
-      clearLine();
+      if(!ctx.pad) clearLine();
       Base::template fmtStop<tag>(ctx);
     }
   };
