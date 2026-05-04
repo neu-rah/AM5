@@ -71,7 +71,7 @@ template<typename Cor> struct Colors{Cor fg;Cor bg;};
 struct Path {
   Depth len;
   Sz* data;
-  Sz sel(Depth i=0) const {return data[(int)i];}
+  Sz sel(Depth i=0) const {return len>i?data[(int)i]:0;}
   Sz last() const {return sel(len-1);}
   Path next() {assert(len>0);return {(Depth)(len-1),&data[1]};}
 };

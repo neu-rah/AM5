@@ -15,8 +15,8 @@
 // F3 -----------------------------------------------------------------
 struct ANSIFmt {
   template<typename O>
-  struct Part:Formats::template Part<O> {
-    using Base=typename Formats::template Part<O>;
+  struct Part:UseEditCursorFmt::template Part<O> {
+    using Base=typename UseEditCursorFmt::template Part<O>;
     using Base::setColors;
     using Base::clear;
     using Base::nl;

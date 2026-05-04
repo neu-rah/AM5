@@ -12,6 +12,7 @@
 #pragma once
 
 #include "menu/sys/base.h"
+#include "menu/sys/formats.h"
 
 template<typename Cfg=Nil>
 struct OutAPI:Cfg {
@@ -39,6 +40,9 @@ struct OutAPI:Cfg {
   static constexpr Sz orgX() {return 0;}
   static constexpr Sz orgY() {return 0;}
   static constexpr Pos org() {return {orgX(),orgY()};}
+  static constexpr bool unlocked() {return true;}
+  static constexpr bool updating() {return false;}
+  static constexpr bool locked() {return false;}
   static constexpr LockMode lockMode() {return LockMode::None;}
   static constexpr void lockMode(LockMode) {}
   template<typename Cor> static void setColors(Cor,Cor) {}
@@ -319,8 +323,8 @@ struct Raw {
 /// base chain class F must have `DeviceCursor`
 struct UseEditCursorFmt {
   template<typename F>
-  struct Part:F {
-    using Base=F;
+  struct Part:Formats::template Part<F> {
+    using Base=typename Formats::template Part<F>;
     using Base::fmtStart;
     using Base::fmtStop;
     //force renew of editing state before printing, if still valid

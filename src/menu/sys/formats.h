@@ -4,7 +4,7 @@
 
 struct Formats {
   template<typename O>
-  struct Part:UseEditCursorFmt::template Part<O> {
+  struct Part:O {
     using IsFormat=std::true_type;
     static_assert(O::template Excludes<IsPrinter>::value,"Printers must preseed Formats");//TODO:: then chop OutDef into Printers|Fmt|Dev
   };

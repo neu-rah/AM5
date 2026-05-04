@@ -14,7 +14,7 @@
 #include "tinyTimeUtils.h"
 
 template <typename T, typename B,Wraps w=Wraps::no,Pad pad=Pad::no>
-struct Menu {
+struct MenuBase {
   template <typename I>
   struct Part:ItemNav::template Part<I> {
     using Base=typename ItemNav::template Part<I>;
@@ -46,19 +46,8 @@ struct Menu {
     void print(Out& out,Ctx& ctx) {
       m_title.print(out,ctx);
       if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
-        Ctx padCtx{
-          ctx.path,
-          ctx.mode,
-          ctx.pAt,
-          ctx.enabled,
-          ctx.tops,
-          ctx.at,
-          0,
-          true,
-          0,
-          ctx.idx//parent index
-        };
-        m_body.printBody(out,padCtx);
+        Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)ctx.at+1,0,true,0,ctx.idx};
+        m_body.printBody(out,tmp);
         // out.template fmtStop<Fmt::Menu>(ctx);
       }
     }
@@ -75,6 +64,7 @@ struct Menu {
         Sz s=ctx.sel();
         return m_body.printMenu(out,tmp,s);
       }
+      ctx.at++;
       bool r=out.printMenu(/*obj()*/*this,ctx);// print the target menu
       return r;
     }
@@ -119,11 +109,25 @@ struct Menu {
   };
 };
 
-template <typename T, typename B,Wraps wraps=Wraps::no>
-using PadMenu=ItemDef<Menu<T,B,wraps,Pad::yes>>;
+template<Wraps w=Wraps::no, Pad p=Pad::no,typename... OO> struct Menu;
 
-template <typename T, typename B,Wraps w,Pad p> using MenuDef=ItemDef<Menu<T,B,w,p>>;
-template <typename T, typename B,Wraps w,Pad p> using IMenuDef=IItemDef<Menu<T,B,w,p>>;
+template<Wraps w, Pad p,typename O,typename... OO>
+struct Menu<w,p,O,OO...> {
+  template<typename T>
+  struct Title { template<typename B> using Body=MenuBase<T,B,w,p>;};
+};
+
+template<Wraps w, Pad p>
+struct Menu<w,p> {
+  template<typename T>
+  struct Title { template<typename B> using Body=MenuBase<T,B,w,p>;};
+};
+
+template <typename T, typename B,Wraps wraps=Wraps::no>
+using PadMenu=ItemDef<MenuBase<T,B,wraps,Pad::yes>>;
+
+template <typename T, typename B,Wraps w,Pad p> using MenuDef=ItemDef<MenuBase<T,B,w,p>>;
+template <typename T, typename B,Wraps w,Pad p> using IMenuDef=IItemDef<MenuBase<T,B,w,p>>;
 
 template<typename... OO> using Title=ItemDef<OO.../*,ItemNav*/>; 
 template<typename... OO> using Label=ItemDef<AsLabel<OO...>>; 
