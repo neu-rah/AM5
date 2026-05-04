@@ -12,16 +12,16 @@ struct ToggleBehave {
   struct Part:RecallNavPos::template Part<I> {
     using Base=typename RecallNavPos::template Part<I>;
     using Base::Base;
-    static constexpr const Wraps wraps{Wraps::yes};
+    // static constexpr const Wraps wraps{Wraps::yes};
     bool changed() const {return m_changed/*||Base::changed()*/;}
     bool sync() {return m_changed=false;Base::sync();}
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       I::nav(n,cke,path);
       if(cke.cmd==Cmd::Enter) {
-        n.open();
+        n.padOpen();
         n.go(Base::m_sel);
-        n.doNav({Cmd::Up},Base::size(),Wraps::yes);
+        n.doNav({Cmd::Up},Base::size(),Base::wraps());
         m_changed=Base::m_sel!=n.sel();
         Base::m_sel=n.sel();
         n.close();
@@ -32,10 +32,10 @@ struct ToggleBehave {
   };
 };
 
-template<typename T,typename B>
+template<typename T,typename B,typename... OO>
 using ToggleFieldDef=ItemDef<
   ToggleBehave,
-  Menu<T,B,WrapNav>
+  Menu<T,B,WrapNav,OO...>
 >;
 
 template<typename T,typename B,typename... OO>

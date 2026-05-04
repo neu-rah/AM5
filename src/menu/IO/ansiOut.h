@@ -42,18 +42,18 @@ struct ANSIOut {
 
     // template<typename Cor> static void _setColors(Cor f,Cor b) {_setColors(f,b);}
     template<typename Cor>
-  	static void setColors(Cor f,Cor b) {
+  	void setColors(Cor f,Cor b) {
       setForegroundColor(f);
       setBackgroundColor(b);
     }
 
   private:
-    static void esc(){Base::_put((char)ESCAPE);}
-  	static void preamble() {esc();Base::_put((char)BRACE);}
-    static void pnv(int x, char v){preamble();Base::_put(x);Base::_put(v);}
-    static void setAttribute(int a){pnv(a,'m');}
-    static void setBackgroundColor(int color) {setAttribute(color + 40);}
-    static void setForegroundColor(int color) {setAttribute(color + 30);}
+    void esc(){Base::_put((char)ESCAPE);}
+  	void preamble() {esc();Base::_put((char)BRACE);}
+    void pnv(int x, char v){preamble();Base::_put(x);Base::_put(v);}
+    void setAttribute(int a){pnv(a,'m');}
+    void setBackgroundColor(int color) {setAttribute(color + 40);}
+    void setForegroundColor(int color) {setAttribute(color + 30);}
     void fill(int x1, int y1, int x2, int y2,char ch=' ') {
       for (int y = y1; y < y2; y++) {
         setPos(x1,y);

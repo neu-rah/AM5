@@ -131,5 +131,5 @@ template <typename T, typename B,typename... OO> using PadMenu=ItemDef<Menu<T,B,
 template <typename T, typename B,typename... OO> using MenuDef=ItemDef<Menu<T,B,OO...>>;
 template <typename T, typename B,typename... OO> using IMenuDef=IItemDef<Menu<T,B,OO...>>;
 
-// template<typename... OO> using Title=ItemDef<OO.../*,ItemNav*/>; 
+template<typename... OO> using Title=ItemDef<OO...>; 
 // template<typename... OO> using Label=ItemDef<AsLabel<OO...>>; 

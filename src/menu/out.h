@@ -85,17 +85,22 @@ struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>{//::template Map<OutLink>{
   using Base=APIOf<API,O,OO...>;//::template Map<OutLink>;
   using Base::printItem;
   using Base::obj;
+  using Base::put;
+  using Base::nl;
   static_assert(Base::template Excludes<IsCursor>::value||Base::template Requires<IsDataParser>::value,"Cursor requires preseeding DataParser<>");
   static_assert(Base::template Excludes<Class<class Clip>>::value||Base::template Requires<IsDataParser>::value,"Clip requires preseeding DataParser<>");
   static_assert(Base::template Excludes<Class<class TexWrap>>::value||Base::template Requires<IsDataParser>::value,"TextWrap requires preseeding DataParser<>");
   static_assert(Base::template Excludes<Class<class UTF8>>::value||Base::template Requires<IsDataParser>::value,"UTF8 requires preseeding DataParser<>");
 
-  template<typename T>
-  std::enable_if_t<!Base::HasPartialUpdate::value> put(T o) 
-    {if(Base::lockMode()==LockMode::None) Base::put(o);}
+  // template<typename T>
+  // std::enable_if_t<!Base::HasPartialUpdate::value> put(T o) 
+  //   {if(Base::lockMode()==LockMode::None) Base::put(o);}
 
-  std::enable_if_t<!Base::HasPartialUpdate::value> nl() 
-    {if(Base::lockMode()==LockMode::None) Base::nl();}
+  // template<typename T>
+  // std::enable_if_t<!Base::HasPartialUpdate::value> put(T o) {Base::put(o);}
+
+  // std::enable_if_t<!Base::HasPartialUpdate::value> nl() 
+  //   {if(Base::lockMode()==LockMode::None) Base::nl();}
 
   template<typename Item>
   bool printTitle(const Item& item,Ctx& ctx){
@@ -321,7 +326,7 @@ struct Raw {
     static_assert(Base::template Excludes<IsDataParser>::value,"DataParser<> must preseed the raw device");
     static void _nl() {Base::nl();}
     static void _flush() {Base::flush();}
-    template<typename T> static void _put(const T o) {Base::put(o);}
+    template<typename T> void _put(const T o) {Base::put(o);}
     void _setPos(Sz x,Sz y) {Base::setPos(x,y);}
     void _setPos(const Pos& o) {Base::setPos(o);}
     void padWith(Sz n,const char o=' ') {for(;n>0;n--) Base::obj().put(o);}

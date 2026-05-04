@@ -182,7 +182,7 @@ namespace action {
 
 template<typename... OO> using Desc=OnFocus<typename Put<OO...>::template ToOut<decltype(footer),footer,Clear::yes>>;
 
-using Back=ItemDef</*CloseOnSelect,*/StaticText<text::back>,Desc<StaticText<desc::back>>>;
+using Back=ItemDef<StaticText<text::back>,Desc<StaticText<desc::back>>>;
 using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>,Desc<StaticText<desc::quit>>>>;
 
 using CItem=ItemDef<Text>;
@@ -222,7 +222,7 @@ using ChooseDemo=ChooseFieldDef<
     ItemDef<AsField<StaticText<text::sub5>,AsUnit<StaticText<text::percent>>>>
     //,Back <--//TODO: extend the enter nav to this level and respect the handling (same as esc)
   >,
-  Wraps::yes
+  WrapNav
 >;
 
 using SelectDemo=SelectFieldDef<
@@ -238,7 +238,7 @@ using SelectDemo=SelectFieldDef<
     ItemDef<AsField<StaticText<text::sub4>>>,
     ItemDef<AsField<StaticText<text::sub5>>>
   >,
-  Wraps::yes
+  WrapNav
 >;
 
 //a Map operation, this operation will fit Map<> and will insert OO... components into the chain
@@ -246,12 +246,13 @@ template<typename... OO> struct Ins {template<typename M>  using Map=typename M:
 template<typename... OO> struct App {template<typename M>  using Map=typename M::template App<OO...>;};
 
 using ToggleDemo=ToggleFieldDef<
-  ItemDef<BodyAction<action::subIdx>,Text,AsEditMode<>>,
+  ItemDef<Text,AsEditMode<>>,
   StaticBody<
     ItemDef<AsField<StaticText<text::no>>>,
     ItemDef<AsField<StaticText<text::yes>>>,
     ItemDef<AsField<Text>>
-  >
+  >,
+  BodyAction<action::subIdx>
 >;
 
 using Power=NumFieldDef<
@@ -294,13 +295,13 @@ auto dateField(const char*lbl) {
   );
 }
 
-auto mainMenu=menuDef<Wraps::yes>(
+auto mainMenu=menuDef<WrapNav>(
   ItemDef<Text>{"Main menu"},
   staticBody(
     ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
     ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
     ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
-    menuDef<Wraps::yes>(
+    menuDef<WrapNav>(
       Title<StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
       staticBody(
         Power{},
@@ -317,22 +318,18 @@ auto mainMenu=menuDef<Wraps::yes>(
         StaticText<text::array_sub_menu>,
         Desc<StaticText<desc::array_sub_menu>>
       >,
-      CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>,
-      Wraps::no,
-      Pad::no
+      CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
     >{},
     #ifndef __AVR__
       MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
         Title<BodyAction<action::subIdx>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
         CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>,
-        Wraps::yes,
-        Pad::no
+        WrapNav
       >{},
       MenuDef<
         Title<Id<ids::container>,BodyAction<action::subIdx>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
         StdBody<vector<IItem*>>,
-        Wraps::yes,
-        Pad::no
+        WrapNav
       >{},
     #endif
     Quit{}
