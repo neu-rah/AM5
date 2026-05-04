@@ -20,16 +20,37 @@ struct TextFmt {
     using Base::fmtStart;
     using Base::fmtStop;
     using Base::put;
+    using Base::resume;
 
     template<Fmt tag>
-    std::enable_if_t<tag&Fmt::NavCursor>
-    fmtStart(const Ctx& ctx) {
-      put(ctx?ctx.enabled?'>':'-':' ');
+    void fmtStart(const Ctx& ctx) {
+      switch(tag) {
+        case Fmt::View: dout<<xy<0,1><<ctx<<endl;resume();break;
+        case Fmt::Body: put('{');break;
+        case Fmt::NavCursor:
+          put(ctx?(ctx.enabled?'>':'-'):' ');
+          break;
+        case Fmt::EditMode:
+          if(ctx) switch(ctx.mode) {
+            case NavMode::Nav: put(':');break;
+            case NavMode::Edit: put('=');break;
+            case NavMode::Tune: put('.');break;
+          } else if(!ctx.pad) put(' ');
+          break;
+      }
     }
 
     template<Fmt tag>
-    std::enable_if_t<tag&(Fmt::View|Fmt::Title|Fmt::Item)>
-    fmtStop(const Ctx&) {Base::nl();}
+    void fmtStop(const Ctx&ctx) {
+      switch(tag){
+        case Fmt::Body: put('}');break;
+        case Fmt::View:
+        case Fmt::Title:
+        case Fmt::Item:
+          put('#');
+          if(!ctx.pad) Base::nl();
+      }
+    }
 
   };
 };

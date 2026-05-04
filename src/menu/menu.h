@@ -13,11 +13,25 @@
 #include "menu/item.h"
 #include "tinyTimeUtils.h"
 
-template <typename T, typename B,Wraps w=Wraps::no,Pad pad=Pad::no>
+struct WrapNav {
+  template<typename I>
+  struct Part:I {
+    static constexpr bool wraps() {return true;}
+  };
+};
+
+struct PadDraw {
+  template<typename I>
+  struct Part:I {
+    static constexpr bool isPad() {return true;}
+  };
+};
+
+template <typename T, typename B,typename... II>
 struct MenuBase {
   template <typename I>
-  struct Part:ItemNav::template Part<I> {
-    using Base=typename ItemNav::template Part<I>;
+  struct Part:Chain<II...,ItemNav>::template Part<I> {
+    using Base=typename Chain<II...,ItemNav>::template Part<I>;
     using This=Part<I>;
     using Title=T;
     using Body = B;
@@ -25,16 +39,14 @@ struct MenuBase {
     Title m_title{};
     Body m_body;
 
-    constexpr const bool wraps() {return w==Wraps::yes;}
     constexpr Part(Title&&t,B&&b):m_title{std::forward<Title>(t)},m_body{std::forward<B>(b)}{}
-    template<typename... II>
-    constexpr Part(Title&&t,II&&... oo):m_title{std::forward<Title>(t)},m_body{std::forward<II>(oo)...}{}
+    template<typename... OO>
+    constexpr Part(Title&&t,OO&&... oo):m_title{std::forward<Title>(t)},m_body{std::forward<OO>(oo)...}{}
 
     static constexpr const Depth depth() {return Body::depth()+1;}
 
     // template<Sz n=0> static constexpr Sz cnt() {return Body::template cnt<n+1>();}
     constexpr Sz size() const {return m_body.size();}
-    constexpr const bool isPad() {return pad==Pad::yes;}
 
     bool changed() {//TODO: change this into a "simple" print with `LockMode::Changed` insted!
       return m_title.changed();
@@ -45,7 +57,7 @@ struct MenuBase {
     template<typename Out> 
     void print(Out& out,Ctx& ctx) {
       m_title.print(out,ctx);
-      if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
+      if(Base::isPad()) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
         Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)ctx.at+1,0,true,0,ctx.idx};
         m_body.printBody(out,tmp);
         // out.template fmtStop<Fmt::Menu>(ctx);
@@ -81,7 +93,7 @@ struct MenuBase {
     bool nav(Nav& n,const CKE& cke,Path p) {
       if(p.len>0&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
       bool r=Base::nav(n,cke,p);
-      return p.len?n.doNav(cke,size(),w)||r:r;
+      return p.len?n.doNav(cke,size(),Base::wraps())||r:r;
     }
 
     Body& body() {return m_body;}
@@ -109,25 +121,17 @@ struct MenuBase {
   };
 };
 
-template<Wraps w=Wraps::no, Pad p=Pad::no,typename... OO> struct Menu;
-
-template<Wraps w, Pad p,typename O,typename... OO>
-struct Menu<w,p,O,OO...> {
+template<typename... OO>
+struct Menu {
   template<typename T>
-  struct Title { template<typename B> using Body=MenuBase<T,B,w,p>;};
+  struct Title { template<typename B> using Body=MenuBase<T,B,OO...>;};
 };
 
-template<Wraps w, Pad p>
-struct Menu<w,p> {
-  template<typename T>
-  struct Title { template<typename B> using Body=MenuBase<T,B,w,p>;};
-};
+template <typename T, typename B,typename... OO>
+using PadMenu=ItemDef<MenuBase<T,B,PadDraw,OO...>>;
 
-template <typename T, typename B,Wraps wraps=Wraps::no>
-using PadMenu=ItemDef<MenuBase<T,B,wraps,Pad::yes>>;
-
-template <typename T, typename B,Wraps w,Pad p> using MenuDef=ItemDef<MenuBase<T,B,w,p>>;
-template <typename T, typename B,Wraps w,Pad p> using IMenuDef=IItemDef<MenuBase<T,B,w,p>>;
+template <typename T, typename B,typename... OO> using MenuDef=ItemDef<MenuBase<T,B,OO...>>;
+template <typename T, typename B,typename... OO> using IMenuDef=IItemDef<MenuBase<T,B,OO...>>;
 
 template<typename... OO> using Title=ItemDef<OO.../*,ItemNav*/>; 
 template<typename... OO> using Label=ItemDef<AsLabel<OO...>>; 

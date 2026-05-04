@@ -35,19 +35,19 @@ struct ToggleBehave {
 template<typename T,typename B>
 using ToggleFieldDef=ItemDef<
   ToggleBehave,
-  MenuBase<T,B,Wraps::yes>
+  MenuBase<T,B,WrapNav>
 >;
 
-template<typename T,typename B,Wraps w=Wraps::yes>
+template<typename T,typename B,typename... OO>
 using SelectFieldDef=ItemDef<
   RecallNavPos,
-  MenuBase<typename T::template Ins<EditField,ParentDraw>::template App<ItemNav>,B,w>
+  MenuBase<typename T::template Ins<EditField,ParentDraw>::template App<ItemNav>,B,OO...>
 >;
 
-template<typename T,typename B,Wraps w=Wraps::yes>
+template<typename T,typename B,typename... OO>
 using ChooseFieldDef=ItemDef<
   RecallNavPos,
-  MenuBase<typename T::template App<ItemNav>,B,w>
+  MenuBase<typename T::template App<ItemNav>,B,OO...>
 >;
 
 template<typename T,typename O,typename... OO>

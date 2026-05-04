@@ -290,3 +290,28 @@ template<typename... OO> using AsData=AsFmt<Fmt::Data,OO...>;
 template<typename... OO> using AsUnit=AsFmt<Fmt::Unit,OO...>;
   
 
+using FullPrinter=Chain<
+  ViewPrinter,// outermost format envelope
+  MenuPrinter<// calls printMenu
+    TitlePrinter,// just print the title
+    BodyPrinter,//stream/serial print
+    ItemPrinter<//calls printItem:
+      IndexPrinter,// print item index 1-9
+      NavCursorPrinter,// use a text cursor on selected item.
+      ItemBodyPrinter//→ printItem → Item::print
+    >
+  >
+>;
+
+using ScrollPrinter=Chain<
+  ViewPrinter,// outermost format envelope
+  MenuPrinter<// calls printMenu
+    TitlePrinter,// just print the title
+    ScrollBodyPrinter,//scroll till focus is visible
+    ItemPrinter<//calls printItem:
+      IndexPrinter,// print item index 1-9
+      NavCursorPrinter,// use a text cursor on selected item.
+      ItemBodyPrinter//→ printItem → Item::print
+    >
+  >
+>;
