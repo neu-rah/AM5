@@ -38,19 +38,6 @@ struct StaticBody {
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx=0) {
     bool r=false;
-    // if(m_item.isPad()) {//first pass
-    //   dout.xy(0,1+bidx);dout<<colors<RED,BLACK><<ctx<<"|"<<cnt<>++<<padWith<10><<flush;out.resume();
-    //   Ctx padCtx{
-    //     ctx.path,//ctx.printAt>1?ctx.path.next():ctx.path,
-    //     ctx.mode,
-    //     ctx.printAt,
-    //     0,
-    //     ctx.tops
-    //   };
-    //   dout.xy(0,2+bidx);dout<<colors<BLUE,BLACK><<padCtx<<"|"<<cnt<>++<<padWith<10><<flush;out.resume();
-    //   r=out.printItem(m_item,padCtx);
-    // } else 
-    // if(m_item.isPad()) {//first pass
       r=out.printItem(m_item,ctx);
     return m_body.printBody(out,ctx,bidx+1)||r;
   }

@@ -270,7 +270,7 @@ using Power=NumFieldDef<
 // date field generating function
 auto dateField(const char*lbl) {
   return padDef(
-    ItemDef<Text,ParentDraw,ItemNav>{lbl},
+    ItemDef<Text>{lbl},
     staticBody(
       ItemDef<
         EditField,ParentDraw,AsEditMode<>,ItemNav,
@@ -292,13 +292,13 @@ auto dateField(const char*lbl) {
 }
 
 auto mainMenu=menuDef<Wraps::yes>(
-  ItemDef<Text,ItemNav>{"Main menu"},
+  ItemDef<Text>{"Main menu"},
   staticBody(
     ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
     ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
     ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
     menuDef<Wraps::yes>(
-      Title<ItemNav,StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
+      Title<StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
       staticBody(
         Power{},
         ToggleDemo{"Toggle","Maybe"},
@@ -311,7 +311,6 @@ auto mainMenu=menuDef<Wraps::yes>(
     MenuDef<//sub menu with C array body (all items of the same type)
       Title<
         BodyAction<action::subIdx>,
-        ItemNav,
         StaticText<text::array_sub_menu>,
         Desc<StaticText<desc::array_sub_menu>>
       >,
@@ -321,13 +320,13 @@ auto mainMenu=menuDef<Wraps::yes>(
     >{},
     #ifndef __AVR__
       MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
-        Title<BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
+        Title<BodyAction<action::subIdx>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
         CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>,
         Wraps::yes,
         Pad::no
       >{},
       MenuDef<
-        Title<Id<ids::container>,BodyAction<action::subIdx>,ItemNav,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
+        Title<Id<ids::container>,BodyAction<action::subIdx>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
         StdBody<vector<IItem*>>,
         Wraps::yes,
         Pad::no
@@ -390,9 +389,22 @@ void setup() {
 }
 
 int main(){
-  // setup();
-  // while(run());
+  setup();
+  // cout<<"start level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
+  // nav.go(3);
+  // cout<<"go 3  level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
+  // nav.enter();
+  // cout<<"enter level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
+  // nav.go(2);
+  // cout<<"go 2  level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
+  // nav.enter();
+  // cout<<"enter level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
+  // nav.enter();
+  // cout<<"enter level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
+  // nav.up();
+  // cout<<"enter level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
+  while(run());
   dout<<xy<0,50><<"end."<<endl;
-  cout<<decltype(dateField("what?"))::depth()<<endl;
+  // cout<<decltype(dateField("what?"))::depth()<<endl;
   return 0;
 }

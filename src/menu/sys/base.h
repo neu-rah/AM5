@@ -108,7 +108,7 @@ struct Ctx {
     Sz pIdx={0}
   ):path{path},mode{mode},pAt{pAt},enabled{enabled},tops{tops},at{at},prev{prev},pad{pad},idx{idx},pIdx{pIdx}{}
 
-  Ctx next() const {return Ctx{path,mode,pAt,enabled,tops,(Depth)(at+1),0,pad,0};}
+  Ctx next() const {assert(at+1<path.len);return Ctx{path,mode,pAt,enabled,tops,(Depth)(at+1),0,pad,0};}
   Sz sel() const {assert(at<path.len);return path.sel(at);}
   Sz top() const {return tops[(int)at];}
   Sz top(Sz i) {return tops[(int)at]=i;}

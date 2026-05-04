@@ -46,40 +46,9 @@ struct Menu {
     void print(Out& out,Ctx& ctx) {
       m_title.print(out,ctx);
       if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
-        // dout<<xy<0,21><<colors<GREEN,BLACK><<"ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
+        // if(out.unlocked()) dout<<xy<0,32><<colors<GREEN,BLACK><<"ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
         Ctx padCtx{
           ctx.path,
-          ctx.mode,
-          ctx.pAt,
-          ctx.enabled,
-          ctx.tops,
-          (Depth)(ctx.at+1),
-          0,
-          true,
-          0,
-          ctx.idx//parent index
-        };
-        // dout<<xy<0,22><<colors<YELLOW,BLACK><<"padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
-        m_body.printBody(out,padCtx);
-        // out.template fmtStop<Fmt::Menu>(ctx);
-      }
-    }
-
-    template<typename Out>
-    bool printMenu(Out& out,Ctx&& ctx) {return printMenu(out,ctx);}
-
-    template<typename Out>
-    bool printMenu(Out& out,Ctx& ctx) {
-      ctx.idx=0;
-      out.resume();
-      if(ctx.pAt!=ctx.at){//walk to print level
-        Ctx tmp=ctx.next();
-        return m_body.printMenu(out,tmp,ctx.path.data[(int)ctx.at]);
-      }
-      if(pad==Pad::yes) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
-        dout<<xy<0,23><<colors<GREEN,BLACK><<"*ctx:"<<ctx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
-        Ctx padCtx{
-          ctx.path,//ctx.printAt>0?ctx.path.next():ctx.path,
           ctx.mode,
           ctx.pAt,
           ctx.enabled,
@@ -88,10 +57,28 @@ struct Menu {
           0,
           true,
           0,
-          ctx.idx
+          ctx.idx//parent index
         };
-        dout<<xy<0,24><<colors<YELLOW,BLACK><<"*padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<flush;out.resume();
+        // if(out.unlocked()) dout<<xy<0,33><<colors<YELLOW,BLACK><<"padCtx:"<<padCtx<<" pad:"<<pad<<"|"<<cnt<>++<<::padWith<10><<flush;out.resume();
         m_body.printBody(out,padCtx);
+        // out.template fmtStop<Fmt::Menu>(ctx);
+      }
+    }
+
+    // template<typename Out>
+    // bool printMenu(Out& out,Ctx&& ctx) {return printMenu(out,ctx);}
+
+    template<typename Out>
+    bool printMenu(Out& out,Ctx& ctx) {
+      ctx.idx=0;
+      out.resume();
+      if(ctx.pAt!=ctx.at){//walk to print level
+        // Ctx tmp=ctx.next();
+        Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)(ctx.at+1),0,ctx.pad,0,ctx.idx};
+        Sz s=ctx.sel();
+        // ctx.at++;
+        return m_body.printMenu(out,tmp,s);
+        // return m_body.printMenu(out,ctx,ctx.path.data[(int)ctx.at]);
       }
       bool r=out.printMenu(/*obj()*/*this,ctx);// print the target menu
       return r;
@@ -108,9 +95,9 @@ struct Menu {
     template<typename Nav> 
     bool nav(Nav& n,const CKE& cke,Path p) {
       if(p.len>0&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
-      if (m_title.nav(n,cke,p)) return true;
-      if(Base::nav(n,cke,p)) return true;
-      return p.len?n.doNav(cke,size(),w):false;
+      // bool q=m_title.nav(n,cke,p);
+      bool r=Base::nav(n,cke,p);
+      return p.len?n.doNav(cke,size(),w)||r:r;
     }
 
     Body& body() {return m_body;}

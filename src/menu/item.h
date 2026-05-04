@@ -288,6 +288,7 @@ struct ParentDraw {
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ParentDraw");
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
+      dout<<"ParentDraw::nav(Cmd::Enter)"<<endl;
       if(cke.cmd==Cmd::Enter) return path.len>0?n.close():n.padOpen();
       return  I::nav(n,cke,path);
     }
@@ -305,12 +306,12 @@ struct ItemNav {
     static_assert(I::template Excludes<Class<ItemNav>>::value,"ItemNav must be used only one time on an `Item` definition");
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
-      bool r=Base::nav(n,cke,path);
       if(cke.cmd==Cmd::Enter) {
+        dout<<"ItemNav::nav(Cmd::Enter)"<<endl;
         if(path.len==0) return n.open();
         else if(path.len==1) return n.close();
       }
-      return r;
+      return Base::nav(n,cke,path);
     }
   };
 };

@@ -36,7 +36,6 @@ struct ANSIFmt {
         case Fmt::Field: setColors(YELLOW,BLUE);break;
         case Fmt::Title: setColors(BLUE,WHITE);break;
         case Fmt::Item: 
-          // dout.xy(0,1+ctx.idx);dout<<colors<RED,BLACK><<ctx<<padWith<10><<flush;resume();
           setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);
           break;
         case Fmt::NavCursor: put(ctx?ctx.enabled?'>':'-':' ');break;
