@@ -207,8 +207,8 @@ struct NavCursorPrinter {
     template<typename I>
     bool printItem(I& i,Ctx& ctx) {
       O::template fmtStart<Fmt::NavCursor>(ctx);
-      bool r=O::printItem(i,ctx);
       O::template fmtStop<Fmt::NavCursor>(ctx);
+      bool r=O::printItem(i,ctx);
       return r;
     }
   };

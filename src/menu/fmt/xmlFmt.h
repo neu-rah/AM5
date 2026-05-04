@@ -20,44 +20,106 @@ struct XmlFmt {
     using Base::put;
 
     int indent{0};
+    int datasec{0};
+    bool attr{false};
 
     template<Fmt tag>
-    static void name() {
+    void name() {
       switch(tag) {
         case Fmt::View: Base::put("view");break;
         case Fmt::Title: Base::put("title");break;
         case Fmt::Menu: Base::put("menu");break;
         case Fmt::Body: Base::put("body");break;
         case Fmt::Item: Base::put("item");break;
-        case Fmt::Index: Base::put("index");break;
-        case Fmt::Accel: Base::put("accel");break;
-        case Fmt::NavCursor: Base::put("nav_cursor");break;
-        case Fmt::Field: Base::put("field");break;
-        case Fmt::Label: Base::put("label");break;
-        case Fmt::EditMode: Base::put("edit_mode");break;
-        case Fmt::EditCursor: Base::put("edit_cursor");break;
+        case Fmt::Index: Base::put("idx");break;
+        case Fmt::Accel: Base::put("acc");break;
+        case Fmt::NavCursor: Base::put("ncur");break;
+        case Fmt::Field: Base::put("fld");break;
+        case Fmt::Label: Base::put("lbl");break;
+        case Fmt::EditMode: Base::put("mode");break;
+        case Fmt::EditCursor: Base::put("ecur");break;
         case Fmt::Data: Base::put("data");break;
-        case Fmt::Unit: Base::put("unit");break;
+        case Fmt::Unit: Base::put("un");break;
         default: put("fmt");break;
       }
     }
+
+    template<Fmt tag>
+    void attrStart(const Ctx& ctx) {
+      put(' ');
+      name<tag>();
+      put('=');
+      put('"');
+    }
+
+    template<Fmt tag>
+    void attrStop(const Ctx& ctx) {put('"');}
+
+    static constexpr const int attr_tags=Fmt::NavCursor|Fmt::Index|Fmt::EditCursor|Fmt::EditMode|Fmt::Accel;
+    static constexpr const int indent_tags=Fmt::View|Fmt::Menu|Fmt::Body|Fmt::Title|Fmt::Item;
+
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
-      if(tag&(Fmt::View|Fmt::Menu|Fmt::Body|Fmt::Title|Fmt::Item))
+      if(attr&&!(tag&attr_tags)) {
+        attr=false;
+        put('>');
+        if(tag&indent_tags) nl();
+      }
+      if(tag&attr_tags) {
+        attr=true;
+        attrStart<tag>(ctx);
+        switch(tag) {
+          // case Fmt::View: 
+          case Fmt::Index: put(ctx.idx);break;
+          case Fmt::NavCursor: put(ctx.idx==ctx.path.data[ctx.at-1]?(ctx.enabled?'@':'-'):' ');break;
+        }
+        return;
+      }
+
+      if(tag&(Fmt::Data)) {
+        if(datasec==0) put("<![CDATA[");
+        datasec++;
+        return;
+      }
+
+      if(tag&(indent_tags))
         for(int n=indent;n>0;n--) put("  ");
       put('<');
       name<tag>();
-      put('>');
+      attr=true;
       if(tag&(Fmt::View|Fmt::Menu|Fmt::Body)) {
+        if(tag==Fmt::View) {
+          put(" at=\"");
+          for(int i=0;i<ctx.path.len;i++) {
+            put('/');
+            put(ctx.path.data[i]);
+          }
+          put('/');
+          put("\"");
+        }
         indent++;
-        nl();
+        // nl();
       }
-      // if(tag&(Fmt::Item|Fmt::Title)) nl();
+      // if(tag&(Fmt::Item|Fmt::Title)) {
+      //   put('$');
+      //   nl();
+      // }
       Base::template fmtStart<tag>(ctx);
     }
     template<Fmt tag>
     void fmtStop(const Ctx& ctx) {
       Base::template fmtStop<tag>(ctx);
+      if(tag&(Fmt::NavCursor|Fmt::Index|Fmt::EditCursor|Fmt::EditMode|Fmt::Accel)) {
+        attrStop<tag>(ctx);
+        return;
+      }
+      if(tag&(Fmt::Data)) {
+        if(datasec>0) {
+          datasec--;
+          if(datasec==0) put("]]>");
+          return;
+        }
+      }
       if(tag&(Fmt::View|Fmt::Menu|Fmt::Body)) indent--;
       if(tag&(Fmt::View|Fmt::Menu|Fmt::Body))
         for(int n=indent;n>0;n--) put("  ");

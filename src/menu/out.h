@@ -26,6 +26,7 @@ struct OutAPI:Cfg {
   using RawDevice=std::false_type;
   using IsCursor=std::false_type;
   using HasGate=std::false_type;
+  using HasPartialUpdate=std::false_type;
   template<typename> using Requires=std::false_type;
   template<typename> using Excludes=std::true_type;
   using Cfg::obj;
@@ -88,6 +89,14 @@ struct DefinedOut<API,O,OO...>:APIOf<API,O,OO...>{//::template Map<OutLink>{
   static_assert(Base::template Excludes<Class<class Clip>>::value||Base::template Requires<IsDataParser>::value,"Clip requires preseeding DataParser<>");
   static_assert(Base::template Excludes<Class<class TexWrap>>::value||Base::template Requires<IsDataParser>::value,"TextWrap requires preseeding DataParser<>");
   static_assert(Base::template Excludes<Class<class UTF8>>::value||Base::template Requires<IsDataParser>::value,"UTF8 requires preseeding DataParser<>");
+
+  template<typename T>
+  std::enable_if_t<!Base::HasPartialUpdate::value> put(T o) 
+    {if(Base::lockMode()==LockMode::None) Base::put(o);}
+
+  std::enable_if_t<!Base::HasPartialUpdate::value> nl() 
+    {if(Base::lockMode()==LockMode::None) Base::nl();}
+
   template<typename Item>
   bool printTitle(const Item& item,Ctx& ctx){
     Base::fmtStart(Fmt::Title,ctx);
@@ -302,9 +311,9 @@ struct StaticPos {
 /// @brief provides raw access to the output device
 struct Raw {
   template<typename O>
-  struct Part:O {
+  struct Part:Gate::Part<O> {
     using RawDevice=std::true_type;
-    using Base=O;
+    using Base=typename Gate::Part<O>;
     static_assert(Base::template Excludes<IsFormat>::value,"formats must preseed the raw device");
     static_assert(Base::template Excludes<IsCursor>::value,"Cursor must preseed the raw device");
     static_assert(Base::template Excludes<IsPrinter>::value,"Printers must preseed the raw device");

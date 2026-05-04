@@ -145,14 +145,14 @@ struct NumRange {
     using Type=N;
     Type m_low;
     Type m_high;
-    Wraps wraps;
+    bool wraps;
     template<typename... OO>
-    Part(Type l,Type h,Wraps w,OO&&... oo)
+    Part(Type l,Type h,bool w,OO&&... oo)
       :Base{std::forward<OO>(oo)...},m_low{l},m_high{h},wraps{w}{}
     constexpr bool valid(N o) const {return o<=m_low&&o<=m_high;}
     constexpr N clamp(N o) const {return o<m_low?m_low:o>m_high?m_high:o;}
-    constexpr N stepUp(N o,N s) {return m_high-o>=s?o+s:wraps==Wraps::yes?m_low:m_high;}
-    constexpr N stepDown(N s,N o) {return o-m_low>=s?o-s:wraps==Wraps::yes?m_high:m_low;}
+    constexpr N stepUp(N o,N s) {return m_high-o>=s?o+s:wraps?m_low:m_high;}
+    constexpr N stepDown(N s,N o) {return o-m_low>=s?o-s:wraps?m_high:m_low;}
     void up(N s=1) {get()=stepUp(s,get());}
     void down(N s=1) {get()=stepDown(s,get());}
   };
