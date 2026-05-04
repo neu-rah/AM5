@@ -113,6 +113,7 @@ struct Ctx {
   Sz top() const {return tops[(int)at];}
   Sz top(Sz i) {return tops[(int)at]=i;}
   operator bool() const {return path.sel(at)==idx&&!pad;}
+  bool padPrinting() const {return at-pAt>0;}
 };
 
 #ifdef MENU_DEBUG

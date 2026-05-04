@@ -57,11 +57,11 @@ struct MenuBase {
     template<typename Out> 
     void print(Out& out,Ctx& ctx) {
       m_title.print(out,ctx);
-      if(Base::isPad()) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
-        Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)ctx.at+1,0,true,0,ctx.idx};
-        m_body.printBody(out,tmp);
-        // out.template fmtStop<Fmt::Menu>(ctx);
-      }
+      // if(Base::isPad()) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
+      //   Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)ctx.at+1,0,true,0,ctx.idx};
+      //   m_body.printBody(out,tmp);
+      //   // out.template fmtStop<Fmt::Menu>(ctx);
+      // }
     }
 
     // template<typename Out>

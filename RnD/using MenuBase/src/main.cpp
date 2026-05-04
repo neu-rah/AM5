@@ -1,6 +1,7 @@
 #include <menu.h>
 #include <menu/IO/streamOut.h>
 #include <menu/fmt/textFmt.h>
+#include <menu/fmt/xmlFmt.h>
 #include <iostream>
 using namespace std;
 
@@ -21,7 +22,9 @@ MyMenu myMenu("title",{"op1","op2","op3"});
 
 OutDef<
   FullPrinter,
-  TextFmt,
+  // TextFmt,
+  XmlFmt
+  ,
   ConsoleOut
 > out;
 
