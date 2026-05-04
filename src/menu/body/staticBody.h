@@ -21,8 +21,6 @@ struct StaticBody {
   using Map=StaticBody<M<O>,M<OO>...>;
   Item m_item;
   Body m_body;
-  // template<typename... II> constexpr StaticBody(Item&& i,II&&... ii):m_item{std::forward<Item>(i)},m_body{std::move(ii)...}{}
-  // static constexpr const Depth depth() {return staticMax<Item::depth(),Body::depth()>();}
   constexpr StaticBody() {}
   template<typename... II>
   constexpr StaticBody(Item&& i,II&&... ii):m_item{std::forward<Item>(i)},m_body{std::forward<II>(ii)...}{}
@@ -37,16 +35,12 @@ struct StaticBody {
     {return i?m_body.printMenu(out,ctx,i-1):m_item.printMenu(out,ctx);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx=0) {
-    bool r=false;
-      r=out.printItem(m_item,ctx);
+    bool r=out.printItem(m_item,ctx);
     return m_body.printBody(out,ctx,bidx+1)||r;
   }
 
-  template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i) {
-    // ctx.pad=ctx&&m_item.isPad();
-    // ctx.padIdx=size()-i;
-    return i?m_body.printItem(out,ctx,i-1):m_item.print(out,ctx);
-  }
+  template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i) 
+    {return i?m_body.printItem(out,ctx,i-1):m_item.print(out,ctx);}
 
   template<typename Nav>
   bool nav(Nav& n,const CKE& cke,Path path,Sz i)
@@ -101,11 +95,7 @@ struct StaticBody<O> {
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i) 
     {assert(i==0);return m_item.printMenu(out,ctx);}
 
-  template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx=0) {
-    // ctx.pad=m_item.isPad();
-    // ctx.padIdx=bidx;
-    return out.printItem(m_item,ctx);
-  }
+  template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx=0) {return out.printItem(m_item,ctx);}
 
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
     {return m_item.print(out,ctx);}

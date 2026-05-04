@@ -162,9 +162,9 @@ struct TreeNav {
 
   protected: 
     Sz m_prevSel{};
-    PathData<depth()+1> m_path{3,2,1,0};
-    DataDef<Watch<Data<Depth>>> m_level{1};
-    Depth m_print_level{1};
+    PathData<depth()> m_path{0};
+    DataDef<Watch<Data<Depth>>> m_level{0};
+    Depth m_print_level{0};
     DataDef<Watch<Data<NavMode>>> m_navMode{NavMode::Nav};
   };
 };

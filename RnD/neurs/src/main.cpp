@@ -273,9 +273,12 @@ auto dateField(const char*lbl) {
     ItemDef<Text>{lbl},
     staticBody(
       ItemDef<
-        EditField,ParentDraw,AsEditMode<>,ItemNav,
-        NumField<StaticNumRange<int,1900,2050,Wraps::yes>,
-        Watch<AsField<Default<int,2026>,Int>>>
+        EditField,//use nav keys up/down to change numeric value within range
+        ParentDraw,//draw inplace
+        AsEditMode<>,//edit mode indicator (format)
+        ItemNav,//open nav level for this item on Cmd::Enter
+        NumField<StaticNumRange<int,1900,2050,Wraps::yes>,//static numeric range
+        Watch<AsField<Default<int,2026>,Int>>>//what for changes, format as field an Int data type with default value 2026
       >{2026},
       ItemDef<
         StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
@@ -297,14 +300,14 @@ auto mainMenu=menuDef<Wraps::yes>(
     ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
     ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
     ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
+        dateField("date:"),
     menuDef<Wraps::yes>(
       Title<StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
       staticBody(
         Power{},
         ToggleDemo{"Toggle","Maybe"},
-        // SelectDemo{},
-        // ChooseDemo{},
-        dateField("date:"),
+        SelectDemo{},
+        ChooseDemo{},
         Back{}
       )
     ),

@@ -40,6 +40,7 @@ struct ItemAPI:Def {
   template<int> using WithId=ItemAPI<CRTP<ItemAPI<Nil>>>;
 };
 
+/// @deprecated code size surges
 // template<typename N>
 // struct ItemLink:N {
 //   template<typename O>
@@ -186,20 +187,6 @@ struct EnDis {
       {return enabled()?Base::nav(n,cke,path):false;}
   };
 };
-
-/// @brief just closes the nav level on enter
-/// this is now the default behavior if returning false (fallback)
-// struct CloseOnSelect {
-//   template<typename I>
-//   struct Part:I {
-//     using I::I;
-//     template<typename Nav>
-//     bool nav(Nav& n,const CKE& cke,const Path path) {
-//       if(cke.cmd==Cmd::Enter) return n.close();
-//       return I::nav(n,cke,path);
-//     }
-//   };
-// };
 
 //fields ---
 struct EditField {

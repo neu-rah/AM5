@@ -35,10 +35,18 @@ struct ANSIFmt {
           break;
         case Fmt::Field: setColors(YELLOW,BLUE);break;
         case Fmt::Title: setColors(BLUE,WHITE);break;
-        case Fmt::Item: 
-          setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);
+        case Fmt::Item: setColors(ctx.enabled?WHITE:BLACK,ctx?GREEN:BLUE);break;
+        case Fmt::EditMode:
+          if(ctx) switch(ctx.mode) {
+            case NavMode::Nav: put(':');break;
+            case NavMode::Edit: put('=');break;
+            case NavMode::Tune: put('.');break;
+          } else if(!ctx.pad) put(' ');
           break;
-        case Fmt::NavCursor: put(ctx?ctx.enabled?'>':'-':' ');break;
+        case Fmt::NavCursor: 
+          if (ctx) put(ctx.enabled?'>':'-');
+          else if(!ctx.pad) put(' ');
+          break;
         case Fmt::Index: if(!ctx.pad) put(ctx.idx<9?1+ctx.idx:' ');break;
         default:break;
       }
