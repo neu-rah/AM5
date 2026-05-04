@@ -67,7 +67,7 @@ using Printer=Chain<
 >;
 
 IOutDef<
-  Printer,
+  Printer,//menu parts to use
   ANSIFmt,//add some ANSI colors and format to the output
   // TextFmt,
   ClearFreeFmt,//this can take a lot of burden away from user format
@@ -196,7 +196,12 @@ CItem cBody[]{
   "README.md"
 };
 
-bool stay(int i) {return true;}
+bool stay(int i) {
+  syslog.resume();
+  syslog<<"stay function called. The menu remains, not closing as default."<<endl;
+  out.resume();
+  return true;
+}
 
 IItem* iBody[]{
   new IItemDef<StaticText<text::op1>>{},
