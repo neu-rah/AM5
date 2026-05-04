@@ -272,13 +272,13 @@ auto dateField(const char*lbl) {
   return padDef(
     ItemDef<Text>{lbl},
     staticBody(
-      ItemDef<
+      ItemDef<//lets define a numeric field:
         EditField,//use nav keys up/down to change numeric value within range
         ParentDraw,//draw inplace
         AsEditMode<>,//edit mode indicator (format)
         ItemNav,//open nav level for this item on Cmd::Enter
         NumField<StaticNumRange<int,1900,2050,Wraps::yes>,//static numeric range
-        Watch<AsField<Default<int,2026>,Int>>>//what for changes, format as field an Int data type with default value 2026
+        Watch<AsField<Default<int,2026>,Int>>>//watch for changes, format as field an Int (Data<int>) data type with default value 2026
       >{2026},
       ItemDef<
         StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
