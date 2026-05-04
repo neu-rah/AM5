@@ -23,8 +23,8 @@
 #include "menu/menu.h"
 #include "menu/nav.h"
 
-template<typename... OO> constexpr 
-StaticBody<OO...> staticBody(OO&&... oo)
+template<typename... OO> 
+constexpr StaticBody<OO...> staticBody(OO&&... oo)
   {return StaticBody<OO...>{std::forward<OO>(oo)...};}
 
 template<typename T,typename B,typename... OO,typename... PP> 

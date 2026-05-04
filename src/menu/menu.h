@@ -28,7 +28,7 @@ struct PadDraw {
 };
 
 template <typename T, typename B,typename... II>
-struct MenuBase {
+struct Menu {
   template <typename I>
   struct Part:Chain<II...,ItemNav>::template Part<I> {
     using Base=typename Chain<II...,ItemNav>::template Part<I>;
@@ -41,7 +41,7 @@ struct MenuBase {
 
     constexpr Part(Title&&t,B&&b):m_title{std::forward<Title>(t)},m_body{std::forward<B>(b)}{}
     template<typename... OO>
-    constexpr Part(Title&&t,OO&&... oo):m_title{std::forward<Title>(t)},m_body{std::forward<OO>(oo)...}{}
+    constexpr Part(Title&t,OO&&... oo):m_title{t},m_body{std::forward<OO>(oo)...}{}
 
     static constexpr const Depth depth() {return Body::depth()+1;}
 
@@ -121,17 +121,15 @@ struct MenuBase {
   };
 };
 
-template<typename... OO>
-struct Menu {
-  template<typename T>
-  struct Title { template<typename B> using Body=MenuBase<T,B,OO...>;};
-};
+// template<typename... OO>
+// struct Menu {
+//   template<typename T>
+//   struct Title { template<typename B> using Body=Menu<T,B,OO...>;};
+// };
 
-template <typename T, typename B,typename... OO>
-using PadMenu=ItemDef<MenuBase<T,B,PadDraw,OO...>>;
+template <typename T, typename B,typename... OO> using PadMenu=ItemDef<Menu<T,B,PadDraw,OO...>>;
+template <typename T, typename B,typename... OO> using MenuDef=ItemDef<Menu<T,B,OO...>>;
+template <typename T, typename B,typename... OO> using IMenuDef=IItemDef<Menu<T,B,OO...>>;
 
-template <typename T, typename B,typename... OO> using MenuDef=ItemDef<MenuBase<T,B,OO...>>;
-template <typename T, typename B,typename... OO> using IMenuDef=IItemDef<MenuBase<T,B,OO...>>;
-
-template<typename... OO> using Title=ItemDef<OO.../*,ItemNav*/>; 
-template<typename... OO> using Label=ItemDef<AsLabel<OO...>>; 
+// template<typename... OO> using Title=ItemDef<OO.../*,ItemNav*/>; 
+// template<typename... OO> using Label=ItemDef<AsLabel<OO...>>; 

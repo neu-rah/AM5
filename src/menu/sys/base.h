@@ -112,7 +112,7 @@ struct Ctx {
   Sz sel() const {assert(at<path.len);return path.sel(at);}
   Sz top() const {return tops[(int)at];}
   Sz top(Sz i) {return tops[(int)at]=i;}
-  operator bool() const {return path.sel(at)==idx&&!pad;}
+  operator bool() const {return path.sel(at-1)==idx&&!pad;}
   bool padPrinting() const {return at-pAt>0;}
 };
 

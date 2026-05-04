@@ -82,7 +82,9 @@ struct Data {
     using Base=O;
     using Base::Base;
     Type data;
-    template<typename... OO> Part(const Type& o,OO&&... oo):Base{std::forward<OO>(oo)...},data{o}{}
+    template<typename... OO>
+    Part(const Type o,OO&&... oo)
+      :Base{std::forward<OO>(oo)...},data{o}{}
     // template<typename... OO> Part(OO&&... oo):Base{std::forward<OO>(oo)...}{}
     const Type& get() const {return data;} 
     void set(const Type& o) {data=o;}

@@ -71,7 +71,7 @@ struct XmlFmt {
         switch(tag) {
           // case Fmt::View: 
           case Fmt::Index: put(ctx.idx);break;
-          case Fmt::NavCursor: put(ctx.idx==ctx.path.data[ctx.at-1]?(ctx.enabled?'@':'-'):' ');break;
+          case Fmt::NavCursor: put(ctx?(ctx.enabled?'@':'-'):' ');break;
         }
         return;
       }

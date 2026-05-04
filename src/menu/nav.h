@@ -134,7 +134,6 @@ struct TreeNav {
     }
 
     bool padOpen() {
-      dout<<"padOpen"<<endl;
       if(m_level.get()<depth()) {
         m_level.set(m_level+1);
         m_path.data[m_level]=0;
@@ -143,7 +142,6 @@ struct TreeNav {
       } else return false;
     }
     bool open() {
-      dout<<"open"<<endl;
       if(padOpen()) {
         m_print_level++;//=m_level;
         return true;
@@ -161,7 +159,7 @@ struct TreeNav {
 
   protected: 
     Sz m_prevSel{};
-    PathData<depth()+1> m_path{0};//TODO: why do we need +1? check depth calc!
+    PathData<depth()+1> m_path{};//TODO: why do we need +1? check depth calc!
     DataDef<Watch<Data<Depth>>> m_level{0};
     Depth m_print_level{0};
     DataDef<Watch<Data<NavMode>>> m_navMode{NavMode::Nav};

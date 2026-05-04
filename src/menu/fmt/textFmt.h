@@ -25,8 +25,7 @@ struct TextFmt {
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
       switch(tag) {
-        case Fmt::View: dout<<xy<0,1><<ctx<<endl;resume();break;
-        case Fmt::Body: put('{');break;
+        default:break;
         case Fmt::NavCursor:
           put(ctx?(ctx.enabled?'>':'-'):' ');
           break;
@@ -43,11 +42,10 @@ struct TextFmt {
     template<Fmt tag>
     void fmtStop(const Ctx&ctx) {
       switch(tag){
-        case Fmt::Body: put('}');break;
+        default:break;
         case Fmt::View:
         case Fmt::Title:
         case Fmt::Item:
-          put('#');
           if(!ctx.pad) Base::nl();
       }
     }
