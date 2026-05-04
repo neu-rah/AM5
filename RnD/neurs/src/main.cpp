@@ -149,7 +149,7 @@ namespace desc {
   static constexpr const CText sub_sbody{"std::container with virtual items"};
 };
 
-enum ids {op3,power,container};
+enum ids {op3,power,container,date_fld};
 
 namespace action {
   bool op1(Sz) {
@@ -267,7 +267,7 @@ using Power=NumFieldDef<
   AsUnit<StaticText<text::percent>>//field unit
 >;
 
-// date field generating function
+  // date field generating function
 auto dateField(const char*lbl) {
   return padDef(
     ItemDef<Text>{lbl},
@@ -277,8 +277,8 @@ auto dateField(const char*lbl) {
         ParentDraw,//draw inplace
         AsEditMode<>,//edit mode indicator (format)
         ItemNav,//open nav level for this item on Cmd::Enter
-        NumField<StaticNumRange<int,1900,2050,Wraps::yes>,//static numeric range
-        Watch<AsField<Default<int,2026>,Int>>>//watch for changes, format as field an Int (Data<int>) data type with default value 2026
+        NumField<StaticNumRange<int,1900,2150,Wraps::yes>,//static numeric range
+        Watch<AsField<Default<int,2026>,Int>>>//watch for changes, format an Int (Data<int>) as field with default value 2026
       >{2026},
       ItemDef<
         StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
@@ -300,7 +300,6 @@ auto mainMenu=menuDef<Wraps::yes>(
     ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
     ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
     ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
-        dateField("date:"),
     menuDef<Wraps::yes>(
       Title<StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
       staticBody(
@@ -308,6 +307,7 @@ auto mainMenu=menuDef<Wraps::yes>(
         ToggleDemo{"Toggle","Maybe"},
         SelectDemo{},
         ChooseDemo{},
+        dateField("date:"),
         Back{}
       )
     ),
@@ -393,21 +393,11 @@ void setup() {
 
 int main(){
   setup();
-  // cout<<"start level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
-  // nav.go(3);
-  // cout<<"go 3  level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
-  // nav.enter();
-  // cout<<"enter level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
-  // nav.go(2);
-  // cout<<"go 2  level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
-  // nav.enter();
-  // cout<<"enter level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
-  // nav.enter();
-  // cout<<"enter level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
-  // nav.up();
-  // cout<<"enter level:"<<nav.level()<<" sel:"<<nav.sel()<<endl;
   while(run());
   dout<<xy<0,50><<"end."<<endl;
-  // cout<<decltype(dateField("what?"))::depth()<<endl;
+  cout<<decltype(dateField(""))::depth()<<endl;
+  // dout<<"date_fld:"<<mainMenu.withId<date_fld>()<<endl;
+  // dout<<"isPad:"<<mainMenu.withId<date_fld>().isPad()<<endl;
+  // dout<<"depth:"<<mainMenu.withId<date_fld>().depth()<<endl;
   return 0;
 }

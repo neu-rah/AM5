@@ -37,15 +37,15 @@
     static void setAttribute(int a){pnv(a,'m');}
     static void setBackgroundColor(int color) {setAttribute(color + 40);}
     static void setForegroundColor(int color) {setAttribute(color + 30);}
-    static constexpr const void fmtStart(Fmt,Ctx&) {}
-    static constexpr const void fmtStop(Fmt,Ctx&) {}
+    template<Fmt tag> static constexpr void fmtStart(const Ctx& ctx) {}
+    template<Fmt tag> static constexpr void fmtStop(const Ctx& ctx) {}
   };
 
   using DOut=DebugOut<decltype(std::cerr),std::cerr>;
   DOut dout;
 
   template<template<typename...> class T,typename... NN> 
-  DOut& operator<<(DOut& out,const T<NN...> o) {o.printItem(out);return out;}
+  DOut& operator<<(DOut& out,T<NN...>& o) {o.print(out);return out;}
 
   DOut& endl (DOut& s) {s.nl();return s;}
   DOut& flush(DOut& s) {s.flush();return s;}

@@ -107,13 +107,12 @@ struct TreeNav {
       ///track scroll top for each level, this is output device specific
       static Sz tops[root().depth()]{0};//TODO: check if ScrollBody is in output part, or store this there with an API call fallback.
       Ctx ctx{m_path.focusAt(m_level+1),m_navMode,m_print_level,true,tops};
+      dout<<xy<0,1><<colors<BLACK,RED><<ctx<<padWith<10><<flush;out.resume();
       return root().printMenu(out,ctx);
     }
     bool doCmd(Cmd cmd,Key k=0, bool e=false) {
-      dout<<xy<0,1><<colors<BLACK,GREEN><<cmd<<" "<<m_level.get()<<"|"<<cnt<>++<<padWith<10><<flush;
       if(cmd==Cmd::Esc) return close();//preemptive esc=>close
       bool r=root().nav(Base::obj(),{cmd,k,e},focus(m_level+1));
-      dout<<xy<0,2><<colors<BLACK,GREEN><<cmd<<" "<<m_level.get()<<"|"<<cnt<>++<<padWith<10><<flush;
       return r;
     }
 
@@ -135,8 +134,8 @@ struct TreeNav {
     }
 
     bool padOpen() {
+      dout<<xy<0,3><<"padOpen |"<<cnt<>++<<flush;
       if(m_level.get()<depth()) {
-        dout<<xy<0,4><<colors<BLUE,BLACK><<"padOpen |"<<cnt<>++<<padWith<10><<flush;
         m_level.set(m_level+1);
         m_path.data[m_level]=0;
         if(m_level.get()<m_print_level) m_print_level=m_level;
@@ -144,9 +143,9 @@ struct TreeNav {
       } else return false;
     }
     bool open() {
+      dout<<xy<0,2><<"open |"<<cnt<>++<<flush;
       if(padOpen()) {
-        dout<<xy<0,3><<colors<BLUE,BLACK><<"open |"<<cnt<>++<<padWith<10><<flush;
-        m_print_level=m_level;
+        m_print_level++;//=m_level;
         return true;
       } else return false;
     }
@@ -162,7 +161,7 @@ struct TreeNav {
 
   protected: 
     Sz m_prevSel{};
-    PathData<depth()> m_path{0};
+    PathData<depth()+1> m_path{0};//TODO: why do we need +1? check depth calc!
     DataDef<Watch<Data<Depth>>> m_level{0};
     Depth m_print_level{0};
     DataDef<Watch<Data<NavMode>>> m_navMode{NavMode::Nav};

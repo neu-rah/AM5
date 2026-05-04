@@ -71,7 +71,7 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>{//::template Map<ItemLink> {
   bool nav(Nav& n,const CKE& cke,const Path p)
     {return enabled()?Base::nav(n,cke,p):cke.cmd==Cmd::Enter;}
 
-  template<typename Out> bool print(Out& out,Ctx&& ctx={})  
+  template<typename Out> bool print(Out& out,Ctx&& ctx={{}})  
     {return print(out,std::forward<Ctx&>(ctx));}
 
   template<typename Out> bool print(Out& out,Ctx& ctx) {
@@ -294,7 +294,7 @@ struct ItemNav {
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       if(cke.cmd==Cmd::Enter) {
-        dout<<"ItemNav::nav(Cmd::Enter)"<<endl;
+        dout<<"ItemNav::nav(Cmd::Enter) len:"<<(int)path.len<<endl;
         if(path.len==0) return n.open();
         else if(path.len==1) return n.close();
       }
