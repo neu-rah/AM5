@@ -12,7 +12,6 @@
 #pragma once
 
 // enum {no=false,yes=true};
-enum class Wraps {no,yes};
 enum class Scroll {no=false,yes=true};
 enum Edge {start=true,stop=false};
 enum class Clear {no,yes};
@@ -51,13 +50,13 @@ enum class LockMode {
   template<typename Out>
   Out& operator<<(Out& out, Pad o) {return out<<(o==Pad::yes?"yes":"no");}
 
-  template<typename Out>
-  Out& operator<<(Out& out,const Wraps& w) {
-    switch(w) {
-      case Wraps::no:return out<<"Wraps::no";break;
-      case Wraps::yes:return out<<"Wraps::yes";break;
-    }
-  }
+  // template<typename Out>
+  // Out& operator<<(Out& out,const Wraps& w) {
+  //   switch(w) {
+  //     case Wraps::no:return out<<"Wraps::no";break;
+  //     case Wraps::yes:return out<<"Wraps::yes";break;
+  //   }
+  // }
 
   template<typename Out>
   Out& operator<<(Out& out,const NavMode& mode) {

@@ -557,7 +557,7 @@ struct Buffer {
     void scroll() {
       memmove(buffer,&buffer[width()],(height()-1)*width());
       memset(&buffer[(height()-1)*width()],c,width());
-      Base::obj().setPos(0,height()-1);
+      Base::obj().setPos({0,height()-1});
     }
     Sz freeY() const {
       return scrl==Scroll::no?

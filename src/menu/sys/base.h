@@ -110,6 +110,7 @@ struct Ctx {
 
   Ctx next() const {assert(at+1<path.len);return Ctx{path,mode,pAt,enabled,tops,(Depth)(at+1),0,pad,0};}
   Sz sel() const {assert(at<path.len);return path.sel(at);}
+  Sz sel(Depth i) const {assert(i<path.len);return path.sel(i);}
   Sz top() const {return tops[(int)at];}
   Sz top(Sz i) {return tops[(int)at]=i;}
   operator bool() const {return path.sel(at-1)==idx&&!pad;}

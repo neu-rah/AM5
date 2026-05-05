@@ -15,6 +15,8 @@ _just like that..._
 
 ### decisions
 
+#### remove Gate from Raw? we can block calls on nav, however we need the output matched results!
+
 #### new menu structure (menu not deriving from Title)
 
 - brings the problem of not being able to add parts to the menu (composition is closed).
@@ -24,9 +26,13 @@ _just like that..._
 
 - ~~make a bitmask out of Fmt, too many switches on format (and they will still work!)~~ **done**
 - ~~move Wraps setting out of ItemNav (rename?)~~,  
-  only usefulness is to open on enter, former **CanNav**,  
+  ~~only usefulness is to open on enter, former **CanNav**~~
+  reintroduced ItemNav with the new menu structure, it makes easier to build the menus  
 - use prefix/suffix items/components to implement separators?
   and avoid the @⅜£⅜§ of navigating over them...
+- allow things like `EnDis` to print state as a xml attribute... persistency API?
+  we can cheat this one by grabbing `ctx.enabled`
+- make buffers independent of output, we want to print to many
 
 >`Wraps` setting now on `Menu` and on numeric ranges
 
@@ -55,15 +61,15 @@ _features still not implemented_
 - ✓ fields _(numeric and indexed enums)_
 - ✓ color space, provide color report for devices that do not support it (kind of cursor)
 - ✓ device resume, we need this for the following output panels to work, and color report too
+- ✓ `PadFree` output part -> `ClearFreeFmt`
+- ✓ `ClearFree` output part -> `ClearFreeFmt`
+- pad menu/fields
 - text only non-selectable fake items, useful for Pad separators
 - real enum fields that retrieve and store data (not nav position)
-- pad menu/fields
 - text edit fields
 - password fields
 - body union
 - fonts
-- `PadFree` output part _-> padWith(freeX())_ **in format now**
-- `ClearFree` output part _-> while(freeY()) PadFree(freeX())_ **in format now**
 - dialogs
 - multilingual text
 - text align Left|Center|Right -> see old versions

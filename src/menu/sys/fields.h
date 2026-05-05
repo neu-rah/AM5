@@ -41,15 +41,15 @@ using ToggleFieldDef=ItemDef<
 template<typename T,typename B,typename... OO>
 using SelectFieldDef=ItemDef<
   RecallNavPos,
-  Menu<typename T::template Ins<EditField,ParentDraw>::template App<ItemNav>,B,OO...>
+  Menu<T,B,EditField,ParentDraw,OO...>
 >;
 
 template<typename T,typename B,typename... OO>
 using ChooseFieldDef=ItemDef<
   RecallNavPos,
-  Menu<typename T::template App<ItemNav>,B,OO...>
+  Menu<T,B,OO...>
 >;
 
 template<typename T,typename O,typename... OO>
 using NumFieldDef
-  =ItemDef<typename T::template Ins<EditField,ParentDraw>::template App<AsEditMode<>,O,OO...>>;
+  =ItemDef<T,AsEditMode<>,EditField,ParentDraw,O,OO...>;

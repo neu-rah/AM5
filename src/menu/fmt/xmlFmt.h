@@ -58,6 +58,15 @@ struct XmlFmt {
     static constexpr const int attr_tags=Fmt::NavCursor|Fmt::Index|Fmt::EditCursor|Fmt::EditMode|Fmt::Accel;
     static constexpr const int indent_tags=Fmt::View|Fmt::Menu|Fmt::Body|Fmt::Title|Fmt::Item;
 
+    void putPath(const Path& p,Depth s,Depth l) {
+      assert(s+l<p.len);
+      for(int i=s;i<s+l;i++) {
+        put('/');
+        put(p.data[i]);
+      }
+      put('/');
+    }
+
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
       if(attr&&!(tag&attr_tags)) {
@@ -88,13 +97,9 @@ struct XmlFmt {
       name<tag>();
       attr=true;
       if(tag&(Fmt::View|Fmt::Menu|Fmt::Body)) {
-        if(tag==Fmt::View) {
+        if(tag&(Fmt::View|Fmt::Menu)) {
           put(" at=\"");
-          for(int i=0;i<ctx.path.len;i++) {
-            put('/');
-            put(ctx.path.data[i]);
-          }
-          put('/');
+          putPath(ctx.path,0,tag==Fmt::Menu?std::min(ctx.at,ctx.path.len-1):ctx.pAt);
           put("\"");
         }
         indent++;

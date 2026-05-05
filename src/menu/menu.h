@@ -22,7 +22,7 @@ struct WrapNav {
 
 struct PadDraw {
   template<typename I>
-  struct Part:I {
+  struct Part:ParentDraw::template Part<I> {
     static constexpr bool isPad() {return true;}
   };
 };
@@ -49,19 +49,20 @@ struct Menu {
     constexpr Sz size() const {return m_body.size();}
 
     bool changed() {//TODO: change this into a "simple" print with `LockMode::Changed` insted!
-      return m_title.changed();
-      // bool r=m_title.changed();
-      // return pad==Pad::yes?m_body.changed()||r:r;
+      // return m_title.changed();
+      bool r=m_title.changed();
+      if(Base::isPad()) dout<<xy<0,4><<colors<GREEN,BLACK><<"PAD! |"<<cnt<>++<<::padWith<10><<flush;
+      return Base::isPad()?m_body.changed()||r:r;
     }
 
     template<typename Out> 
     void print(Out& out,Ctx& ctx) {
       m_title.print(out,ctx);
-      // if(Base::isPad()) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
-      //   Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)ctx.at+1,0,true,0,ctx.idx};
-      //   m_body.printBody(out,tmp);
-      //   // out.template fmtStop<Fmt::Menu>(ctx);
-      // }
+      if(Base::isPad()) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
+        Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)ctx.at+1,0,true,0,ctx.idx};
+        m_body.printBody(out,tmp);
+        // out.template fmtStop<Fmt::Menu>(ctx);
+      }
     }
 
     // template<typename Out>
@@ -70,8 +71,9 @@ struct Menu {
     template<typename Out>
     bool printMenu(Out& out,Ctx& ctx) {
       ctx.idx=0;
-      out.resume();
+      out.resume();//TODO: can this be somewhere else?
       if(ctx.pAt!=ctx.at){//walk to print level
+        //TODO: can this tmp be an update of ctx?
         Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)(ctx.at+1),0,ctx.pad,0,ctx.idx};
         Sz s=ctx.sel();
         return m_body.printMenu(out,tmp,s);

@@ -103,7 +103,7 @@ struct ScrollBodyPrinter {
       LockMode om=lockMode();
       Sz x=Base::posX();
       Sz y=Base::posY();
-      if(ctx.sel()<ctx.top()) {
+      if(ctx.sel(ctx.pAt)<ctx.top()) {
         ctx.top(ctx.sel());//--scroll down
         om=LockMode::None;//scroll => full redraw
       } else for(;;) {
@@ -112,7 +112,7 @@ struct ScrollBodyPrinter {
         Sz f=freeY();
         Sz ci=ctx.idx;
         ctx.idx=0;
-        if(ctx.sel()<ci&&(!(ctx.sel()==(ci-1)&&f<0))) break;
+        if(ctx.sel(ctx.pAt)<ci&&(!(ctx.sel(ctx.pAt)==(ci-1)&&f<0))) break;
         setPos(x,y);
         ctx.top(ctx.top()+1);//--scroll up
         om=LockMode::None;//scroll => full redraw

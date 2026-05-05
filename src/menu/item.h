@@ -198,6 +198,7 @@ struct EditField {
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       bool r=false;
       if(cke.cmd==Cmd::Enter) {
+        dout<<xy<0,3><<colors<BLUE,BLACK><<"EditField::Nav(Cmd::Enter) |"<<cnt<>++<<padWith<10><<flush;
         n.navMode(path.len?NavMode::Nav:NavMode::Edit);
         r=true;
       }
@@ -275,7 +276,10 @@ struct ParentDraw {
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ParentDraw");
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
-      if(cke.cmd==Cmd::Enter) return path.len>0?n.close():n.padOpen();
+      if(cke.cmd==Cmd::Enter) {
+        dout<<xy<0,1><<colors<BLUE,BLACK><<"ParentDraw::Nav(Cmd::Enter) |"<<cnt<>++<<padWith<10><<flush;
+        return path.len>0?n.close():n.padOpen();
+      }
       return  I::nav(n,cke,path);
     }
   };
@@ -293,6 +297,7 @@ struct ItemNav {
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       if(cke.cmd==Cmd::Enter) {
+        dout<<xy<0,2><<colors<BLUE,BLACK><<"ItemNav::Nav(Cmd::Enter) |"<<cnt<>++<<padWith<10><<flush;
         if(path.len==0) return n.open();
         else if(path.len==1) return n.close();
       }

@@ -3,6 +3,7 @@
   #include <menu/IO/ansiOut.h>
   #include <menu/fmt/textFmt.h>
   #include <menu/fmt/ansiFmt.h>
+  #include <menu/fmt/xmlFmt.h>
   #include <menu/IO/pcKbdIn.h>
   #include <menu/body/cArrayBody.h>
   #include <menu/body/stdBody.h>
@@ -37,9 +38,31 @@ OutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<5,35>,
+  StaticPos<5,32>,
   StaticArea<80,10>
 > syslog;
+
+IOutDef<
+  FullPrinter,
+  XmlFmt,
+  DataParser<>,//put all data into characters
+  // CtrlChars,
+  // UTF8,//bypass UTF8 surrogate codes
+  // TextWrap,//long texts continue next line
+  // Clip,//keep content inside area
+  Buffer<>,
+  ColorTrack<int>,
+  Cursor,//track and report cursor movement
+  Gate,//locks output for measuring and other operations
+  ANSIOut,//inject ansi codes into the next output device
+  #ifdef __AVR__
+    SerialOut,
+  #else
+    ConsoleOut,
+  #endif
+  StaticPos<0,45>,
+  StaticArea<100,20>
+> web;
 
 bool running=true;
 
@@ -52,22 +75,8 @@ InDef<
   PCKbd
 > in;
 
-using Printer=Chain<
-  ViewPrinter,// outermost format envelope
-  MenuPrinter<// calls printMenu
-    TitlePrinter,// just print the title
-    // ScrollBodyPrinter,//scroll till focus is visible
-    BodyPrinter,//stream/serial print
-    ItemPrinter<//calls printItem:
-      IndexPrinter,// print item index 1-9
-      NavCursorPrinter,// use a text cursor on selected item.
-      ItemBodyPrinter//→ printItem → Item::print
-    >
-  >
->;
-
 IOutDef<
-  Printer,//menu parts to use
+  ScrollPrinter,//menu parts to use
   ANSIFmt,//add some ANSI colors and format to the output
   // TextFmt,
   ClearFreeFmt,//this can take a lot of burden away from user format
@@ -266,7 +275,7 @@ using Power=NumFieldDef<
     AsLabel<StaticText<text::power>>//field label
   >,
   NumField<//use range to change the data
-    StaticNumRange<int,0,100,Wraps::no>,//valid range
+    StaticNumRange<int,0,100,false>,//valid range
     ItemNav,
     Watch<AsField<Default<int,55>,Int>>//use `int` and `change watch` as field (data)
   >,
@@ -283,17 +292,17 @@ auto dateField(const char*lbl) {
         ParentDraw,//draw inplace
         AsEditMode<>,//edit mode indicator (format)
         ItemNav,//open nav level for this item on Cmd::Enter
-        NumField<StaticNumRange<int,1900,2150,Wraps::yes>,//static numeric range
+        NumField<StaticNumRange<int,1900,2150,true>,//static numeric range
         Watch<AsField<Default<int,2026>,Int>>>//watch for changes, format an Int (Data<int>) as field with default value 2026
       >{2026},
       ItemDef<
         StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
-        NumField<StaticNumRange<int,1,12,Wraps::yes>,
+        NumField<StaticNumRange<int,1,12,true>,
         Watch<AsField<Int>>>
       >{1},
       ItemDef<
         StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
-        NumField<StaticNumRange<int,1,31,Wraps::yes>,
+        NumField<StaticNumRange<int,1,31,true>,
         Watch<AsField<Int>>>
       >{1}
     )
@@ -348,7 +357,7 @@ INavDef<
 
 bool action::op2(Sz) {
   syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  // mainMenu.withId<ids::ops3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }
 
@@ -359,9 +368,14 @@ bool run() {
     fps.reset();
     nav.in(in);
     if(nav.changed(out)) {
+      // web.resume();
+      web.lockMode(LockMode::None);
+      web.setColors(RED,WHITE);
+      web.clear();
+      nav.printTo(web);
+      out.resume();
       nav.printTo(out);
       nav.sync(out);
-      out.resume();
     }
   }
   return running;
@@ -372,20 +386,25 @@ void setup() {
 
   #ifndef __AVR__
     //populate std container menu
-    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
-    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
-    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
+    // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
+    // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
+    // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
   #endif
 
-  syslog.lockMode(LockMode::None);
-  syslog.setColors(GREEN,BLACK);
-  syslog.clear();
-  syslog.put(".·•<::(log)::>•·.");
+  // web.lockMode(LockMode::None);
+  // web.setColors(RED,WHITE);
+  // web.clear();
+  // nav.printTo(web);
 
-  footer.lockMode(LockMode::None);
-  footer.setColors(BLUE,BLACK);
-  footer.clear();
-  footer.put("footer");
+  // syslog.lockMode(LockMode::None);
+  // syslog.setColors(GREEN,BLACK);
+  // syslog.clear();
+  // syslog.put(".·•<::(log)::>•·.");
+
+  // footer.lockMode(LockMode::None);
+  // footer.setColors(BLUE,BLACK);
+  // footer.clear();
+  // footer.put("footer");
 
   out.lockMode(LockMode::None);
   out.setColors(WHITE,BLACK);
@@ -397,9 +416,5 @@ int main(){
   setup();
   while(run());
   dout<<xy<0,50><<"end."<<endl;
-  cout<<decltype(dateField(""))::depth()<<endl;
-  // dout<<"date_fld:"<<mainMenu.withId<date_fld>()<<endl;
-  // dout<<"isPad:"<<mainMenu.withId<date_fld>().isPad()<<endl;
-  // dout<<"depth:"<<mainMenu.withId<date_fld>().depth()<<endl;
   return 0;
 }
