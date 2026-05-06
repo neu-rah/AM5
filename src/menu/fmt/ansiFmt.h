@@ -93,6 +93,7 @@ struct ANSIFmt {
     // stop --
     template<Fmt tag>
     void fmtStop(const Ctx& ctx) {
+      if((tag&Fmt::Item)&&ctx&&(ctx.sel(ctx.pAt) == ctx.pIdx)) setColors(ctx.enabled?WHITE:BLACK,GREEN);
       Base::template fmtStop<tag>(ctx);
     }
   };
