@@ -15,6 +15,30 @@ _just like that..._
 
 ### decisions
 
+#### case table for ctx.path on a pad print process up to editing.
+
+```text
+ctx.pAt:0 ctx.path:path:{a}       => menu nav
+ctx.pAt:1 ctx.path:path:{a,b}     => sub-menu nav
+ctx.pAt:2 ctx.path:path:{a,b,c}   => sub-menu nav
+ctx.pAt:1 ctx.path:path:{a,b,c}   => parent draw/pad nav
+ctx.pAt:1 ctx.path:path:{a,b,c,d} => pad edit
+
+path[pAt]==ctx.pIdx <=> parent is selected
+
+path.len-pAt:
+1-0=1 => NavMode::Nav       => root menu nav
+2-1=1 => NavMode::Nav       => sub menu nav
+3-2=1 => NavMode::Edit/Tune => sub menu nav
+3-1=2 => NavMode::Nav       => pad menu nav
+4-1=3 => NavMode::Edit/Tune => pad field edit
+```
+
+```c++
+bool psel() {return path[pAt]==ctx.pIdx;}// <=> parent is selected
+```
+
+
 #### remove Gate from Raw? we can block calls on nav, however we need the output matched results!
 
 #### new menu structure (menu not deriving from Title)

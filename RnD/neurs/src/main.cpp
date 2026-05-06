@@ -76,7 +76,17 @@ InDef<
 > in;
 
 IOutDef<
-  ScrollPrinter,//menu parts to use
+  // ScrollPrinter,//menu parts to use
+  ViewPrinter,// outermost format envelope
+  MenuPrinter<// calls printMenu
+    TitlePrinter,// just print the title
+    BodyPrinter,//stream/serial print
+    ItemPrinter<//calls printItem:
+      // IndexPrinter,// print item index 1-9
+      NavCursorPrinter,// use a text cursor on selected item.
+      ItemBodyPrinter//→ printItem → Item::print
+    >
+  >,
   ANSIFmt,//add some ANSI colors and format to the output
   // TextFmt,
   ClearFreeFmt,//this can take a lot of burden away from user format
@@ -124,7 +134,7 @@ namespace text {
   static constexpr const CText op1{"Option 1"};
   static constexpr const CText op2{"Option 2"};
   static constexpr const CText op3{"Option 3"};
-  static constexpr const CText fields_menu{"Fields..."};
+  static constexpr const CText fields_menu{"abcde..."};
   static constexpr const CText array_sub_menu{"Same type array>"};
   static constexpr const CText sub_ibody{"IItem* array"};
   static constexpr const CText sub_sbody{"std::container"};
@@ -285,23 +295,31 @@ using Power=NumFieldDef<
   // date field generating function
 auto dateField(const char*lbl) {
   return padDef(
-    ItemDef<Text>{lbl},
+    ItemDef<AsLabel<Text>,AsEditMode<>>{lbl},
     staticBody(
       ItemDef<//lets define a numeric field:
         EditField,//use nav keys up/down to change numeric value within range
         ParentDraw,//draw inplace
-        AsEditMode<>,//edit mode indicator (format)
+        // AsEditMode<>,//edit mode indicator (format)
         ItemNav,//open nav level for this item on Cmd::Enter
         NumField<StaticNumRange<int,1900,2150,true>,//static numeric range
         Watch<AsField<Default<int,2026>,Int>>>//watch for changes, format an Int (Data<int>) as field with default value 2026
       >{2026},
       ItemDef<
-        StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+        StaticText<text::dateSep>,
+        EditField,
+        ParentDraw,
+        // AsEditMode<>,
+        ItemNav,
         NumField<StaticNumRange<int,1,12,true>,
         Watch<AsField<Int>>>
       >{1},
       ItemDef<
-        StaticText<text::dateSep>,EditField,ParentDraw,AsEditMode<>,ItemNav,
+        StaticText<text::dateSep>,
+        EditField,
+        ParentDraw,
+        // AsEditMode<>,
+        ItemNav,
         NumField<StaticNumRange<int,1,31,true>,
         Watch<AsField<Int>>>
       >{1}
@@ -322,7 +340,7 @@ auto mainMenu=menuDef<WrapNav>(
         ToggleDemo{"Toggle","Maybe"},
         SelectDemo{},
         ChooseDemo{},
-        dateField("date:"),
+        dateField("date"),
         Back{}
       )
     ),
@@ -357,20 +375,20 @@ INavDef<
 
 bool action::op2(Sz) {
   syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  // mainMenu.withId<ids::ops3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }
 
 //================================================================================================--
 bool run() {
-  static TinyTimeUtils::FPS<60> fps;
+  static TinyTimeUtils::FPS<30> fps;
   if(fps) {
     fps.reset();
     nav.in(in);
     if(nav.changed(out)) {
-      // web.resume();
-      web.lockMode(LockMode::None);
-      web.setColors(RED,WHITE);
+      web.resume();
+      // web.lockMode(LockMode::None);
+      // web.setColors(RED,WHITE);
       web.clear();
       nav.printTo(web);
       out.resume();
@@ -386,25 +404,25 @@ void setup() {
 
   #ifndef __AVR__
     //populate std container menu
-    // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
-    // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
-    // mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
+    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
+    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
+    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
   #endif
 
-  // web.lockMode(LockMode::None);
-  // web.setColors(RED,WHITE);
-  // web.clear();
-  // nav.printTo(web);
+  web.lockMode(LockMode::None);
+  web.setColors(RED,WHITE);
+  web.clear();
+  nav.printTo(web);
 
-  // syslog.lockMode(LockMode::None);
-  // syslog.setColors(GREEN,BLACK);
-  // syslog.clear();
-  // syslog.put(".·•<::(log)::>•·.");
+  syslog.lockMode(LockMode::None);
+  syslog.setColors(GREEN,BLACK);
+  syslog.clear();
+  syslog.put(".·•<::(log)::>•·.");
 
-  // footer.lockMode(LockMode::None);
-  // footer.setColors(BLUE,BLACK);
-  // footer.clear();
-  // footer.put("footer");
+  footer.lockMode(LockMode::None);
+  footer.setColors(BLUE,BLACK);
+  footer.clear();
+  footer.put("footer");
 
   out.lockMode(LockMode::None);
   out.setColors(WHITE,BLACK);
@@ -414,6 +432,9 @@ void setup() {
 
 int main(){
   setup();
+  nav.go(3);
+  nav.enter();
+  nav.go(4);
   while(run());
   dout<<xy<0,50><<"end."<<endl;
   return 0;

@@ -51,12 +51,13 @@ struct Menu {
     bool changed() {//TODO: change this into a "simple" print with `LockMode::Changed` insted!
       // return m_title.changed();
       bool r=m_title.changed();
-      if(Base::isPad()) dout<<xy<0,4><<colors<GREEN,BLACK><<"PAD! |"<<cnt<>++<<::padWith<10><<flush;
+      // if(Base::isPad()) dout<<xy<0,4><<colors<GREEN,BLACK><<"PAD! |"<<cnt<>++<<::padWith<10><<flush;
       return Base::isPad()?m_body.changed()||r:r;
     }
 
     template<typename Out> 
     void print(Out& out,Ctx& ctx) {
+      if(out.unlocked()) dout<<xy<0,2><<"Menu::print|"<<cnt<>++<<flush;out.resume();
       m_title.print(out,ctx);
       if(Base::isPad()) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
         Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)ctx.at+1,0,true,0,ctx.idx};
@@ -70,11 +71,11 @@ struct Menu {
 
     template<typename Out>
     bool printMenu(Out& out,Ctx& ctx) {
-      ctx.idx=0;
-      out.resume();//TODO: can this be somewhere else?
-      if(ctx.pAt!=ctx.at){//walk to print level
+      if(out.unlocked()) dout<<xy<0,1><<"Menu::printMenu|"<<cnt<>++<<flush;out.resume();
+      // ctx.idx=0;
+      if(ctx.pAt>ctx.at){//walk to print level
         //TODO: can this tmp be an update of ctx?
-        Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)(ctx.at+1),0,ctx.pad,0,ctx.idx};
+        Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)(ctx.at+1),0,ctx.pad,0, ctx.idx };
         Sz s=ctx.sel();
         return m_body.printMenu(out,tmp,s);
       }
@@ -85,7 +86,9 @@ struct Menu {
 
     template<typename Out>
     bool printBody(Out& out,Ctx& ctx)  
-      {return m_body.printBody(out,ctx);}
+      {
+        // ctx.pIdx=ctx.idx;
+        return m_body.printBody(out,ctx);}
 
     template<typename Out> 
     bool printItem(Out& out,Ctx& ctx) const 
