@@ -29,20 +29,20 @@ struct ANSIFmt {
     // static constexpr int bg(bool sel) {return sel?GREEN:BLUE;}
     
     static constexpr Colors<int> fb(const Ctx& ctx) {
-        int a = ctx.after();
-        bool b = ctx;
-        bool c = ctx.pad;
-        bool d = ctx.psel();
+        // int a = ctx.after();
+        // bool b = ctx;
+        // bool c = ctx.pad;
+        // bool d = ctx.psel();
 
-        if(c&&d) {//pad focus
-          if(b) {//selected
-            switch(a) {//pad focus
+        if(ctx.pad&&ctx.psel()) {//pad focus
+          if(ctx) {//selected
+            switch(ctx.after()) {//pad focus
               default: return {ctx&&ctx.enabled?WHITE:BLACK,GREEN};//nav
               case 2: return {ctx.enabled?GREEN:BLACK,WHITE};//pad nav
               case 3: return {RED,WHITE};//pad edit
             }
           } else return {ctx.enabled?WHITE:BLACK,GREEN};//on pad with parent selected
-        } else if((b&&!c)||(b&&c&&d&&a>1)) return {WHITE,GREEN};//pad parent focus
+        } else if(ctx && (!ctx.pad || (ctx.psel() && ctx.after() > 1))) return {WHITE,GREEN};//pad parent focus
         return {ctx.enabled?WHITE:BLACK,BLUE};//unselected
     }
 
@@ -93,7 +93,7 @@ struct ANSIFmt {
     // stop --
     template<Fmt tag>
     void fmtStop(const Ctx& ctx) {
-      if((tag&Fmt::Item)&&ctx&&(ctx.sel(ctx.pAt) == ctx.pIdx)) setColors(ctx.enabled?WHITE:BLACK,GREEN);
+      if((tag&Fmt::Item)&&ctx&&(ctx.sel(ctx.pAt)==ctx.pIdx)) setColors(ctx.enabled?WHITE:BLACK,GREEN);
       Base::template fmtStop<tag>(ctx);
     }
   };
