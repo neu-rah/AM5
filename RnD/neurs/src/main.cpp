@@ -424,10 +424,8 @@ void setup() {
 }
 
 int main(){
+  nav.go(30);
   setup();
-  nav.go(3);
-  nav.enter();
-  nav.go(1);
   while(run());
   dout<<xy<0,50><<"end."<<endl;
   return 0;

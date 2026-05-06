@@ -4,7 +4,7 @@
 
 _just like that..._
 
-- entering a menu with idx out of range block the app!
+- ~~entering a menu with idx out of range block the app!~~ -> clamping focus value within body range.
 - enum Toggle & Select are not calling the action when done
 - clear info panel on focus change
 - ~~XML formatting still sucks~~ XML with indent, attributes and cdata sections!

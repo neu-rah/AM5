@@ -219,8 +219,8 @@ struct NumField {
     using Base::up;
     using Base::down;
     using Type=typename Base::Type;
-    // bool up(DataType n=1) {set(Base::up(Base::get(),n));return Base::up();}
-    // bool down(DataType n=1) {set(Base::down(get(),n));return Base::down();}
+    constexpr bool valid() const {return Base::valid(get());}
+    constexpr bool clamp() {return Base::set(Base::clamp(get()));}
     template<typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       if(n.navMode()==NavMode::Edit) switch(cke.cmd){
