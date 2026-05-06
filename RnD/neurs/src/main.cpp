@@ -51,7 +51,7 @@ IOutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<20,10>,
+  StaticPos<5,3>,
   StaticArea<30,8>
 > out;
 
