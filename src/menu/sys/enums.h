@@ -18,7 +18,7 @@ enum class Clear {no,yes};
 enum class Pad {no,yes};
 enum class NavMode {Nav,Edit,Tune};
 
-enum class Cmd {Enter,Esc,Up,Down,Left,Right,Key,Go};
+enum class Cmd {Enter=1<<0,Esc=1<<1,Up=1<<2,Down=1<<3,Left=1<<4,Right=1<<5,Key=1<<6,Go=1<<7};
 
 enum class Fmt:int {
   None=0<<0,View=1<<0,Title=1<<1,Menu=1<<2,Body=1<<3,Item=1<<4,
