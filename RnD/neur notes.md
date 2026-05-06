@@ -7,55 +7,62 @@ _just like that..._
 - ~~entering a menu with idx out of range block the app!~~ -> clamping focus value within body range.
 - enum Toggle & Select are not calling the action when done
 - clear info panel on focus change
-- ~~XML formatting still sucks~~ XML with indent, attributes and cdata sections!
-- allow pad exit without `Esc` (either side?)
+- XML with indent, attributes and cdata sections! **still sucks**
+- allow **pad exit** without `Esc` (either side?)
 - ~~Body is reprinting the menu for each pad item~~
 
 ## Design
 
-### decisions
-
-#### case table for ctx.path on a pad print process up to editing.
-
-```text
-ctx.pAt:0 ctx.path:path:{a}       => menu nav
-ctx.pAt:1 ctx.path:path:{a,b}     => sub-menu nav
-ctx.pAt:2 ctx.path:path:{a,b,c}   => sub-menu nav
-ctx.pAt:1 ctx.path:path:{a,b,c}   => parent draw/pad nav
-ctx.pAt:1 ctx.path:path:{a,b,c,d} => pad edit
-
-path[pAt]==ctx.pIdx <=> parent is selected
-
-path.len-pAt:
-1-0=1 => NavMode::Nav       => root menu nav
-2-1=1 => NavMode::Nav       => sub menu nav
-3-2=1 => NavMode::Edit/Tune => sub menu nav
-3-1=2 => NavMode::Nav       => pad menu nav
-4-1=3 => NavMode::Edit/Tune => pad field edit
-```
+### current footer print by output redirection makes big recursive types... mitigate!
 
 ```c++
-bool psel() {return path[pAt]==ctx.pIdx;}// <=> parent is selected
+template<typename... OO>
+using Desc=
+  OnFocus<
+  typename Put<OO...>::template ToOut<
+    decltype(footer),footer,Clear::yes//<here we add all the output type into this item part type
+  >
+>;
 ```
 
+can we use Ids? => join multiple outputs
 
-#### remove Gate from Raw? we can block calls on nav, however we need the output matched results!
+### ~~pad printing navigation and color~~ 
 
-#### new menu structure (menu not deriving from Title)
+> **done on ansiFmt... replicate**  
+  _This makes evident the need of color tables!_
 
-- brings the problem of not being able to add parts to the menu (composition is closed).
-  This is a BIG problem, however this is also what allows us to have **menu generating functions** like `menuDef(...)`
+### ~~remove Gate from Raw? ~~
+
+we can block calls on nav, **however we need the output matched results!**
+
+- need draw to sync and check for changes on visible
+- need output only on LockMode::Update or LockMode::None.
+- can provide char measure if Cursor present.
+
+### new menu structure 
+
+_**menu not deriving from Title**_
+
+- ~~brings the problem of not being able to add parts to the menu (composition is closed).~~
+
+>solved, even factory functions can, ex: `menuDef<WrapNav>(...)`.
+
+**can you believe this?**
+```c++
+template<typename... OO,typename T,typename B,typename... PP> 
+constexpr MenuDef<T,B,OO...> menuDef(T&& t,B&& b,PP&&... pp)
+  {return {std::forward<T>(t),std::forward<B>(b),std::forward<PP>(pp)...};}
+```
 
 ### other design things
 
-- ~~make a bitmask out of Fmt, too many switches on format (and they will still work!)~~ **done**
-- ~~move Wraps setting out of ItemNav (rename?)~~,  
-  ~~only usefulness is to open on enter, former **CanNav**~~
-  reintroduced ItemNav with the new menu structure, it makes easier to build the menus  
+*  ~~only usefulness is to open on enter, former **CanNav**~~  
+*  ~~reintroduced ItemNav with the new menu structure, it makes easier to build the menus~~  
 - use prefix/suffix items/components to implement separators?
   and avoid the @⅜£⅜§ of navigating over them...
 - allow things like `EnDis` to print state as a xml attribute... persistency API?
-  we can cheat this one by grabbing `ctx.enabled`
+  we can cheat this one by grabbing `ctx.enabled`... can it be generalized?
 - make buffers independent of output, we want to print to many
 
 >`Wraps` setting now on `Menu` and on numeric ranges
