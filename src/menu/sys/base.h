@@ -71,9 +71,9 @@ template<typename Cor> struct Colors{Cor fg;Cor bg;};
 struct Path {
   Depth len;
   Sz* data;
-  Sz sel(Depth i=0) const {return len>i?data[(int)i]:0;}
-  Sz last() const {return sel(len-1);}
-  Path next() {assert(len>0);return {(Depth)(len-1),&data[1]};}
+  constexpr Sz sel(Depth i=0) const {return len>i?data[(int)i]:0;}
+  constexpr Sz last() const {return sel(len-1);}
+  constexpr Path next() const {assert(len>0);return {(Depth)(len-1),&data[1]};}
 };
 
 template<Depth depth> struct PathData {
@@ -108,16 +108,20 @@ struct Ctx {
     Sz pIdx={-1}
   ):path{path},mode{mode},pAt{pAt},enabled{enabled},tops{tops},at{at},prev{prev},pad{pad},idx{idx},pIdx{pIdx}{}
 
-  Ctx next() const {assert(at+1<path.len);return Ctx{path,mode,pAt,enabled,tops,(Depth)(at+1),0,pad,0};}
-  Sz sel() const {return path.sel(std::min(at,path.len-1));}
-  Sz sel(Depth i) const {assert(i<path.len);return path.sel(i);}
-  Sz top() const {return tops[(int)at];}
+  constexpr bool psel() const {return sel(pAt)==pIdx;}// <=> parent is selected?
+  constexpr Depth after() const {return path.len-pAt;}// <=> depth after print root, 1=>menu nav, 2=>pad menu nav, 3=>pad menu edit
+  constexpr Sz sel() const {return path.sel(std::min(at,path.len-1));}
+  constexpr Sz sel(Depth i) const {assert(i<path.len);return path.sel(i);}
+  constexpr Sz top() const {return tops[(int)at];}
+  constexpr operator bool() const {return path.sel(at-1)==idx;}
+  constexpr bool padPrinting() const {return at-pAt>0;}
   Sz top(Sz i) {return tops[(int)at]=i;}
-  operator bool() const {return path.sel(at-1)==idx;}
-  bool padPrinting() const {return at-pAt>0;}
+  Ctx next() const {assert(at+1<path.len);return Ctx{path,mode,pAt,enabled,tops,(Depth)(at+1),0,pad,0};}
 };
 
 #ifdef MENU_DEBUG
+  template<typename Out> Out& operator<<(Out& out,const Pos& o) {return out<<"{"<<o.x<<","<<o.y<<"}";}
+
   template<typename Out>
   Out& operator<<(Out& out,const Path o) {
     out<<"{";

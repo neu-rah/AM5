@@ -21,6 +21,59 @@
   #endif
   using namespace std;
 
+bool running=true;
+
+InDef<
+  #ifdef ARDUINO
+    SerialIn,
+  #else
+    LinuxKeyIn,
+  #endif
+  PCKbd
+> in;
+
+IOutDef<
+  ScrollPrinter,//menu parts to use
+  ANSIFmt,//add some ANSI colors and format to the output
+  // TextFmt,
+  ClearFreeFmt,//this can take a lot of burden away from user format
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  ColorTrack<int>,//track color setting for device resume...
+  Cursor,//track cursor position for resume...
+  Gate,
+  ANSIOut,//inject ansi codes into the next output device
+  #ifdef __AVR__
+    SerialOut,
+  #else
+    ConsoleOut,
+  #endif
+  StaticPos<20,10>,
+  StaticArea<30,8>
+> out;
+
+OutDef<
+  DataParser<>,//put all data into characters
+  CtrlChars,
+  UTF8,//bypass UTF8 surrogate codes
+  TextWrap,//long texts continue next line
+  Clip,//keep content inside area
+  ColorTrack<int>,//track color setting for device resume...
+  Cursor,//track cursor position for resume...
+  Gate,
+  ANSIOut,//inject ansi codes into the next output device
+  #ifdef __AVR__
+    SerialOut,
+  #else
+    ConsoleOut,
+  #endif
+  StaticPos<decltype(out)::orgX(),decltype(out)::orgY()+decltype(out)::height()>,
+  StaticArea<decltype(out)::width(),4>
+> footer;
+
 OutDef<
   TextFmt,
   DataParser<>,//put all data into characters
@@ -38,7 +91,7 @@ OutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<5,32>,
+  StaticPos<5,decltype(footer)::orgY()+decltype(footer)::height()+1>,
   StaticArea<80,10>
 > syslog;
 
@@ -60,72 +113,9 @@ IOutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<0,45>,
+  StaticPos<0,decltype(syslog)::orgY()+decltype(syslog)::height()+1>,
   StaticArea<100,20>
 > web;
-
-bool running=true;
-
-InDef<
-  #ifdef ARDUINO
-    SerialIn,
-  #else
-    LinuxKeyIn,
-  #endif
-  PCKbd
-> in;
-
-IOutDef<
-  // ScrollPrinter,//menu parts to use
-  ViewPrinter,// outermost format envelope
-  MenuPrinter<// calls printMenu
-    TitlePrinter,// just print the title
-    BodyPrinter,//stream/serial print
-    ItemPrinter<//calls printItem:
-      // IndexPrinter,// print item index 1-9
-      NavCursorPrinter,// use a text cursor on selected item.
-      ItemBodyPrinter//→ printItem → Item::print
-    >
-  >,
-  ANSIFmt,//add some ANSI colors and format to the output
-  // TextFmt,
-  ClearFreeFmt,//this can take a lot of burden away from user format
-  DataParser<>,//put all data into characters
-  CtrlChars,
-  UTF8,//bypass UTF8 surrogate codes
-  TextWrap,//long texts continue next line
-  Clip,//keep content inside area
-  ColorTrack<int>,//track color setting for device resume...
-  Cursor,//track cursor position for resume...
-  Gate,
-  ANSIOut,//inject ansi codes into the next output device
-  #ifdef __AVR__
-    SerialOut,
-  #else
-    ConsoleOut,
-  #endif
-  StaticPos<20,10>,
-  StaticArea<30,16>
-> out;
-
-OutDef<
-  DataParser<>,//put all data into characters
-  CtrlChars,
-  UTF8,//bypass UTF8 surrogate codes
-  TextWrap,//long texts continue next line
-  Clip,//keep content inside area
-  ColorTrack<int>,//track color setting for device resume...
-  Cursor,//track cursor position for resume...
-  Gate,
-  ANSIOut,//inject ansi codes into the next output device
-  #ifdef __AVR__
-    SerialOut,
-  #else
-    ConsoleOut,
-  #endif
-  StaticPos<20,26>,
-  StaticArea<30,4>
-> footer;
 
 namespace text {
   static constexpr const CText main_menu{"Main menu"};
@@ -134,7 +124,7 @@ namespace text {
   static constexpr const CText op1{"Option 1"};
   static constexpr const CText op2{"Option 2"};
   static constexpr const CText op3{"Option 3"};
-  static constexpr const CText fields_menu{"abcde..."};
+  static constexpr const CText fields_menu{"Fields..."};
   static constexpr const CText array_sub_menu{"Same type array>"};
   static constexpr const CText sub_ibody{"IItem* array"};
   static constexpr const CText sub_sbody{"std::container"};
@@ -300,6 +290,7 @@ auto dateField(const char*lbl) {
       ItemDef<//lets define a numeric field:
         EditField,//use nav keys up/down to change numeric value within range
         ParentDraw,//draw inplace
+        // EnDis<false>,
         // AsEditMode<>,//edit mode indicator (format)
         ItemNav,//open nav level for this item on Cmd::Enter
         NumField<StaticNumRange<int,1900,2150,true>,//static numeric range

@@ -25,27 +25,25 @@ struct ANSIFmt {
     using Base::put;
     using Base::resume;
 
-    static constexpr int fg(bool en) {return en?WHITE:BLACK;}
-    static constexpr int bg(bool sel) {return sel?GREEN:BLUE;}
-    static constexpr bool psel(const Ctx& ctx) {return ctx.sel(ctx.pAt)==ctx.pIdx;}// <=> parent is selected?
-    static constexpr Depth after(const Ctx& ctx) {return ctx.path.len-ctx.pAt;}// <=> depth after print root, 1=>menu nav, 2=>pad menu nav, 3=>pad menu edit
+    // static constexpr int fg(bool en) {return en?WHITE:BLACK;}
+    // static constexpr int bg(bool sel) {return sel?GREEN:BLUE;}
     
     static constexpr Colors<int> fb(const Ctx& ctx) {
-        int a = after(ctx);
+        int a = ctx.after();
         bool b = ctx;
         bool c = ctx.pad;
-        bool d = psel(ctx);
+        bool d = ctx.psel();
 
         if(c&&d) {//pad focus
           if(b) {//selected
             switch(a) {//pad focus
-              default: return {ctx?BLACK:WHITE,GREEN};//nav
-              case 2: return {GREEN,WHITE};//pad nav
+              default: return {ctx&&ctx.enabled?WHITE:BLACK,GREEN};//nav
+              case 2: return {ctx.enabled?GREEN:BLACK,WHITE};//pad nav
               case 3: return {RED,WHITE};//pad edit
             }
-          } else return {BLACK,GREEN};//on pad with parent selected
+          } else return {ctx.enabled?WHITE:BLACK,GREEN};//on pad with parent selected
         } else if((b&&!c)||(b&&c&&d&&a>1)) return {WHITE,GREEN};//pad parent focus
-        return {WHITE,BLUE};//unselected
+        return {ctx.enabled?WHITE:BLACK,BLUE};//unselected
     }
 
     // start ---
@@ -70,7 +68,7 @@ struct ANSIFmt {
       switch(tag){//for text
         case Fmt::EditMode:
           // setColors(fg(ctx.enabled),bg(ps));
-          if((ctx&&!ctx.pad)||(ctx&&ctx.pad&&psel(ctx))) switch(ctx.mode) {
+          if(ctx && (!ctx.pad || (ctx.sel(ctx.pAt) == ctx.pIdx))) switch(ctx.mode) {
             default: break;
             case NavMode::Nav: put(':');break;
             case NavMode::Edit: put('=');break;

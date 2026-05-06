@@ -276,8 +276,9 @@ struct DeviceCursor {
     using F::fmtStop;
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::Item> fmtStart(const Ctx& ctx) {
+      // dout<<xy<0,1><<"storing cursor pos "<<F::obj().pos()<<padWith<10><<flush;F::resume();
       F::template fmtStart<tag>(ctx);
-      if(ctx) m_text_cursor_at=F::obj().pos();
+      if(ctx && (!ctx.pad || (ctx.sel(ctx.pAt) == ctx.pIdx))) m_text_cursor_at=F::obj().pos();
     }
     template<Fmt tag>
     std::enable_if_t<tag&Fmt::EditCursor> fmtStop(const Ctx& ctx) {

@@ -57,7 +57,7 @@ struct Menu {
 
     template<typename Out> 
     void print(Out& out,Ctx& ctx) {
-      if(out.unlocked()) dout<<xy<0,2><<"Menu::print|"<<cnt<>++<<flush;out.resume();
+      // if(out.unlocked()) dout<<xy<0,2><<"Menu::print|"<<cnt<>++<<flush;out.resume();
       m_title.print(out,ctx);
       if(Base::isPad()) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
         Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)ctx.at+1,0,true,0,ctx.idx};
@@ -71,7 +71,7 @@ struct Menu {
 
     template<typename Out>
     bool printMenu(Out& out,Ctx& ctx) {
-      if(out.unlocked()) dout<<xy<0,1><<"Menu::printMenu|"<<cnt<>++<<flush;out.resume();
+      // if(out.unlocked()) dout<<xy<0,1><<"Menu::printMenu|"<<cnt<>++<<flush;out.resume();
       // ctx.idx=0;
       if(ctx.pAt>ctx.at){//walk to print level
         //TODO: can this tmp be an update of ctx?
