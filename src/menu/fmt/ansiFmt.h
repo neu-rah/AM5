@@ -25,21 +25,13 @@ struct ANSIFmt {
     using Base::put;
     using Base::resume;
 
-    // static constexpr int fg(bool en) {return en?WHITE:BLACK;}
-    // static constexpr int bg(bool sel) {return sel?GREEN:BLUE;}
-    
     static constexpr Colors<int> fb(const Ctx& ctx) {
-        // int a = ctx.after();
-        // bool b = ctx;
-        // bool c = ctx.pad;
-        // bool d = ctx.psel();
-
         if(ctx.pad&&ctx.psel()) {//pad focus
           if(ctx) {//selected
-            switch(ctx.after()) {//pad focus
-              default: return {ctx&&ctx.enabled?WHITE:BLACK,GREEN};//nav
+            switch(ctx.after()) {//pad nav mode
+              default: return {ctx&&ctx.enabled?WHITE:BLACK,GREEN};//parent nav
               case 2: return {ctx.enabled?GREEN:BLACK,WHITE};//pad nav
-              case 3: return {RED,WHITE};//pad edit
+              case 3: return {BLUE,WHITE};//pad edit
             }
           } else return {ctx.enabled?WHITE:BLACK,GREEN};//on pad with parent selected
         } else if(ctx && (!ctx.pad || (ctx.psel() && ctx.after() > 1))) return {WHITE,GREEN};//pad parent focus
@@ -49,25 +41,20 @@ struct ANSIFmt {
     // start ---
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
-      switch(tag) {
+      switch(tag) {//for colors
         case Fmt::View:
           setColors(WHITE,BLUE);
           clear();
           break;
         case Fmt::Title: setColors(BLUE,WHITE);break;
-        // case Fmt::Field: setColors(ctx.enabled?YELLOW:BLACK,bg(psel(ctx)));
+        // case Fmt::Field: setColors(ctx.enabled?WHITE:BLACK,fb(ctx).bg);break;
         case Fmt::Item: {
           Colors<int> o=fb(ctx);
           setColors(o.fg,o.bg);
-          // put((int)after(ctx));
-          // put((bool)ctx);
-          // put(ctx.pad);
-          // put(psel(ctx));
         } break;
       }
       switch(tag){//for text
         case Fmt::EditMode:
-          // setColors(fg(ctx.enabled),bg(ps));
           if(ctx && (!ctx.pad || (ctx.sel(ctx.pAt) == ctx.pIdx))) switch(ctx.mode) {
             default: break;
             case NavMode::Nav: put(':');break;
@@ -76,7 +63,6 @@ struct ANSIFmt {
           } else if(!ctx.pad) put(' ');
           break;
         case Fmt::NavCursor: 
-          // setColors(fg(ctx.enabled),bg(ps));
           if(!ctx.pad) {
             if (ctx) put(ctx.enabled?'>':'-');
             else put(' ');

@@ -300,7 +300,7 @@ auto dateField(const char*lbl) {
         StaticText<text::dateSep>,
         EditField,
         ParentDraw,
-        // AsEditMode<>,
+        AsEditMode<>,
         ItemNav,
         NumField<StaticNumRange<int,1,12,true>,
         Watch<AsField<Int>>>
@@ -309,7 +309,7 @@ auto dateField(const char*lbl) {
         StaticText<text::dateSep>,
         EditField,
         ParentDraw,
-        // AsEditMode<>,
+        AsEditMode<>,
         ItemNav,
         NumField<StaticNumRange<int,1,31,true>,
         Watch<AsField<Int>>>
