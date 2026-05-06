@@ -51,7 +51,7 @@ IOutDef<
   #else
     ConsoleOut,
   #endif
-  StaticPos<5,3>,
+  StaticPos<20,10>,
   StaticArea<30,8>
 > out;
 
@@ -236,7 +236,8 @@ using ChooseDemo=ChooseFieldDef<
     ItemDef<AsField<StaticText<text::sub5>,AsUnit<StaticText<text::percent>>>>
     //,Back <--//TODO: extend the enter nav to this level and respect the handling (same as esc)
   >,
-  WrapNav
+  WrapNav,
+  BodyAction<action::subIdx>
 >;
 
 using SelectDemo=SelectFieldDef<
@@ -252,7 +253,8 @@ using SelectDemo=SelectFieldDef<
     ItemDef<AsField<StaticText<text::sub4>>>,
     ItemDef<AsField<StaticText<text::sub5>>>
   >,
-  WrapNav
+  WrapNav,
+  BodyAction<action::subIdx>
 >;
 
 //a Map operation, this operation will fit Map<> and will insert OO... components into the chain
@@ -425,7 +427,7 @@ int main(){
   setup();
   nav.go(3);
   nav.enter();
-  nav.go(4);
+  nav.go(1);
   while(run());
   dout<<xy<0,50><<"end."<<endl;
   return 0;

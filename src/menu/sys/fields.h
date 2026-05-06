@@ -19,9 +19,8 @@ struct ToggleBehave {
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       I::nav(n,cke,path);
       if(cke.cmd==Cmd::Enter) {
-        n.padOpen();
         n.go(Base::m_sel);
-        n.doNav({Cmd::Up},Base::size(),Base::wraps());
+        n.doNav({Cmd::Up},Base::Body::size(),Base::wraps());
         m_changed=Base::m_sel!=n.sel();
         Base::m_sel=n.sel();
         n.close();
@@ -35,7 +34,7 @@ struct ToggleBehave {
 template<typename T,typename B,typename... OO>
 using ToggleFieldDef=ItemDef<
   ToggleBehave,
-  Menu<T,B,WrapNav,OO...>
+  Menu<T,B,ParentDraw,WrapNav,OO...>
 >;
 
 template<typename T,typename B,typename... OO>
