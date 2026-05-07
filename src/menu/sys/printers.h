@@ -104,7 +104,7 @@ struct ScrollBodyPrinter {
       Sz x=Base::posX();
       Sz y=Base::posY();
       if(ctx.sel(ctx.pAt)<0) ctx.path.data[(int)ctx.pAt]=0;
-      else if(ctx.sel(ctx.pAt)>=i.size()) ctx.path.data[ctx.pAt]=i.size()-1;
+      else if(ctx.sel(ctx.pAt)>=i.size()) ctx.path.data[(int)ctx.pAt]=i.size()-1;
       if(ctx.sel(ctx.pAt)<ctx.top()) {
         ctx.top(ctx.sel());//--scroll down
         om=LockMode::None;//scroll => full redraw

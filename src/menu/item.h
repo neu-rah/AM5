@@ -33,7 +33,7 @@ struct ItemAPI:Def {
   template<typename Out> static constexpr bool printBody(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr bool printItem(Out&,Ctx&) {return false;}
   template<typename Out> static constexpr void print(Out&,Ctx&) {}
-  template<typename Nav> static constexpr bool nav(Nav& n,const CKE& cke,Path) {return false;}
+  template<bool isKbd,typename Nav> static constexpr bool nav(Nav& n,const CKE& cke,Path) {return false;}
   //Id--
   static constexpr int getId() {return -1;}
   template<int> using HasId=std::false_type;
@@ -50,9 +50,9 @@ struct ItemAPI:Def {
 //     // constexpr void sync() {Base::sync();O::sync();}
 //     constexpr bool changed() const {return Base::changed()||O::changed();}
 //     //API chain calls for nav function
-//     // template<typename Nav>
+//     // template<bool isKbd,typename Nav>
 //     // bool nav(Nav& n,const CKE& cke,const Path p) 
-//     //   {return Base::nav(n,cke,p)||O::nav(n,cke,p);}
+//     //   {return Base::template nav<isKbd>(n,cke,p)||O::template nav<isKbd>(n,cke,p);}
 //   };
 // };
 
@@ -67,9 +67,9 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>{//::template Map<ItemLink> {
     {Base::printMenu(out,ctx);}
   void enter(Path path) {nav({Cmd::Enter},path);}
 
-  template<typename Nav>
+  template<bool isKbd,typename Nav>
   bool nav(Nav& n,const CKE& cke,const Path p)
-    {return enabled()?Base::nav(n,cke,p):cke.cmd==Cmd::Enter;}
+    {return enabled()?Base::template nav<isKbd>(n,cke,p):cke.cmd==Cmd::Enter;}
 
   template<typename Out> bool print(Out& out,Ctx&& ctx={{}})  
     {return print(out,std::forward<Ctx&>(ctx));}
@@ -96,7 +96,13 @@ struct IItem {
   virtual void sync(IOut& out)=0;
   virtual bool up() const=0;
   virtual bool down() const=0;
-  virtual bool nav(INav& n,const CKE& cke,const Path p)=0;
+  virtual bool _kbdNav(INav& n,const CKE& cke,const Path p)=0;
+  virtual bool _nav(INav& n,const CKE& cke,const Path p)=0;
+
+  template<bool isKbd,typename Nav>
+  bool nav(Nav& n,const CKE& cke,const Path& path) {
+    return isKbd?_kbdNav(n,cke,path):_nav(n,cke,path);
+  }
 
   template <typename Out>
   static constexpr bool printMenu(Out& out,Ctx& ctx) 
@@ -121,7 +127,8 @@ struct IItemDef:IItem, ItemDef<II...> {
   virtual void sync(IOut& out) override {Base::sync(out);}
   virtual bool up() const {return Base::up();};
   virtual bool down() const {return Base::down();};
-  virtual bool nav(INav& n,const CKE& cke,const Path p) override {return Base::nav(n,cke,p);}
+  virtual bool _nav(INav& n,const CKE& cke,const Path p) override {return Base::template nav<false>(n,cke,p);}
+  virtual bool _kbdNav(INav& n,const CKE& cke,const Path p) override {return Base::template nav<true>(n,cke,p);}
   template <typename Out> static constexpr bool printMenu(Out& out,Ctx& ctx) {return Base::printMenu(out,ctx);}
   template<typename Out> static constexpr void print(Out& out,Ctx& ctx) {return Base::print(out,ctx);}
 
@@ -141,7 +148,7 @@ struct Action {
     using Base=I;
     using Base::Base;
     constexpr Part(){}
-    template<typename Nav>
+    template<bool isKbd,typename Nav>
     static constexpr bool nav(Nav& n,const CKE& cke,Path path) 
       {return cke.cmd==Cmd::Enter&&action(path.sel());}
   };
@@ -155,10 +162,10 @@ struct BodyAction {
     using Base=I;
     using Base::Base;
     using Base::enabled;
-    template<typename Nav>
+    template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path p) {
       if(cke.cmd==Cmd::Enter&&p.len) f(p.last());
-      return Base::nav(n,cke,p);
+      return Base::template nav<isKbd>(n,cke,p);
     }
   };
 };
@@ -182,9 +189,9 @@ struct EnDis {
     using Base::Base;
     bool enabled(const Path ={}) const {return Base::get();}
     void enable(bool e=true) {Base::set(e);}
-    template<typename Nav>
+    template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path)
-      {return enabled()?Base::nav(n,cke,path):false;}
+      {return enabled()?Base::template nav<isKbd>(n,cke,path):false;}
   };
 };
 
@@ -194,7 +201,7 @@ struct EditField {
   struct Part:I {
     using Base=I;
     using Base::Base;
-    template<typename Nav>
+    template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       bool r=false;
       if(cke.cmd==Cmd::Enter) {
@@ -202,7 +209,7 @@ struct EditField {
         n.navMode(path.len?NavMode::Nav:NavMode::Edit);
         r=true;
       }
-      return I::nav(n,cke,path)||r;
+      return I::template nav<isKbd>(n,cke,path)||r;
     }
   };
 };
@@ -221,14 +228,14 @@ struct NumField {
     using Type=typename Base::Type;
     constexpr bool valid() const {return Base::valid(get());}
     constexpr bool clamp() {return Base::set(Base::clamp(get()));}
-    template<typename Nav>
+    template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       if(n.navMode()==NavMode::Edit) switch(cke.cmd){
         case Cmd::Up: Base::up(); return true;
         case Cmd::Down: Base::down(); return true;
         default: break;
       }
-      return Base::nav(n,cke,path);
+      return Base::template nav<isKbd>(n,cke,path);
     }
   };
 };
@@ -253,17 +260,17 @@ struct RecallNavPos {
       }
       else Base::body().printItem(out,ctx,m_sel);
     }
-    template<typename Nav>
+    template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       if(cke.cmd==Cmd::Enter) {
         if(path.len) m_sel=path.sel();//store selected item index
         else {
-          bool r=I::nav(n,cke,path);//still check base
+          bool r=I::template nav<isKbd>(n,cke,path);//still check base
           n.go(m_sel);//restore selected index
           return r;
         }
       }
-      return I::nav(n,cke,path);//still check base
+      return I::template nav<isKbd>(n,cke,path);//still check base
     }
     protected: Sz m_sel{0};
   };
@@ -274,13 +281,13 @@ struct ParentDraw {
   struct Part:I {
     using I::I;
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ParentDraw");
-    template<typename Nav>
+    template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
       if(cke.cmd==Cmd::Enter) {
         // dout<<xy<0,1><<colors<BLUE,BLACK><<"ParentDraw::Nav(Cmd::Enter) |"<<cnt<>++<<padWith<10><<flush;
         return path.len>0?n.close():n.padOpen();
       }
-      return  I::nav(n,cke,path);
+      return  I::template nav<isKbd>(n,cke,path);
     }
   };
 };
@@ -294,14 +301,14 @@ struct ItemNav {
     static_assert(I::template Excludes<Class<RecallNavPos>>::value,"Recall must preseed ItemNav");
     static_assert(I::template Excludes<Class<ParentDraw>>::value,"ParentDraw must preseed ItemNav");
     static_assert(I::template Excludes<Class<ItemNav>>::value,"ItemNav must be used only one time on an `Item` definition");
-    template<typename Nav>
+    template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path) {
       if(cke.cmd==Cmd::Enter) {
         // dout<<xy<0,2><<colors<BLUE,BLACK><<"ItemNav::Nav(Cmd::Enter) |"<<cnt<>++<<padWith<10><<flush;
         if(path.len==0) return n.open();
         else if(path.len==1) return n.close();
       }
-      return Base::nav(n,cke,path);
+      return Base::template nav<isKbd>(n,cke,path);
     }
   };
 };
@@ -351,7 +358,7 @@ struct ItemRef {
     static constexpr void print(Out& out,Ctx& ctx) 
       {ref.print(out,ctx);}
 
-    template<typename Nav> 
+    template<bool isKbd,typename Nav> 
     static constexpr bool nav(Nav& n,const CKE& cke,const Path p) 
       {return ref.nav(n,cke,p);}
 

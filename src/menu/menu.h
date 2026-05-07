@@ -60,7 +60,7 @@ struct Menu {
       // if(out.unlocked()) dout<<xy<0,2><<"Menu::print|"<<cnt<>++<<flush;out.resume();
       m_title.print(out,ctx);
       if(Base::isPad()) {//<----- this is a pad... (second pass) lets print the body inplace, will need a new ctx thou, the original will be messed up
-        Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)ctx.at+1,0,true,0,ctx.idx};
+        Ctx tmp{ctx.path,ctx.mode,ctx.pAt,ctx.enabled,ctx.tops,(Depth)(ctx.at+(Depth)1),0,true,0,ctx.idx};
         m_body.printBody(out,tmp);
         // out.template fmtStop<Fmt::Menu>(ctx);
       }
@@ -94,10 +94,10 @@ struct Menu {
     bool printItem(Out& out,Ctx& ctx) const 
       {return Title::print(out,ctx);}
     
-    template<typename Nav> 
+    template<bool isKbd,typename Nav> 
     bool nav(Nav& n,const CKE& cke,Path p) {
-      if(p.len>0&&m_body.nav(n,cke,p.next(),p.sel())) return true;//walk the path
-      bool r=Base::nav(n,cke,p);
+      if(p.len>0&&m_body.template nav<isKbd>(n,cke,p.next(),p.sel())) return true;//walk the path
+      bool r=Base::template nav<isKbd>(n,cke,p);
       return p.len?n.doNav(cke,size(),Base::wraps())||r:r;
     }
 

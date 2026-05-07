@@ -12,9 +12,9 @@ struct StdBody:T {
     for(auto i=T::begin();i<T::end();i++) c=c||(**i).changed();
     return c;
   }
-  template<typename Nav> 
+  template<bool isKbd,typename Nav> 
   bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
-    {return T::operator[](i)->nav(n,cke,path);}
+    {return T::operator[](i)->template nav<isKbd>(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
     for(auto i=T::begin();i<T::end()&&out.freeY();i++) out.printItem(**i,ctx);
