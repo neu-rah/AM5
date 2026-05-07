@@ -285,7 +285,40 @@ using Power=NumFieldDef<
 >;
 
   // date field generating function
-auto dateField(const char*lbl) {
+auto dateField(const char*lbl)->decltype(
+  padDef(
+    ItemDef<AsLabel<Text>,AsEditMode<>>{lbl},
+    staticBody(
+      ItemDef<//lets define a numeric field:
+        EditField,//use nav keys up/down to change numeric value within range
+        ParentDraw,//draw inplace
+        // EnDis<false>,
+        // AsEditMode<>,//edit mode indicator (format)
+        ItemNav,//open nav level for this item on Cmd::Enter
+        NumField<StaticNumRange<int,1900,2150,true>,//static numeric range
+        Watch<AsField<Default<int,2026>,Int>>>//watch for changes, format an Int (Data<int>) as field with default value 2026
+      >{2026},
+      ItemDef<
+        StaticText<text::dateSep>,
+        EditField,
+        ParentDraw,
+        AsEditMode<>,
+        ItemNav,
+        NumField<StaticNumRange<int,1,12,true>,
+        Watch<AsField<Int>>>
+      >{1},
+      ItemDef<
+        StaticText<text::dateSep>,
+        EditField,
+        ParentDraw,
+        AsEditMode<>,
+        ItemNav,
+        NumField<StaticNumRange<int,1,31,true>,
+        Watch<AsField<Int>>>
+      >{1}
+    )
+  )
+) {
   return padDef(
     ItemDef<AsLabel<Text>,AsEditMode<>>{lbl},
     staticBody(
@@ -433,6 +466,6 @@ int main(){
   nav.go(30);
   setup();
   while(run());
-  dout<<xy<0,50><<"end."<<endl;
+  // dout<<xy<0,50><<"end."<<endl;
   return 0;
 }

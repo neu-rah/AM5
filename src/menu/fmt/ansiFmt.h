@@ -25,7 +25,7 @@ struct ANSIFmt {
     using Base::put;
     using Base::resume;
 
-    static constexpr Colors<int> fb(const Ctx& ctx) {
+    static Colors<int> fb(const Ctx& ctx) {
         if(ctx.pad&&ctx.psel()) {//pad focus
           if(ctx) {//selected
             switch(ctx.after()) {//pad nav mode
@@ -42,6 +42,7 @@ struct ANSIFmt {
     template<Fmt tag>
     void fmtStart(const Ctx& ctx) {
       switch(tag) {//for colors
+        default:break;
         case Fmt::View:
           setColors(WHITE,BLUE);
           clear();
