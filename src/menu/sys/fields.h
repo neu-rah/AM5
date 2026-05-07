@@ -30,9 +30,9 @@ struct ToggleBehave {
     // static constexpr const Wraps wraps{Wraps::yes};
     bool changed() const {return m_changed/*||Base::changed()*/;}
     bool sync() {return m_changed=false;Base::sync();}
-    template<typename Nav>
+    template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
-      I::nav(n,cke,path);
+      I::template nav<isKbd>(n,cke,path);
       if(cke.cmd==Cmd::Enter) {
         n.go(Base::m_sel);
         n.doNav({Cmd::Up},Base::Body::size(),Base::wraps());

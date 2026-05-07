@@ -110,9 +110,11 @@ struct TreeNav {
       // dout<<xy<0,1><<colors<BLACK,RED><<ctx<<padWith<10><<flush;out.resume();
       return root().printMenu(out,ctx);
     }
+
+    template<bool isKbd>
     bool doCmd(Cmd cmd,Key k=0, bool e=false) {
       if(cmd==Cmd::Esc) return close();//preemptive esc=>close
-      bool r=root().nav(Base::obj(),{cmd,k,e},focus(m_level+1));
+      bool r=root().template nav<isKbd>(Base::obj(),{cmd,k,e},focus(m_level+1));
       return r;
     }
 

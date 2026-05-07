@@ -14,9 +14,9 @@ struct CArrayBody {
     return c;
   }
 
-  template<typename Nav> 
+  template<bool isKbd,typename Nav> 
   bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
-    {return data[i].nav(n,cke,path);}
+    {return data[i].template nav<isKbd>(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
     for(Sz i=0;i<_sz&&out.freeY();i++) out.printItem(data[ctx.idx],ctx);//? [ctx.idx]? why not i?
@@ -44,9 +44,9 @@ struct CPtrArrayBody {
     return c;
   }
 
-  template<typename Nav> 
+  template<bool isKbd,typename Nav> 
   bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
-    {return data[i]->nav(n,cke,path);}
+    {return data[i]->template nav<isKbd>(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
     for(Sz i=0;i<_sz&&out.freeY();i++) out.printItem(*data[ctx.idx],ctx);

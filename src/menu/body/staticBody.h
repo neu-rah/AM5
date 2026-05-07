@@ -42,9 +42,9 @@ struct StaticBody {
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i) 
     {return i?m_body.printItem(out,ctx,i-1):m_item.print(out,ctx);}
 
-  template<typename Nav>
+  template<bool isKbd,typename Nav>
   bool nav(Nav& n,const CKE& cke,Path path,Sz i)
-    {return i?m_body.nav(n,cke,path,i-1):m_item.nav(n,cke,path);}
+    {return i?m_body.template nav<isKbd>(n,cke,path,i-1):m_item.template nav<isKbd>(n,cke,path);}
 //Id, this is compile-time search/reference --
   template<int id>
   using HasId=std::integral_constant<bool,
@@ -100,8 +100,8 @@ struct StaticBody<O> {
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
     {return m_item.print(out,ctx);}
 
-  template<typename Nav> bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
-    {assert(i==0);return m_item.nav(n,cke,path);}
+  template<bool isKbd,typename Nav> bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
+    {assert(i==0);return m_item.template nav<isKbd>(n,cke,path);}
 //Id--
   template<int id>
   using HasId=std::integral_constant<bool,id==Item::getId()||typename Item::template HasId<id>{}>;

@@ -78,6 +78,7 @@ struct XmlFmt {
         attr=true;
         attrStart<tag>(ctx);
         switch(tag) {
+          default:break;
           // case Fmt::View: 
           case Fmt::Index: put(ctx.idx);break;
           case Fmt::NavCursor: put(ctx?(ctx.enabled?'@':'-'):' ');break;
@@ -99,7 +100,7 @@ struct XmlFmt {
       if(tag&(Fmt::View|Fmt::Menu|Fmt::Body)) {
         if(tag&(Fmt::View|Fmt::Menu)) {
           put(" at=\"");
-          putPath(ctx.path,0,tag==Fmt::Menu?std::min(ctx.at,ctx.path.len-1):ctx.pAt);
+          putPath(ctx.path,0,tag==Fmt::Menu?std::min((Depth)ctx.at,(Depth)(ctx.path.len-1)):ctx.pAt);
           put("\"");
         }
         indent++;

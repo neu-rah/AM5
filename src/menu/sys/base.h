@@ -73,7 +73,12 @@ struct Path {
   Sz* data;
   constexpr Sz sel(Depth i=0) const {return len>i?data[(int)i]:0;}
   constexpr Sz last() const {return sel(len-1);}
-  constexpr Path next() const {assert(len>0);return {(Depth)(len-1),&data[1]};}
+  constexpr Path next() const {
+    #ifndef ARDUINO
+      assert(len>0);
+    #endif
+    return {(Depth)(len-1),&data[1]};
+  }
 };
 
 template<Depth depth> struct PathData {
@@ -110,7 +115,7 @@ struct Ctx {
 
   constexpr bool psel() const {return sel(pAt)==pIdx;}// <=> parent is selected?
   constexpr Depth after() const {return path.len-pAt;}// <=> depth after print root, 1=>menu nav, 2=>pad menu nav, 3=>pad menu edit
-  constexpr Sz sel() const {return path.sel(std::min(at,path.len-1));}
+  constexpr Sz sel() const {return path.sel(std::min((Depth)at,(Depth)(path.len-1)));}
   constexpr Sz sel(Depth i) const {assert(i<path.len);return path.sel(i);}
   constexpr Sz top() const {return tops[(int)at];}
   constexpr operator bool() const {return path.sel(at-1)==idx;}
