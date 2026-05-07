@@ -18,9 +18,21 @@ _just like that..._
 > On previous versions we passed a `bool kbd` template param, then used metaprogramming to filter cases
 
 **we can:**
-- send the kbd template param
-- send a regular kbd param
-- use a nav var
+- send the kbd template param => as it was o previous versions, allows meta-prog filter
+- send a regular kbd param => a bit more ram and maybe less flash I guess.. but who knows the code for kbd will be around (used or not)
+- use a nav var => multiple outputs can mess this, and code would be around
+- different functions => that would require a new Cmd to deliver it over the tree
+- decide for kbd if key is sent (Cmd::Key) case, code can be removed by meta-prog
+
+main
+RAM:   [==========]  201.1% (used 4119 bytes)
+Flash: [==========]  106.8% (used 34458 bytes)
+
+nav<isKbd>
+RAM:   [==========]  201.1% (used 4119 bytes from 2048)
+Flash: [==========]  106.8% (used 34458 bytes from 32256 bytes)
+
+
 
 ### current footer print by output redirection makes big recursive types... mitigate!
 
