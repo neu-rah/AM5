@@ -1,4 +1,4 @@
-# TODO from the 2022 verion
+# TODO from the 2022 version
 
 ## Bugs and fixes
 - [x] Cmd::Up should always increase the numeric value (compose commands swap if needed other direction)
@@ -6,7 +6,7 @@
     => then add a measure class to disable printing right on top of output driver
       cursors are past drivers and they need the info, so pass it along over the driver
 - [x] make color tables a `Part` so that we do not need to pass the device
-- [ ] Nav should use reference to external created menu intead of the data member, data member versions can be composed after
+- [ ] Nav should use reference to external created menu instead of the data member, data member versions can be composed after
 
 ## Development
 
@@ -19,7 +19,7 @@
 - [x][x] use C array as body
 - [x][x] Pads
 - [x][x] Add extra params to `act` call, added index
-- [x][-] add Act command so that we can generalise more
+- [x][-] add Act command so that we can generalize more
 - [x][-] make item to call actions by id, allowing action tables and quick input to action translation
 - [x][?] allow pre-made commands to mimic nav commands (sending commands to ID), this allows linking of buttons and fields
 - [x][x] Multiline options
@@ -32,16 +32,16 @@
 - [x][-] split formats into composable parts
 - [x][ ] roll long texts on focus => clipping ctrl
 - [x][ ] add margin to `Align`
-- [x][ ] Multilanguage
+- [x][ ] Multilingual
 - [x][x] split input into drivers and parsers
-- [x][ ] Id to Path (is this usefull?). yes, or support runtime id
-- [~][x] safegards to ensure proper mount of parts (ex: EnDis should not be on top of any action)
+- [x][ ] Id to Path (is this useful?). yes, or support runtime id
+- [~][x] safeguards to ensure proper mount of parts (ex: EnDis should not be on top of any action)
 - [ ][ ] Cmd::Exit at root should suspend the menu if Activity monitor is present
 - [ ][ ] open or select on focus (for enums and 2d nav)
 - [ ][ ] Full panel options
 - [ ][x] Panel footer => panel and measure
 - [ ][ ] Part to invert key direction... can it relate to input type?
-- [ ][ ] shortcuts and accels
+- [ ][ ] shortcuts and accel
 - [ ][x] Check for `\n` inside strings to account for vertical measure? optional?
 - [ ][x] UTF8 printing
 - [ ][x] Help text
@@ -72,7 +72,7 @@
 - [ ] Radio? this is possible by tieing a field with an enum value
 
 ## Input
-- [ ] a command parser is something that can be overriden by the item
+- [ ] a command parser is something that can be overridden by the item
     use this for a num. keypad handler when entering the num.pad dialog
 - [ ] RF driver => id nav
 
@@ -82,7 +82,7 @@
 - [x] Account for multiline title space
 - [x] V. scroll
 - [x] margins and alignments
-- [x] Viewports
+- [x] Viewport
 - [ ] panels composition and liquid layout
 - [ ] borders and margins
 - [ ] Full and minimal draw
@@ -90,7 +90,7 @@
 - [ ] Formats: ansi, json, xml
 - [ ] Liquid layout
 - [ ] clipping && scroll
-- [ ] serial to webrowser, see pepper driver for node
+- [ ] serial to web browser, see pepper driver for node
 
 ## Navigation
 - [x] 2D nav
