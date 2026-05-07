@@ -329,7 +329,12 @@ auto mainMenu=menuDef<WrapNav>(
     menuDef<WrapNav>(
       Title<StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
       staticBody(
-        ItemDef<AsLabel<Text>,AsEditMode<>,TextField<15>>{"Name"},
+        ItemDef<
+          AsLabel<Text>,
+          AsEditMode<>,
+          EditField,
+          TextField<15>
+        >{"Name"},
         Power{},
         ToggleDemo{"Toggle","Maybe"},
         SelectDemo{},

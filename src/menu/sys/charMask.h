@@ -10,6 +10,7 @@
 */
 
 namespace CharMask {
+  
   /// @brief values between l and t
   /// @tparam T value type
   /// @tparam l lower value
