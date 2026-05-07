@@ -2,7 +2,7 @@
 
 ## conclusion
 
-use F3, see chart comparing the cases with and without `OutLink`
+**use F3**, see chart comparing the cases with and without `OutLink`
 PLATFORM: Atmel AVR (5.1.0) > Arduino Uno  
 HARDWARE: ATMEGA328P 16MHz, 2KB RAM, 31.50KB Flash  
 Building in release mode  

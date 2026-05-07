@@ -13,6 +13,15 @@ _just like that..._
 
 ## Design
 
+### keyboard handling
+
+> On previous versions we passed a `bool kbd` template param, then used metaprogramming to filter cases
+
+**we can:**
+- send the kbd template param
+- send a regular kbd param
+- use a nav var
+
 ### current footer print by output redirection makes big recursive types... mitigate!
 
 ```c++
@@ -20,7 +29,8 @@ template<typename... OO>
 using Desc=
   OnFocus<
   typename Put<OO...>::template ToOut<
-    decltype(footer),footer,Clear::yes//<here we add all the output type into this item part type
+    decltype(footer), footer,//<here we add all the output type into this item part type
+    Clear::yes
   >
 >;
 ```
@@ -32,7 +42,7 @@ can we use Ids? => join multiple outputs
 > **done on ansiFmt... replicate**  
   _This makes evident the need of color tables!_
 
-### ~~remove Gate from Raw? ~~
+### ~~remove Gate from Raw?~~
 
 we can block calls on nav, **however we need the output matched results!**
 
@@ -94,8 +104,7 @@ _features still not implemented_
 - ✓ device resume, we need this for the following output panels to work, and color report too
 - ✓ `PadFree` output part -> `ClearFreeFmt`
 - ✓ `ClearFree` output part -> `ClearFreeFmt`
-- pad menu/fields
-- text only non-selectable fake items, useful for Pad separators
+- ✓ pad menu/fields
 - real enum fields that retrieve and store data (not nav position)
 - text edit fields
 - password fields
@@ -105,6 +114,7 @@ _features still not implemented_
 - multilingual text
 - text align Left|Center|Right -> see old versions
 - panel align
+- text only non-selectable fake items, useful for Pad separators?
 - animation
 - view with panels?
 - inactivity timeout

@@ -4,6 +4,21 @@
 #include "menu/out.h"
 #include "menu/sys/printers.h"
 #include "menu/item.h"
+#include "menu/sys/charMask.h"
+
+template<Sz sz,typename Mask=CharMask::ASCII8>
+struct TextField {
+  template<typename I>
+  struct Part:I {
+    using Base=I;
+    char text[sz+1];
+    char chk{0};
+    constexpr Part():text{0} {}
+    static constexpr Sz depth() {return 2;}
+    template<typename Out>
+    void print(Out& out,Ctx& ctx) {out.put(text);}
+  };
+};
 
 /// @brief toggle enumerated field values on enter key
 /// is implicitly: a RecallDraw and Recall
