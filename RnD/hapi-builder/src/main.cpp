@@ -1,8 +1,9 @@
 #include <iostream>
 using namespace std;
 
-struct Nil{};
+//just FA with HAPI variant (one that can be empty)
 
+// HAPY --------------------------------------------------------------------------
 template<typename... OO> struct Chain;
 
 template<> struct Chain<> {
@@ -20,11 +21,20 @@ struct Chain<O,OO...> {
   template<template<typename> class F> using Map=Chain<F<O>,F<OO>...>;
 };
 
+template<typename API,typename... OO> using APIOf=typename Chain<OO...>::template Part<API>;
+
+//--------------------------------------------------------------------------
+
+struct Nil{};
+
 template<typename Def=Nil>
 struct API {
   static constexpr void path() {}
 };
 
+template<typename... OO> using Def=APIOf<API<Nil>,OO...>;
+
+//--------------------------------------------------------------------------
 struct A {
   template<typename O>struct Part:O {
     using Base=O;
@@ -55,8 +65,8 @@ struct C {
   };
 };
 
-
-using T=typename Chain<A,B,C>::template Part<API<>>;
+// using T=typename Chain<A,B,C>::template Part<API<>>;
+using T=Def<A,B,C>;
 constexpr T o{};
 
 int main(){
