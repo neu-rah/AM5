@@ -7,6 +7,9 @@
   #include <menu/IO/pcKbdIn.h>
   #include <menu/body/cArrayBody.h>
   #include <menu/body/stdBody.h>
+
+  #include <tinyTimeUtils.h>
+  using namespace TinyTimeUtils;
   
   #ifdef __AVR__
     #include <menu/IO/arduino/serialOut.h>
@@ -213,15 +216,15 @@ using Power=NumFieldDef<
   // date field generating function
 auto dateField(const char*lbl)
 #ifdef __AVR__
-  ->decltype(
+->decltype(
   padDef(
     ItemDef<AsLabel<Text>,AsEditMode<>>{lbl},
     staticBody(
       ItemDef<//lets define a numeric field:
         EditField,//use nav keys up/down to change numeric value within range
         ParentDraw,//draw inplace
-        // EnDis<false>,
-        // AsEditMode<>,//edit mode indicator (format)
+        EnDis<false>,
+        AsEditMode<>,//edit mode indicator (format)
         ItemNav,//open nav level for this item on Cmd::Enter
         NumField<StaticNumRange<int,1900,2150,true>,//static numeric range
         Watch<AsField<Default<int,2026>,Int>>>//watch for changes, format an Int (Data<int>) as field with default value 2026
@@ -332,7 +335,7 @@ bool action::op2(Sz) {
 
 //================================================================================================--
 bool run() {
-  static TinyTimeUtils::FPS<300> fps;
+  static TinyTimeUtils::FPS<120> fps;
   if(fps) {
     fps.reset();
     nav.in(in);
@@ -342,7 +345,8 @@ bool run() {
       nav.sync(out);
     }
   }
-  if(!fps) usleep((fps.when()-TinyTimeUtils::timeSrc())*1000);
+  if(!fps) ms_delay(fps.when()-TinyTimeUtils::timeSrc());
+
   return running;
 }
 
@@ -358,6 +362,6 @@ void setup() {
 int main(){
   setup();
   while(run());
-  dout<<xy<0,50><<"end."<<endl;
+  // dout<<xy<0,50><<"end."<<endl;
   return 0;
 }

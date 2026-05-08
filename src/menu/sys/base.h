@@ -62,8 +62,8 @@ using Area=XY;
  
 struct CKE {
   Cmd cmd;
-  Key key{0};
-  bool ext{false};
+  Key key;
+  bool ext;
 };
 
 template<typename Cor> struct Colors{Cor fg;Cor bg;};

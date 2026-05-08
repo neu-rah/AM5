@@ -116,7 +116,8 @@ struct TreeNav {
     template<bool isKbd>
     bool doCmd(Cmd cmd,Key k=0, bool e=false) {
       if(cmd==Cmd::Esc) return close();//preemptive esc=>close, //TODO: need events to inform target (as a component!)
-      bool r=root().template nav<isKbd>(Base::obj(),{cmd,k,e},focus(m_level+1));
+      CKE cke{cmd,k,e};
+      bool r=root().template nav<isKbd>(Base::obj(),cke,focus(m_level+1));
       return r;
     }
 

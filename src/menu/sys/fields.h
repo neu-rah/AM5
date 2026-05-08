@@ -6,11 +6,11 @@
 #include "menu/item.h"
 #include "menu/sys/charMask.h"
 
-template<Sz sz,typename Mask=CharMask::ASCII8>
+template<Sz sz,typename Mask=CharMask::ASCII7>
 struct TextField {
   template<typename I>
-  struct Part:PadDraw::template Part<I> {
-    using Base=typename PadDraw::template Part<I>;
+  struct PartEnd:I {
+    using Base=I;
     char text[sz+1]{"Rui"};
     char chk{0};
     bool edited{false};
@@ -25,7 +25,7 @@ struct TextField {
       if (ctx) {
         out.put(&text[0],i);
         out.template fmtStart<Fmt::EditCursor>(ctx);
-        out.put(text[i]);
+        if(text[i]) out.put(text[i]);
         out.template fmtStop<Fmt::EditCursor>(ctx);
         out.put(&text[i+1]);
       } else out.put(text,sz);
@@ -33,19 +33,36 @@ struct TextField {
     }
     template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
-      if(cke.cmd==Cmd::Key) {
-        if(Mask::chk(cke.key)) {
-          if(strlen(text)<sz) memccpy(&text[path.sel()+1],&text[path.sel()],0,sz);
-          text[path.sel()]=cke.key;
-          edited=true;
-          // dout<<xy<50,3><<"sz:"<<sz<<padWith<3><<flush;
-          return n.doNav({Cmd::Up},sz,Base::wraps());
-          // return n.up();
+      // dout<<xy<0,1><<hex<<(int)cke.key<<padWith<3><<flush;
+      // dout<<xy<0,2><<n.path()<<padWith<10><<flush;
+      if(n.navMode()==NavMode::Edit) {
+        if(cke.cmd==Cmd::Key) {
+          if(cke.key==8||cke.key==127) {//backspace
+            if(path.sel()>0) for(int n=path.sel();n<=sz;n++) text[n-1]=text[n];
+            edited=true;
+            return n.doNav({Cmd::Down},ss(),false);
+          } else if(cke.ext) {//extended keys
+            if(cke.key==0x33) for(int n=path.sel();n<sz;n++) text[n]=text[n+1];//delete
+            else if(cke.key==0x48) n.go(0);//home
+            else if(cke.key==0x46) n.go(ss());//end
+            else return true;
+            edited=true;
+            return true;
+          } else if(Mask::chk(cke.key)) {//write char
+            for(int n=sz-1;n>path.sel();n--) text[n]=text[n-1];
+            text[path.sel()]=cke.key;
+            edited=true;
+            return n.doNav({Cmd::Up},ss()+1,false);
+          }
         }
+        return n.doNav(cke,ss()+1,false);
+        // return Base::template nav<isKbd>(n,cke,path);
       }
-      return n.doNav(cke,strnlen(text,sz),Base::wraps())||Base::template nav<isKbd>(n,cke,path);
+      return Base::template nav<isKbd>(n,cke,path);
     }
+    protected: Sz ss() const {return strnlen(text,sz-1);}
   };
+  template<typename I> using Part=PadDraw::template Part<PartEnd<I>>;
 };
 
 /// @brief toggle enumerated field values on enter key
