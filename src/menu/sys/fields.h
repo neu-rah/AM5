@@ -33,8 +33,6 @@ struct TextField {
     }
     template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path& path) {
-      // dout<<xy<0,1><<hex<<(int)cke.key<<padWith<3><<flush;
-      // dout<<xy<0,2><<n.path()<<padWith<10><<flush;
       if(n.navMode()==NavMode::Edit) {
         if(cke.cmd==Cmd::Key) {
           if(cke.key==8||cke.key==127) {//backspace
@@ -56,7 +54,6 @@ struct TextField {
           }
         }
         return n.doNav(cke,ss()+1,false);
-        // return Base::template nav<isKbd>(n,cke,path);
       }
       return Base::template nav<isKbd>(n,cke,path);
     }
