@@ -9,6 +9,8 @@
  * 
 */
 
+#include "menu/sys/base.h"
+
 namespace CharMask {
   
   /// @brief values between l and t

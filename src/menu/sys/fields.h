@@ -9,14 +9,42 @@
 template<Sz sz,typename Mask=CharMask::ASCII8>
 struct TextField {
   template<typename I>
-  struct Part:I {
-    using Base=I;
-    char text[sz+1];
+  struct Part:PadDraw::template Part<I> {
+    using Base=typename PadDraw::template Part<I>;
+    char text[sz+1]{"Rui"};
     char chk{0};
-    constexpr Part():text{0} {}
+    bool edited{false};
+    // constexpr Part():text{0} {}
+    static constexpr Sz size() {return sz;}
     static constexpr Sz depth() {return 2;}
+    bool changed() const {return edited;}
+    void sync() {edited=false;}
     template<typename Out>
-    void print(Out& out,Ctx& ctx) {out.put(text);}
+    void print(Out& out,Ctx& ctx) {
+      Sz i=ctx.sel();
+      if (ctx) {
+        out.put(&text[0],i);
+        out.template fmtStart<Fmt::EditCursor>(ctx);
+        out.put(text[i]);
+        out.template fmtStop<Fmt::EditCursor>(ctx);
+        out.put(&text[i+1]);
+      } else out.put(text,sz);
+      Base::print(out,ctx);
+    }
+    template<bool isKbd,typename Nav>
+    bool nav(Nav& n,const CKE& cke,const Path& path) {
+      if(cke.cmd==Cmd::Key) {
+        if(Mask::chk(cke.key)) {
+          if(strlen(text)<sz) memccpy(&text[path.sel()+1],&text[path.sel()],0,sz);
+          text[path.sel()]=cke.key;
+          edited=true;
+          // dout<<xy<50,3><<"sz:"<<sz<<padWith<3><<flush;
+          return n.doNav({Cmd::Up},sz,Base::wraps());
+          // return n.up();
+        }
+      }
+      return n.doNav(cke,strnlen(text,sz),Base::wraps())||Base::template nav<isKbd>(n,cke,path);
+    }
   };
 };
 

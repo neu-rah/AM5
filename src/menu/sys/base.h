@@ -62,8 +62,8 @@ using Area=XY;
  
 struct CKE {
   Cmd cmd;
-  Key key;
-  bool ext;
+  Key key{0};
+  bool ext{false};
 };
 
 template<typename Cor> struct Colors{Cor fg;Cor bg;};
@@ -85,6 +85,7 @@ template<Depth depth> struct PathData {
   Sz data[depth]{0};
   Path focusAt(Depth at)  {assert(at<depth);return {at,data};}
   Sz operator[](Depth i) const {assert(i<depth);return data[(int)i];}
+  operator Path() {return Path{depth,data};}
 };
 
 struct Ctx {

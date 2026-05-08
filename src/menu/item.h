@@ -63,13 +63,16 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>{//::template Map<ItemLink> {
   using Base::printMenu;
   using Base::enabled;
   using Base::print;
+
   template<typename Out> void printMenu(Out& out,Ctx&& ctx)
     {Base::printMenu(out,ctx);}
   void enter(Path path) {nav({Cmd::Enter},path);}
 
   template<bool isKbd,typename Nav>
-  bool nav(Nav& n,const CKE& cke,const Path p)
-    {return enabled()?Base::template nav<isKbd>(n,cke,p):cke.cmd==Cmd::Enter;}
+  bool nav(Nav& n,const CKE& cke,const Path p) {
+    // dout<<xy<0,1><<"key:"<<cke.key<<" level:"<<n.level()<<" path:"<<n.path()<<padWith<10><<flush;
+    return enabled()?Base::template nav<isKbd>(n,cke,p):cke.cmd==Cmd::Enter;
+  }
 
   template<typename Out> bool print(Out& out,Ctx&& ctx={{}})  
     {return print(out,std::forward<Ctx&>(ctx));}
@@ -338,7 +341,7 @@ struct ItemRef {
     using RefType=R;
     operator RefType&() const {return ref;}
     static constexpr const Depth depth() {return ref.depth();}
-    static constexpr Sz size(Path p={}) {return ref.size(p);}
+    // static constexpr Sz size(Path p={}) {return ref.size(p);}
     static constexpr bool enabled() {return ref.enable(); }
     static constexpr void enable(bool o=true) {ref.enable(o);}
     static constexpr bool changed() {return ref.changed();}

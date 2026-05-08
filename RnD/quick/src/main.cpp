@@ -32,7 +32,7 @@ InDef<
   PCKbd
 > in;
 
-IOutDef<
+OutDef<
   ScrollPrinter,//menu parts to use
   ANSIFmt,//add some ANSI colors and format to the output
   // TextFmt,
@@ -54,68 +54,6 @@ IOutDef<
   StaticPos<20,10>,
   StaticArea<30,8>
 > out;
-
-OutDef<
-  DataParser<>,//put all data into characters
-  CtrlChars,
-  UTF8,//bypass UTF8 surrogate codes
-  TextWrap,//long texts continue next line
-  Clip,//keep content inside area
-  ColorTrack<int>,//track color setting for device resume...
-  Cursor,//track cursor position for resume...
-  Gate,
-  ANSIOut,//inject ansi codes into the next output device
-  #ifdef __AVR__
-    SerialOut,
-  #else
-    ConsoleOut,
-  #endif
-  StaticPos<decltype(out)::orgX(),decltype(out)::orgY()+decltype(out)::height()>,
-  StaticArea<decltype(out)::width(),4>
-> footer;
-
-OutDef<
-  TextFmt,
-  DataParser<>,//put all data into characters
-  CtrlChars,
-  // UTF8,//bypass UTF8 surrogate codes
-  TextWrap,//long texts continue next line
-  Clip,//keep content inside area
-  Buffer<>,
-  ColorTrack<int>,
-  Cursor,//track and report cursor movement
-  Gate,//locks output for measuring and other operations
-  ANSIOut,//inject ansi codes into the next output device
-  #ifdef __AVR__
-    SerialOut,
-  #else
-    ConsoleOut,
-  #endif
-  StaticPos<5,decltype(footer)::orgY()+decltype(footer)::height()+1>,
-  StaticArea<80,10>
-> syslog;
-
-IOutDef<
-  FullPrinter,
-  XmlFmt,
-  DataParser<>,//put all data into characters
-  // CtrlChars,
-  // UTF8,//bypass UTF8 surrogate codes
-  // TextWrap,//long texts continue next line
-  // Clip,//keep content inside area
-  Buffer<>,
-  ColorTrack<int>,
-  Cursor,//track and report cursor movement
-  Gate,//locks output for measuring and other operations
-  ANSIOut,//inject ansi codes into the next output device
-  #ifdef __AVR__
-    SerialOut,
-  #else
-    ConsoleOut,
-  #endif
-  StaticPos<0,decltype(syslog)::orgY()+decltype(syslog)::height()+1>,
-  StaticArea<100,20>
-> web;
 
 namespace text {
   static constexpr const CText main_menu{"Main menu"};
@@ -162,37 +100,35 @@ enum ids {op3,power,container,date_fld};
 
 namespace action {
   bool op1(Sz) {
-    syslog.resume();
-    syslog<<"option #1 action called."<<endl;
-    out.resume();
+    // syslog.resume();
+    // syslog<<"option #1 action called."<<endl;
+    // out.resume();
     return true;
   }
   bool op2(Sz);
   bool op3(Sz) {
-    syslog.resume();
-    syslog<<"option #3 action called."<<endl;
-    out.resume();
+    // syslog.resume();
+    // syslog<<"option #3 action called."<<endl;
+    // out.resume();
     return true;
   }
   bool quit(Sz) {
-    syslog.setColors(RED,BLACK);
-    syslog.erase();
-    syslog<<"Bye!"<<endl;
+    // syslog.setColors(RED,BLACK);
+    // syslog.erase();
+    // syslog<<"Bye!"<<endl;
     running=false;
     return true;
   }
   bool subIdx(Sz i) {
-    syslog.resume();
-    syslog<<"sub option #"<<i<<" selected."<<endl;
-    out.resume();
+    // syslog.resume();
+    // syslog<<"sub option #"<<i<<" selected."<<endl;
+    // out.resume();
     return false;
   }
 }
 
-template<typename... OO> using Desc=OnFocus<typename Put<OO...>::template ToOut<decltype(footer),footer,Clear::yes>>;
-
-using Back=ItemDef<StaticText<text::back>,Desc<StaticText<desc::back>>>;
-using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>,Desc<StaticText<desc::quit>>>>;
+using Back=ItemDef<StaticText<text::back>>;
+using Quit=ItemDef<Action<action::quit>,AsLabel<StaticText<text::quit>>>;
 
 using CItem=ItemDef<Text>;
 
@@ -206,21 +142,11 @@ CItem cBody[]{
 };
 
 bool stay(int i) {
-  syslog.resume();
-  syslog<<"stay function called. The menu remains, not closing as default."<<endl;
-  out.resume();
+  // syslog.resume();
+  // syslog<<"stay function called. The menu remains, not closing as default."<<endl;
+  // out.resume();
   return true;
 }
-
-IItem* iBody[]{
-  new IItemDef<StaticText<text::op1>>{},
-  new IItemDef<StaticText<text::op2>>{},
-  new IItemDef<StaticText<text::op3>>{},
-  new IItemDef<Text>{"what else..."},
-  new IItemDef<Text,Desc<Text>,Action<stay>>{"Stay","select and stay!"},
-  new IItemDef<StaticText<text::back>>{}
-  // new Back::As<IItemDef>{}
-};
 
 using ChooseDemo=ChooseFieldDef<
   Title<
@@ -329,8 +255,8 @@ auto dateField(const char*lbl)
       ItemDef<//lets define a numeric field:
         EditField,//use nav keys up/down to change numeric value within range
         ParentDraw,//draw inplace
-        // EnDis<false>,
-        // AsEditMode<>,//edit mode indicator (format)
+        EnDis<false>,
+        AsEditMode<>,//edit mode indicator (format)
         ItemNav,//open nav level for this item on Cmd::Enter
         NumField<StaticNumRange<int,1900,2150,true>,//static numeric range
         Watch<AsField<Default<int,2026>,Int>>>//watch for changes, format an Int (Data<int>) as field with default value 2026
@@ -360,18 +286,18 @@ auto dateField(const char*lbl)
 auto mainMenu=menuDef<WrapNav>(
   ItemDef<Text>{"Main menu"},
   staticBody(
-    ItemDef<Action<action::op1>,StaticText<text::op1>,Desc<StaticText<desc::op1>>>{},
-    ItemDef<Action<action::op2>,StaticText<text::op2>,Desc<StaticText<desc::op2>>>{},
-    ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>,Desc<StaticText<desc::op3>>>{},
+    ItemDef<Action<action::op1>,StaticText<text::op1>>{},
+    ItemDef<Action<action::op2>,StaticText<text::op2>>{},
+    ItemDef<Id<ids::op3>,Action<action::op3>,Watch<EnDis<false>>,StaticText<text::op3>>{},
     menuDef<WrapNav>(
-      Title<StaticText<text::fields_menu>,Desc<StaticText<desc::fields_menu>>>{},
+      Title<StaticText<text::fields_menu>>{},
       staticBody(
-        ItemDef<
+        ItemDef<//text edit field demo
           AsLabel<Text>,
           AsEditMode<>,
           EditField,
           ParentDraw,
-          ItemNav,
+          // ItemNav,
           AsField<TextField<15>>
         >{"Name"},
         Power{},
@@ -385,82 +311,43 @@ auto mainMenu=menuDef<WrapNav>(
     MenuDef<//sub menu with C array body (all items of the same type)
       Title<
         BodyAction<action::subIdx>,
-        StaticText<text::array_sub_menu>,
-        Desc<StaticText<desc::array_sub_menu>>
+        StaticText<text::array_sub_menu>
       >,
       CArrayBody<CItem,cBody,sizeof cBody/sizeof *cBody>
     >{},
-    #ifndef __AVR__
-      MenuDef<//sub menu with C array body of virtual `IItem` (not all of the same type)
-        Title<BodyAction<action::subIdx>,StaticText<text::sub_ibody>,Desc<StaticText<desc::sub_ibody>>>,
-        CPtrArrayBody<IItem,iBody,sizeof(iBody)/sizeof(iBody[0])>,
-        WrapNav
-      >{},
-      MenuDef<
-        Title<Id<ids::container>,BodyAction<action::subIdx>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
-        StdBody<vector<IItem*>>,
-        WrapNav
-      >{},
-    #endif
     Quit{}
   )
 );
 
-INavDef<
+NavDef<
   TreeNav,
   Root<decltype(mainMenu),mainMenu>
 > nav;
 
 bool action::op2(Sz) {
-  syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
+  // syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
   mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }
 
 //================================================================================================--
 bool run() {
-  static TinyTimeUtils::FPS<30> fps;
+  static TinyTimeUtils::FPS<300> fps;
   if(fps) {
     fps.reset();
     nav.in(in);
     if(nav.changed(out)) {
-      web.resume();
-      // web.lockMode(LockMode::None);
-      // web.setColors(RED,WHITE);
-      web.clear();
-      nav.printTo(web);
       out.resume();
       nav.printTo(out);
       nav.sync(out);
     }
   }
+  if(!fps) usleep((fps.when()-TinyTimeUtils::timeSrc())*1000);
   return running;
 }
 
 void setup() {
   cout<<"AM5 R&D"<<endl;
-
-  #ifndef __AVR__
-    //populate std container menu
-    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
-    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
-    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
-  #endif
-
-  web.lockMode(LockMode::None);
-  web.setColors(RED,WHITE);
-  web.clear();
-  nav.printTo(web);
-
-  syslog.lockMode(LockMode::None);
-  syslog.setColors(GREEN,BLACK);
-  syslog.clear();
-  syslog.put(".·•<::(log)::>•·.");
-
-  footer.lockMode(LockMode::None);
-  footer.setColors(BLUE,BLACK);
-  footer.clear();
-  footer.put("footer");
 
   out.lockMode(LockMode::None);
   out.setColors(WHITE,BLACK);
@@ -471,6 +358,6 @@ void setup() {
 int main(){
   setup();
   while(run());
-  // dout<<xy<0,50><<"end."<<endl;
+  dout<<xy<0,50><<"end."<<endl;
   return 0;
 }

@@ -18,10 +18,10 @@ template<typename N> struct NavAPI:N {};
 template <typename API,typename... NN>
 struct DefinedNav:APIOf<API, NN...> {
   using Base = APIOf<API, NN...>;
-  bool up() {return Base::doCmd(Cmd::Up);}
-  bool down() {return Base::doCmd(Cmd::Down);}
-  bool enter() {return Base::doCmd(Cmd::Enter);}
-  bool esc() {return Base::doCmd(Cmd::Esc);}
+  bool up() {return Base::template doCmd<false>(Cmd::Up);}
+  bool down() {return Base::template doCmd<false>(Cmd::Down);}
+  bool enter() {return Base::template doCmd<false>(Cmd::Enter);}
+  bool esc() {return Base::template doCmd<false>(Cmd::Esc);}
 };
 
 template<typename... II>
@@ -64,6 +64,7 @@ struct TreeNav {
     using Base::root;
     using Base::depth;
 
+    Path path() {return m_path;}
     Path focus(Sz i) {return m_path.focusAt(i);}
     Depth level() const {return m_level;}
     Sz sel() const {return m_path[m_level];}
@@ -108,17 +109,19 @@ struct TreeNav {
       static Sz tops[root().depth()]{0};//TODO: check if ScrollBody is in output part, or store this there with an API call fallback.
       Ctx ctx{m_path.focusAt(m_level+1),m_navMode,m_print_level,true,tops};
       // dout<<xy<0,1><<colors<BLACK,RED><<ctx<<padWith<10><<flush;out.resume();
+      // dout<<xy<0,2><<" level:"<<level()<<" path:"<<path()<<padWith<10><<flush;
       return root().printMenu(out,ctx);
     }
 
     template<bool isKbd>
     bool doCmd(Cmd cmd,Key k=0, bool e=false) {
-      if(cmd==Cmd::Esc) return close();//preemptive esc=>close
+      if(cmd==Cmd::Esc) return close();//preemptive esc=>close, //TODO: need events to inform target (as a component!)
       bool r=root().template nav<isKbd>(Base::obj(),{cmd,k,e},focus(m_level+1));
       return r;
     }
 
     bool doNav(CKE cke,Sz len,bool w) {
+      // dout<<xy<0,3><<cke.cmd<<" len:"<<len<<" wraps:"<<w<<padWith<10><<flush;
       DataDef<NumRange<Sz>,Data<Sz&>> at(0,len-1,w,m_path.data[(int)level()]);
       switch(cke.cmd) {
         case Cmd::Up: at.up();break;

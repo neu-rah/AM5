@@ -131,6 +131,7 @@ struct IOut {
   virtual void put(const double)=0;
   virtual void put(const char)=0;
   virtual void put(const char*)=0;
+  virtual void put(const char*,Sz)=0;
   virtual void put(const char* const*)=0;
   virtual void put(const char* const*& str)=0;
 
@@ -198,6 +199,7 @@ struct IOutDef:IOut,DefinedOut<OutAPI<CRTP<IOutDef<OO...>>>,OO...>{
   virtual void put(const double n) override {Base::put(n);}
   virtual void put(const char c) override {Base::put(c);}
   virtual void put(const char* str) override {Base::put(str);}
+  virtual void put(const char* str,Sz n) override {Base::put(str,n);}
   virtual void put(const char* const* str) override {Base::put(str);}
   virtual void put(const char* const*& str) override {Base::put(str);}
   // virtual bool printItem(IItem& item,Ctx& ctx) override {return Base::printItem(item,ctx);}
@@ -280,7 +282,7 @@ struct DeviceCursor {
       if(ctx && (!ctx.pad || (ctx.after()>1&&(ctx.sel(ctx.pAt) == ctx.pIdx)))) m_text_cursor_at=F::obj().pos();
     }
     template<Fmt tag>
-    std::enable_if_t<tag&Fmt::EditCursor> fmtStop(const Ctx& ctx) {
+    std::enable_if_t<tag&Fmt::EditCursor> fmtStart(const Ctx& ctx) {
       F::template fmtStop<tag>(ctx);
       m_editing=true;
       m_text_cursor_at=F::obj().pos();
