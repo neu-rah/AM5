@@ -1,171 +1,193 @@
 /**
  * @file data.h
- * @author Rui Azevedo (neu-rah) (ruihfazevedo@gmail.com)
- * @brief data API
- * @version 5
- * @date 2026-04-19
- * 
- * @copyright Copyright (c) 2026
- * 
-*/
+ * @author Rui Azevedo (neu-rah)
+ * @brief Data API - HAPI data components
+ * @version 2026-05
+ */
 
 #pragma once
 
 #include "menu/sys/base.h"
+#include <type_traits>
+#include <utility>
 
-using CText=const char*;
+using CText = const char *;
 
-template<typename O=Nil> 
-struct DataAPI:O {
-  using Base=O;
+// ====================== Base ======================
+template <typename O = Nil>
+struct DataAPI : O {
+  using Base = O;
   using Base::Base;
-  static constexpr bool changed() {return false;}
+
+  static constexpr bool changed() { return false; }
   static constexpr void sync() {}
 };
 
-template<typename... OO>
-struct DataDef:APIOf<DataAPI<>,OO...> {
-  using Base=APIOf<DataAPI<>,OO...>;
+template <typename... OO>
+struct DataDef : APIOf<DataAPI<>, OO...> {
+  using Base = APIOf<DataAPI<>, OO...>;
   using Base::Base;
 };
 
-//compile-time data --
-template<typename T,T data>
-struct StaticData {
-  template<typename O>
-  struct Part:O {
-    using Type=T;
-    using Base=O;
-    using Base::Base;
-    static constexpr T get() {return data;} 
-    static constexpr void set(const Type& o) {data=o;}
-    constexpr operator Type&() {return get();}
-    constexpr operator const Type&() const {return get();}
-    template<typename Out> void print(Out& out,Ctx& ctx) const {
+// ====================== Static Data ======================
+template <typename T, T Value>
+struct StaticData
+{
+  template <typename O>
+  struct Part : O
+  {
+    using Base = O;
+    using Type = T;
+
+    static constexpr T get() { return Value; }
+    // static constexpr void set(T v) { /* optional: ignore or compile error */ }
+
+    constexpr operator Type() const { return get(); }
+
+    template <typename Out, typename Ctx>
+    void print(Out &out, Ctx &ctx) const {
       out.template fmtStart<Fmt::Data>(ctx);
       out.put(get());
       out.template fmtStop<Fmt::Data>(ctx);
-      ;Base::print(out,ctx);
+      Base::print(out, ctx);
     }
   };
 };
 
-//runtime data --
-template<typename T,T& data>
-struct StaticRef {
-  template<typename O>
-  struct Part:O {
-    using Type=T;
-    using Base=O;
-    using Base::Base;
-    static constexpr T& get() {return data;} 
-    static constexpr void set(const Type& o) {data=o;}
-    operator Type&() {return get();}
-    operator Type&() const {return get();}
-    template<typename Out> void print(Out& out,Ctx& ctx) {
+// ====================== Static Reference ======================
+template <typename T, T &Ref>
+struct StaticRef
+{
+  template <typename O>
+  struct Part : O
+  {
+    using Base = O;
+    using Type = T;
+
+    static constexpr T &get() { return Ref; }
+    static constexpr void set(const T &v) { Ref = v; }
+
+    operator Type &() { return get(); }
+    operator const Type &() const { return get(); }
+
+    template <typename Out, typename Ctx>
+    void print(Out &out, Ctx &ctx)
+    {
       out.template fmtStart<Fmt::Data>(ctx);
       out.put(get());
       out.template fmtStop<Fmt::Data>(ctx);
-      Base::print(out,ctx);
+      Base::print(out, ctx);
     }
   };
 };
 
-template<const CText& text>
-using StaticText=StaticRef<const CText,text>;
+template <const CText &Text>
+using StaticText = StaticRef<const CText, Text>;
 
-template<typename T>
+// ====================== Runtime Data ======================
+template <typename T>
 struct Data {
-  template<typename O>
-  struct Part:O {
-    using Type=T;
-    using Base=O;
-    using Base::Base;
+  template <typename O>
+  struct Part : O {
+    using Base = O;
+    using Type = T;
+
     Type data;
-    template<typename... OO>
-    Part(const Type o,OO&&... oo)
-      :Base{std::forward<OO>(oo)...},data{o}{}
-    // template<typename... OO> Part(OO&&... oo):Base{std::forward<OO>(oo)...}{}
-    const Type& get() const {return data;} 
-    void set(const Type& o) {data=o;}
-    operator Type&() {return data;}
-    operator const Type&() const {return data;}
-    template<typename Out> void print(Out& out,Ctx& ctx) {
+
+    // Perfect forwarding constructor
+    template <typename... OO>
+    constexpr Part(Type value, OO &&...oo)
+      : Base{std::forward<OO>(oo)...}, data{std::move(value)} {}
+
+    const Type &get() const { return data; }
+    void set(const Type &v) { data = v; }
+    void set(Type &&v) { data = std::move(v); }
+
+    operator Type &() { return data; }
+    operator const Type &() const { return data; }
+
+    template <typename Out, typename Ctx>
+    void print(Out &out, Ctx &ctx) {
       out.template fmtStart<Fmt::Data>(ctx);
       out.put(data);
       out.template fmtStop<Fmt::Data>(ctx);
-      Base::print(out,ctx);
+      Base::print(out, ctx);
     }
   };
 };
 
-// template<const char*& text> using Text=StaticRef<const char*,text>;
-using Text=Data<const char*>;
-using Bool=Data<bool>;
-using Int=Data<int>;
-
-template<typename W>
+// ====================== Watch ======================
+template <typename W>
 struct Watch {
-  template<typename O>
-  struct Part:W::template Part<O> {
-    using Base=typename W::template Part<O>;
-    using Type=typename Base::Type;
+  template <typename O>
+  struct Part : W::template Part<O> {
+    using Base = typename W::template Part<O>;
+    using Type = typename Base::Type;
     using Base::get;
-    using Base::Base;
     std::remove_reference_t<Type> watched;
-    constexpr bool changed() const {return get()!=watched/*||Base::changed()*/;}
-    void sync() {watched=get();}
+    constexpr bool changed() const {return get() != watched;}
+    void sync() {watched = get();}
   };
 };
 
-template<typename N,N l,N h,bool w>
-struct StaticNumRange {
-  template<typename O>
-  struct Part:O {
-    // static constexpr const Wraps wraps{w};
-    using Base=O;
-    using Base::get;
-    using Base::set;
-    using Type=typename Base::Type;
-    using Base::Base;
-    static constexpr bool valid(N o) {return o<=l&&o<=h;}
-    static constexpr N clamp(N o) {return o<l?l:o>h?h:o;}
-    static constexpr N stepUp(N o,N s) {return h-o>s?o+s:w?l:h;}
-    static constexpr N stepDown(N s,N o) {return o-l>s?o-s:w?h:l;}
-    static constexpr N step(N s,N o) {return s<0?stepDown(-s,o,w):stepUp(s,o,w);}
-    void up(N s=1) {set(stepUp(s,get()));}
-    void down(N s=1) {set(stepDown(s,get()));}
-  };
-};
-
-template<typename N>
+// ====================== Number Range ======================
+template <typename N>
 struct NumRange {
-  template<typename O>
-  struct Part:O {
-    using Base=O;
+  template <typename O>
+  struct Part : O {
+    using Base = O;
+    using Type = N;
     using Base::get;
-    using Type=N;
-    Type m_low;
-    Type m_high;
+
+    Type m_low, m_high;
     bool wraps;
-    template<typename... OO>
-    Part(Type l,Type h,bool w,OO&&... oo)
-      :Base{std::forward<OO>(oo)...},m_low{l},m_high{h},wraps{w}{}
-    constexpr bool valid(N o) const {return o<=m_low&&o<=m_high;}
-    constexpr N clamp(N o) const {return o<m_low?m_low:o>m_high?m_high:o;}
-    constexpr N stepUp(N o,N s) {return m_high-o>=s?o+s:wraps?m_low:m_high;}
-    constexpr N stepDown(N s,N o) {return o-m_low>=s?o-s:wraps?m_high:m_low;}
-    void up(N s=1) {get()=stepUp(s,get());}
-    void down(N s=1) {get()=stepDown(s,get());}
+
+    template <typename... OO>
+    constexpr Part(Type low, Type high, bool w, OO &&...oo)
+      : Base{std::forward<OO>(oo)...}, m_low{low}, m_high{high}, wraps{w} {}
+
+    constexpr bool valid(Type v) const { return v >= m_low && v <= m_high; }
+    constexpr Type clamp(Type v) const { return v < m_low ? m_low : v > m_high ? m_high : v; }
+
+    void up(Type step = 1) { set(clamp(get() + step)); }
+    void down(Type step = 1) { set(clamp(get() - step)); }
   };
 };
 
-template<typename T,T def_val>
-struct Default {
-  template<typename I>
-  struct Part:I {
-    using Base=I;
-    template<typename... OO> constexpr Part(OO... oo):I{def_val,oo...}{}
-    template<typename... OO> constexpr Part(decltype(def_val) o, OO... oo):I{o,oo...}{}
+template <typename N, N Low, N High, bool Wraps = false>
+struct StaticNumRange {
+  template <typename O>
+  struct Part : O {
+    using Base = O;
+    using Type = N;
+    using Base::get;
+
+    static constexpr bool valid(N v) { return v >= Low && v <= High; }
+    static constexpr N clamp(N v) { return v < Low ? Low : v > High ? High : v; }
+
+    void up(N step = 1) { set(clamp(get() + step)); }
+    void down(N step = 1) { set(clamp(get() - step)); }
   };
 };
+
+// ====================== Default ======================
+template <typename T, T DefaultValue>
+struct Default {
+  template <typename O>
+  struct Part : O {
+    using Base = O;
+
+    template <typename... OO>
+    constexpr Part(OO &&...oo)
+      : Base{DefaultValue, std::forward<OO>(oo)...} {}
+
+    template <typename... OO>
+    constexpr Part(T value, OO &&...oo)
+      : Base{value, std::forward<OO>(oo)...} {}
+  };
+};
+
+// ====================== Aliases ======================
+using Text = Data<const char *>;
+using Bool = Data<bool>;
+using Int = Data<int>;
