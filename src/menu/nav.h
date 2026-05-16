@@ -69,7 +69,7 @@ struct TreeNav {
     Depth level() const {return m_level;}
     Sz sel() const {return m_path[m_level];}
 
-    void navMode(NavMode m) {m_navMode.set(m);}
+    void navMode(NavMode m) {m_navMode.set(std::move(m));}
     const NavMode navMode() const {return m_navMode.get();}
 
     void sync() {

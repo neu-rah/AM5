@@ -51,7 +51,7 @@ using Sz=int;//must be signed
 /// @return Sz
 template<const Sz a,const Sz b> constexpr Sz staticMax() {return a>b?a:b;}
 
-// struct Nil{};moved to hapi
+struct Nil{};
 
 struct IItem;
 struct IOut;

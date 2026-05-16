@@ -100,7 +100,7 @@ struct Data {
       : Base{std::forward<OO>(oo)...}, data{std::move(value)} {}
 
     const Type &get() const { return data; }
-    void set(const Type &v) { data = v; }
+    // void set(const Type &v) { data = v; }
     void set(Type &&v) { data = std::move(v); }
 
     operator Type &() { return data; }

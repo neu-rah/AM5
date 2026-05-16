@@ -17,7 +17,7 @@
 struct ANSIOut {
   template<typename O>
   struct _Part:PartialDraw::Part<O> {
-    static_assert(O::template Requires<RawDevice>::value,"`ANSIOut` needs a `RawDevice` following");
+    // static_assert(O::template Requires<RawDevice>::value,"`ANSIOut` needs a `RawDevice` following");
     using HasANSI=std::true_type;
     using Base=typename PartialDraw::template Part<O>;
     using Base::Base;

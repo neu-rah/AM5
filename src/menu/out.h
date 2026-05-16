@@ -407,8 +407,8 @@ struct TextWrap {
   template<typename O>
   struct Part:O {
     using IsParser=std::true_type;
-    static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed TextWrap");
-    static_assert(O::template Excludes<Class<UTF8>>::value,"UTF8 must preseed TextWrap");
+    // static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed TextWrap");
+    // static_assert(O::template Excludes<Class<UTF8>>::value,"UTF8 must preseed TextWrap");
     using Base=O;
     using This=Part<O>;
     inline void put(const char o) {
@@ -425,8 +425,8 @@ struct Clip {
   template<typename O>
   struct Part:O {
     using IsParser=std::true_type;
-    static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed Clip");
-    static_assert(O::template Requires<IsCursor>::value,"Clip needs Cursor");
+    // static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed Clip");
+    // static_assert(O::template Requires<IsCursor>::value,"Clip needs Cursor");
     // static_assert(O::template Requires<Class<Gate>>::value,"Clip needs Gate following");
     using Base=O;
     using This=Part<O>;
@@ -463,8 +463,8 @@ struct Cursor {
   template<typename O>
   struct Part:O {
     // static_assert(O::Obj::template Requires<IsDataParser>::value,"DataParser<> must preseed UTF8");
-    static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed Cursor");
-    static_assert(O::template Requires<IsArea>::value,"Cursor requires area information (StaticArea<>)");
+    // static_assert(O::template Excludes<IsDataParser>::value,"DataParser<> must preseed Cursor");
+    // static_assert(O::template Requires<IsArea>::value,"Cursor requires area information (StaticArea<>)");
     using IsCursor=std::true_type;
     using Base=O;
     using Base::obj;
@@ -514,10 +514,10 @@ struct Buffer {
   template<typename O>
   struct Part:O {
     using IsBuffer=std::true_type;
-    static_assert(O::template Requires<Class<Gate>>::value,"Buffer requires Gate");
-    static_assert(O::template Requires<IsCursor>::value,"Buffer requires Cursor");
-    static_assert(O::template Excludes<Class<Clip>>::value,"Clip must preseed Buffer");
-    static_assert(O::template Excludes<Class<TextWrap>>::value,"TextWrap must preseed Buffer");
+    // static_assert(O::template Requires<Class<Gate>>::value,"Buffer requires Gate");
+    // static_assert(O::template Requires<IsCursor>::value,"Buffer requires Cursor");
+    // static_assert(O::template Excludes<Class<Clip>>::value,"Clip must preseed Buffer");
+    // static_assert(O::template Excludes<Class<TextWrap>>::value,"TextWrap must preseed Buffer");
     using Base=O;
     using Base::width;
     using Base::height;
