@@ -34,7 +34,7 @@ struct ANSIFmt {
               case 3: return {BLUE,WHITE};//pad edit
             }
           } else return {ctx.enabled?WHITE:BLACK,GREEN};//on pad with parent selected
-        } else if(ctx && (!ctx.pad || (ctx.psel() && ctx.after() > 1))) return {WHITE,GREEN};//pad parent focus
+        } else if(ctx && (!ctx.pad || (ctx.psel() && ctx.after() > 1))) return {ctx.enabled?WHITE:BLACK,GREEN};//pad parent focus
         return {ctx.enabled?WHITE:BLACK,BLUE};//unselected
     }
 

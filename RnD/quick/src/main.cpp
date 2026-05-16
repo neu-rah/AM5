@@ -86,46 +86,32 @@ namespace text {
   static constexpr const CText dateSep{"."};
 };
 
-namespace desc {
-  static constexpr const CText back{"return to previous menu."};
-  static constexpr const CText quit{"terminate the program."};
-  static constexpr const CText dot{"."};
-  static constexpr const CText op1{"simple option with action function.\n`Enter` to activate function."};
-  static constexpr const CText op2{"toggles Option 3\nenabled/disabled state."};
-  static constexpr const CText op3{"simple option\ncan be enabled/disabled at runtime."};
-  static constexpr const CText fields_menu{"some field examples..."};
-  static constexpr const CText array_sub_menu{"pure C-Array as menu body, no virtual functions, all items the same"};
-  static constexpr const CText sub_ibody{"pure C-Array with virtual derived items"};
-  static constexpr const CText sub_sbody{"std::container with virtual items"};
-};
-
 enum ids {op3,power,container,date_fld};
 
 namespace action {
   bool op1(Sz) {
-    // syslog.resume();
-    // syslog<<"option #1 action called."<<endl;
-    // out.resume();
+    dout<<xy<0,1><<colors<BLUE,BLACK><<padWith<80><<xy<0,1>;
+    dout<<"option #1 action called."<<flush;
+    out.resume();
     return true;
   }
   bool op2(Sz);
   bool op3(Sz) {
-    // syslog.resume();
-    // syslog<<"option #3 action called."<<endl;
-    // out.resume();
+    dout<<xy<0,1><<colors<BLUE,BLACK><<padWith<80><<xy<0,1>;
+    dout<<"option #3 action called."<<flush;
+    out.resume();
     return true;
   }
   bool quit(Sz) {
-    // syslog.setColors(RED,BLACK);
-    // syslog.erase();
-    // syslog<<"Bye!"<<endl;
+    dout<<xy<0,1><<colors<RED,BLACK><<padWith<80><<xy<0,1>;
+    dout<<"Bye!"<<endl;
     running=false;
     return true;
   }
   bool subIdx(Sz i) {
-    // syslog.resume();
-    // syslog<<"sub option #"<<i<<" selected."<<endl;
-    // out.resume();
+    dout<<xy<0,1><<colors<CYAN,BLACK><<padWith<80><<xy<0,1>;
+    dout<<"sub option #"<<i<<" selected."<<flush;
+    out.resume();
     return false;
   }
 }
@@ -145,9 +131,9 @@ CItem cBody[]{
 };
 
 bool stay(int i) {
-  // syslog.resume();
-  // syslog<<"stay function called. The menu remains, not closing as default."<<endl;
-  // out.resume();
+  dout<<xy<0,1><<colors<RED,BLACK><<padWith<80><<xy<0,1>;
+  dout<<"stay function called. The menu remains, not closing as default."<<flush;
+  out.resume();
   return true;
 }
 
@@ -328,7 +314,8 @@ NavDef<
 > nav;
 
 bool action::op2(Sz) {
-  // syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
+  dout<<xy<0,1><<colors<GREEN,BLACK><<padWith<80><<xy<0,1>;
+  dout<<"option #2 action called. Toggle option #3 enable/disable state"<<endl;
   mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
   return true;
 }

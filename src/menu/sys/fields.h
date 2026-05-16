@@ -31,8 +31,13 @@ struct TextField {
       } else out.put(text,sz);
       Base::print(out,ctx);
     }
+
     template<bool isKbd,typename Nav>
-    bool nav(Nav& n,const CKE& cke,const Path& path) {
+    std::enable_if_t<!isKbd,bool> nav(Nav& n,const CKE& cke,const Path& path)
+      {return Base::template nav<isKbd>(n,cke,path);}
+
+      template<bool isKbd,typename Nav>
+    std::enable_if_t<isKbd,bool> nav(Nav& n,const CKE& cke,const Path& path) {
       if(n.navMode()==NavMode::Edit) {
         if(cke.cmd==Cmd::Key) {
           if(cke.key==8||cke.key==127) {//backspace

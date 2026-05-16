@@ -61,6 +61,8 @@ struct OutAPI:Cfg {
   template<typename Item> static constexpr bool printMenu(Item& item,Ctx& ctx) {return false;}
 };
 
+//deprecated, code size surges and we loose the ability to choose if we cnn the next chain module and when or whit what parameters
+//still interesting
 template<typename N>
 struct OutLink:N {
   template<typename O>
