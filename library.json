@@ -21,7 +21,8 @@
   "homepage": "https://github.com/neu-rah/ArduinoMenu",
   "dependencies": {
     "neu-rah/tinyTimeUtils":"*",
-    "InternetOfPins/HAPI":"*"
+    "InternetOfPins/HAPI":"0.3",
+    "InternetOfPins/OneData":"0.1"
   },
   "frameworks": "*",
   "platforms": "*"

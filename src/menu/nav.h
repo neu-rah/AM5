@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "menu/sys/data.h"
+#include <oneData.h>
 
 template<typename N> struct NavAPI:N {};
 

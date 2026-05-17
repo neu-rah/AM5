@@ -136,7 +136,7 @@ struct Action {
   struct Part:I {
     using Base=I;
     using Base::Base;
-    constexpr Part(){}
+    // constexpr Part(){}
     static constexpr bool act(int i) {return action(i);}
     template<bool isKbd,typename Nav>
     static constexpr bool nav(Nav& n,const CKE& cke,Path path) 
