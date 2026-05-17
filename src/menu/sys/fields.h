@@ -11,7 +11,7 @@ struct TextField {
   template<typename I>
   struct PartEnd:I {
     using Base=I;
-    char text[sz+1]{"Rui"};
+    char text[sz+1]{0};
     char chk{0};
     bool edited{false};
     // constexpr Part():text{0} {}
