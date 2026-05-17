@@ -40,33 +40,19 @@ struct ItemAPI:Def {
   template<int> using WithId=ItemAPI<CRTP<ItemAPI<Nil>>>;
 };
 
-/// @deprecated code size surges
-// template<typename N>
-// struct ItemLink:N {
-//   template<typename O>
-//   struct Part:N::template Part<O> {
-//     using Base=typename N::template Part<O>;
-//     using Base::Base;
-//     // constexpr void sync() {Base::sync();O::sync();}
-//     constexpr bool changed() const {return Base::changed()||O::changed();}
-//     //API chain calls for nav function
-//     // template<bool isKbd,typename Nav>
-//     // bool nav(Nav& n,const CKE& cke,const Path p) 
-//     //   {return Base::template nav<isKbd>(n,cke,p)||O::template nav<isKbd>(n,cke,p);}
-//   };
-// };
-
 template<typename... OO>
-struct ItemDef:APIOf<ItemAPI<>,OO...>{//::template Map<ItemLink> {
-  using Base=APIOf<ItemAPI<>,OO...>;//::template Map<ItemLink>;
+struct ItemDef:APIOf<ItemAPI<>,OO...>{
+  using Base=APIOf<ItemAPI<>,OO...>;
   using Base::Base;
+  // template<typename... QQ> ItemDef(QQ&&... qq):Base{std::forward<QQ>(qq)...}{}
   using Base::printMenu;
   using Base::enabled;
   using Base::print;
 
   template<typename Out> void printMenu(Out& out,Ctx&& ctx)
     {Base::printMenu(out,ctx);}
-  void enter(Path path) {nav({Cmd::Enter},path);}
+
+  // void enter(Path path={}) {nav({Cmd::Enter},path);}
 
   template<bool isKbd,typename Nav>
   bool nav(Nav& n,const CKE& cke,const Path p) {
@@ -151,6 +137,7 @@ struct Action {
     using Base=I;
     using Base::Base;
     constexpr Part(){}
+    static constexpr bool act(int i) {return action(i);}
     template<bool isKbd,typename Nav>
     static constexpr bool nav(Nav& n,const CKE& cke,Path path) 
       {return cke.cmd==Cmd::Enter&&action(path.sel());}

@@ -332,8 +332,15 @@ auto dateField(const char*lbl)
         // EnDis<false>,
         // AsEditMode<>,//edit mode indicator (format)
         ItemNav,//open nav level for this item on Cmd::Enter
-        NumField<StaticNumRange<int,1900,2150,true>,//static numeric range
-        Watch<AsField<Default<int,2026>,Int>>>//watch for changes, format an Int (Data<int>) as field with default value 2026
+        NumField<
+          StaticNumRange<int,1900,2150,true>,//static numeric range
+          Watch<
+            // AsField<
+              // Default<int,2026>,
+              Int
+            // >
+          >
+        >
       >{2026},
       ItemDef<
         StaticText<text::dateSep>,

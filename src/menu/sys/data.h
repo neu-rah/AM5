@@ -28,9 +28,10 @@ template <typename... OO>
 struct DataDef : APIOf<DataAPI<>, OO...> {
   using Base = APIOf<DataAPI<>, OO...>;
   using Base::Base;
+  // template<typename... QQ> DataDef(QQ&&... qq):Base{std::forward<QQ>(qq)...}{}
 };
 
-// ====================== Runtime Owned Data ======================
+// ====================== Runtime Data (Value + Reference support) ======================
 template <typename T>
 struct Data {
   template <typename O>
@@ -40,26 +41,39 @@ struct Data {
 
     Type data{};
 
-    template <typename... OO>
-    constexpr Part(Type value, OO &&...oo)
-        : Base{std::forward<OO>(oo)...}, data{std::move(value)} {}
+    // Perfect forwarding constructor (handles T and T&)
+    template <typename V, typename... OO>
+    constexpr Part(V&& value, OO &&...oo)
+        : Base{std::forward<OO>(oo)...}
+        , data{std::forward<V>(value)} {}
 
+    // Fallback for Chain construction (no initial value)
     template <typename... OO>
     constexpr Part(OO &&...oo)
         : Base{std::forward<OO>(oo)...} {}
 
     const Type &get() const { return data; }
 
-    void set(const Type &v) { data = v; }
+    // void set(const Type &v) { data = v; }
+    void set(std::decay_t<Type> v) { data = v; }
+    
+    // void set(const Type &v) { data = v; }
 
-    // Only enable move-set for non-reference types
-    template <typename U = Type>
-    std::enable_if_t<!std::is_reference_v<U>> set(Type &&v) {
-      data = std::move(v);
-    }
+    // // Move-set only for non-references
+    // template <typename U = Type>
+    // std::enable_if_t<!std::is_reference_v<U>>
+    // set(Type &&v) { data = std::move(v); }
 
     operator Type &() { return data; }
     operator const Type &() const { return data; }
+
+    template <typename Out, typename Ctx>
+    void print(Out &out, Ctx &ctx) {
+      out.template fmtStart<Fmt::Data>(ctx);
+      out.put(data);
+      out.template fmtStop<Fmt::Data>(ctx);
+      Base::print(out, ctx);
+    }
   };
 };
 
@@ -70,7 +84,7 @@ struct DataRef {
   struct Part : O {
     using Base = O;
     using Type = T;
-
+    using Base::Base;
     static T &get() { return Ref; }
     static void set(const T &v) { Ref = v; }
 
@@ -97,7 +111,7 @@ struct Watch {
   struct Part : W::template Part<O> {
     using Base = typename W::template Part<O>;
     using Type = typename Base::Type;
-
+    using Base::Base;
     using Base::get;
     using Base::set;
 
@@ -139,9 +153,9 @@ template <typename N, N Low, N High, bool Wraps = false>
 struct StaticNumRange {
   template <typename O>
   struct Part : O {
-    using Base = O;
     using Type = N;
-
+    using Base = O;
+    using Base::Base;
     using Base::get;
     using Base::set;
 
@@ -159,6 +173,7 @@ struct Default {
   template <typename O>
   struct Part : O {
     using Base = O;
+    using Base::Base;
 
     template <typename... OO>
     constexpr Part(OO &&...oo)
