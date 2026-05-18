@@ -61,7 +61,7 @@ struct ItemDef:APIOf<ItemAPI<>,OO...>{
   }
 
   template<typename Out> bool print(Out& out,Ctx&& ctx={{}})  
-    {return print(out,std::forward<Ctx&>(ctx));}
+    {return print(out,ctx);}
 
   template<typename Out> bool print(Out& out,Ctx& ctx) {
     Base::print(out,ctx);//<----------------------------------

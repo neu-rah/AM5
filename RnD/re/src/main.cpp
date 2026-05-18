@@ -1,4 +1,6 @@
 #include <menu.h>
+#include <menu/IO/streamOut.h>
+#include <menu/fmt/textFmt.h>
 
 #include <iostream>
 using namespace std;
@@ -14,20 +16,25 @@ namespace act {
 
 // ItemDef<Id<id::ok>,AsLabel<Text>,EnDis<false>,Action<act::ok>> ok("ok");
 // ItemDef<Id<id::cancel>,AsLabel<Text>,Action<act::cancel>> cancel{"cancel"};
+// int val=0;
+// DataDef<NumRange<int&>,Data<int&>> tmp{0,3,true,val};
+
+OutDef<TextFmt,ConsoleOut> out;
 
 int main(){
-  int val=0;
-  DataDef<NumRange<int&>,Data<int&>> tmp{0,3,true,val};
-  tmp.up();
-  cout<<val<<"<->"<<tmp<<endl;
-  tmp.up();
-  cout<<val<<"<->"<<tmp<<endl;
-  tmp.up();
-  cout<<val<<"<->"<<tmp<<endl;
-  tmp.up();
-  cout<<val<<"<->"<<tmp<<endl;
-  tmp.up();
-  cout<<val<<"<->"<<tmp<<endl;
+  // auto tmp=menuDef(
+  //   Title<Text>{"title"},
+  //   staticBody(
+  //     ItemDef<AsLabel<Text>>{"text"}
+  //   )
+  // );
+  ItemDef<Text> i{"text"};
+  operator<<(cout,i);
+  cout<<endl;
+  i.print(out);
+  cout<<endl;
+  // tmp.body().m_item.print(out);
+  // cout<<tmp.body().m_item<<endl;
   cout<<"end."<<endl;
   return 0;
 }

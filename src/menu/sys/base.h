@@ -11,9 +11,12 @@
 
 #pragma once
 
-#include <hapi.h>
-using namespace hapi;
 #include "menu/sys/enums.h"
+
+#include <hapi.h>
+#include <oneData.h>
+using namespace hapi;
+using namespace hapi::data;
 
 #ifdef ARDUINO
 #include <Arduino.h>
@@ -51,7 +54,7 @@ using Sz=int;//must be signed
 /// @return Sz
 template<const Sz a,const Sz b> constexpr Sz staticMax() {return a>b?a:b;}
 
-struct Nil{};
+// struct Nil{};//moved to hapi
 
 struct IItem;
 struct IOut;

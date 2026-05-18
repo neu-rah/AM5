@@ -10,9 +10,8 @@
 
 #pragma once
 
-#include <hapi.h>
-#include <oneData.h>
 #include "menu/sys/base.h"
+#include "menu/sys/data.h"
 #include "menu/body/staticBody.h"
 #include "menu/sys/printers.h"
 #include "menu/sys/formats.h"
