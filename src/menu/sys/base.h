@@ -16,7 +16,12 @@
 #include <hapi.h>
 #include <oneData.h>
 using namespace hapi;
-using namespace hapi::data;
+// using namespace hapi::data;
+using hapi::data::DefaultDataDef;
+using hapi::data::CText;
+using hapi::data::Default;
+using hapi::data::Watch;
+using hapi::data::NumRange;
 
 #ifdef ARDUINO
 #include <Arduino.h>
