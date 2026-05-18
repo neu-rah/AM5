@@ -267,8 +267,7 @@ using ToggleDemo=ToggleFieldDef<
     ItemDef<AsField<StaticText<text::no>>>,
     ItemDef<AsField<StaticText<text::yes>>>,
     ItemDef<AsField<Text>>
-  >,
-  BodyAction<action::subIdx>
+  >//,BodyAction<action::subIdx>
 >;
 
 using Power=NumFieldDef<

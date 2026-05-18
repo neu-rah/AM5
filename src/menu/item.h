@@ -178,7 +178,7 @@ struct EnDis {
     using Base=typename Chain<Default<bool,ens>,Hidden<Bool>>::template Part<I>;
     using Base::Base;
     bool enabled(const Path ={}) const {return Base::get();}
-    void enable(bool e=true) {Base::set(e);}
+    void enable(bool e=true) {Base::set(std::move(e));}
     template<bool isKbd,typename Nav>
     bool nav(Nav& n,const CKE& cke,const Path path)
       {return enabled()?Base::template nav<isKbd>(n,cke,path):false;}

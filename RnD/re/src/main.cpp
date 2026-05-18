@@ -12,16 +12,22 @@ namespace act {
   bool cancel(int i) {cout<<i<<" cancel = default nav (possibly close)"<<endl;return false;}
 };
 
-ItemDef<Id<id::ok>,AsLabel<Text>,EnDis<false>,Action<act::ok>> ok("ok");
-ItemDef<Id<id::cancel>,AsLabel<Text>,Action<act::cancel>> cancel{"cancel"};
+// ItemDef<Id<id::ok>,AsLabel<Text>,EnDis<false>,Action<act::ok>> ok("ok");
+// ItemDef<Id<id::cancel>,AsLabel<Text>,Action<act::cancel>> cancel{"cancel"};
 
 int main(){
-  cout<<ok.get()<<endl;
-  cout<<cancel<<endl;
-  ok.act(1);
-  cancel.act(0);
-  ok.enable(false);
-  ok.act(1);
+  int val=0;
+  DataDef<NumRange<int&>,Data<int&>> tmp{0,3,true,val};
+  tmp.up();
+  cout<<val<<"<->"<<tmp<<endl;
+  tmp.up();
+  cout<<val<<"<->"<<tmp<<endl;
+  tmp.up();
+  cout<<val<<"<->"<<tmp<<endl;
+  tmp.up();
+  cout<<val<<"<->"<<tmp<<endl;
+  tmp.up();
+  cout<<val<<"<->"<<tmp<<endl;
   cout<<"end."<<endl;
   return 0;
 }
