@@ -11,113 +11,53 @@
 
 #pragma once
 
-// #include "menu/item.h"
+#include <oneList.h>
+using hapi::one_list::List;
 
 template<typename O,typename... OO>
-struct StaticBody {
-  using Item=O;
-  using Body=StaticBody<OO...>;
-  template<template<typename> class M>
-  using Map=StaticBody<M<O>,M<OO>...>;
-  Item m_item;
-  Body m_body;
-  constexpr StaticBody() {}
-  template<typename... II>
-  constexpr StaticBody(Item&& i,II&&... ii):m_item{std::forward<Item>(i)},m_body{std::forward<II>(ii)...}{}
-  template<typename... II>
-  constexpr StaticBody(II&&... ii):m_body{std::forward<II>(ii)...}{}
-  static constexpr const Depth depth() {return staticMax<Item::depth(),Body::depth()>();}
-  static constexpr Sz size() {return 1+Body::size();}
+struct StaticBody:List<O,OO...> {
+  using Base=List<O,OO...>;
+  using Base::Base;
+  using Tail=StaticBody<OO...>;
+  using Base::head;
+  using Base::tail;
 
-  bool changed() {return m_item.changed()||m_body.changed();}
+  bool changed() {return head.changed()||tail.changed();}
   
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i)
-    {return i?m_body.printMenu(out,ctx,i-1):m_item.printMenu(out,ctx);}
+    {return i?tail.printMenu(out,ctx,i-1):head.printMenu(out,ctx);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx=0) {
-    bool r=out.printItem(m_item,ctx);
-    return m_body.printBody(out,ctx,bidx+1)||r;
+    bool r=out.printItem(head,ctx);
+    return tail.printBody(out,ctx,bidx+1)||r;
   }
 
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i) 
-    {return i?m_body.printItem(out,ctx,i-1):m_item.print(out,ctx);}
+    {return i?tail.printItem(out,ctx,i-1):head.print(out,ctx);}
 
   template<bool isKbd,typename Nav>
   bool nav(Nav& n,const CKE& cke,Path path,Sz i)
-    {return i?m_body.template nav<isKbd>(n,cke,path,i-1):m_item.template nav<isKbd>(n,cke,path);}
-//Id, this is compile-time search/reference --
-  template<int id>
-  using HasId=std::integral_constant<bool,
-    id==Item::getId()||typename Item::template HasId<id>{}||typename Body::template HasId<id>{}
-  >;
-  
-
-  template<int id>
-  using WithId=typename std::conditional<
-    id==Item::getId(),
-    Item,
-    typename std::conditional<
-      Item::template HasId<id>::value,
-      typename Item::template WithId<id>,
-      typename Body::template WithId<id>
-    >::type
-  >::type;
-
-  template<int id>
-  std::enable_if_t<id==Item::getId(),WithId<id>>& withId() {return m_item;}
-
-  template<int id>
-  std::enable_if_t<
-    Item::template HasId<id>::value&&id!=Item::getId(),
-    typename Item::template WithId<id>
-  >& withId() {return m_item.template withId<id>();}
-
-  template<int id>
-  std::enable_if_t<
-    Body::template HasId<id>::value&&id!=Item::getId(),
-    typename Body::template WithId<id>
-  >& withId() {return m_body.template withId<id>();}
-
+    {return i?tail.template nav<isKbd>(n,cke,path,i-1):head.template nav<isKbd>(n,cke,path);}
 };
 
 template<typename O>
-struct StaticBody<O> {
-  using Item=O;
-  template<template<typename> class M> using Map=StaticBody<M<O>>;
-  Item m_item;
-  // constexpr StaticBody(Item&& i):m_item{std::forward<Item>(i)}{}
+struct StaticBody<O>:List<O> {
+  using Base=List<O>;
+  using Base::Base;
+  using Base::head;
 
-  static constexpr const Depth depth() {return Item::depth();}
-  static constexpr Sz size() {return 1;}
+  static constexpr const Depth depth() {return Base::Head::depth();}
 
-  bool changed() {return m_item.changed();}
+  bool changed() {return head.changed();}
 
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i) 
-    {assert(i==0);return m_item.printMenu(out,ctx);}
+    {assert(i==0);return head.printMenu(out,ctx);}
 
-  template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx=0) {return out.printItem(m_item,ctx);}
+  template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx=0) {return out.printItem(head,ctx);}
 
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i)
-    {return m_item.print(out,ctx);}
+    {return head.print(out,ctx);}
 
   template<bool isKbd,typename Nav> bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
-    {assert(i==0);return m_item.template nav<isKbd>(n,cke,path);}
-//Id--
-  template<int id>
-  using HasId=std::integral_constant<bool,id==Item::getId()||typename Item::template HasId<id>{}>;
-
-  template<int id>
-  using WithId=typename std::conditional<id==Item::getId(),Item,typename Item::template WithId<id>>::type;
-
-  template<int id>
-  std::enable_if_t<
-    id==Item::getId(),
-    WithId<id>
-  >& withId() {return m_item;}
-
-  template<int id>
-  std::enable_if_t<
-    Item::template HasId<id>::value&&id!=Item::getId(),
-    WithId<id>
-  >& withId() {return Item::template withId<id>();}
+    {assert(i==0);return head.template nav<isKbd>(n,cke,path);}
 };

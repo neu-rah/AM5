@@ -41,7 +41,7 @@ struct Menu {
 
     constexpr Part(Title&&t,B&&b):m_title{std::forward<Title>(t)},m_body{std::forward<B>(b)}{}
     template<typename... OO>
-    constexpr Part(Title&t,OO&&... oo):m_title{t},m_body{std::forward<OO>(oo)...}{}
+    constexpr Part(Title t,OO&&... oo):m_title{std::move(t)},m_body{std::forward<OO>(oo)...}{}
 
     static constexpr const Depth depth() {return Body::depth()+1;}
 
@@ -91,26 +91,12 @@ struct Menu {
 
     Body& body() {return m_body;}
 
-  //Id--
-    static constexpr bool hasId(int id) {return Body::hasId(id);}
-    template<int id> using HasId=std::integral_constant<bool,id==Title::getId()||typename Body::template HasId<id>{}>;
+    template<typename Id>
+    constexpr const auto& withId() const {
+      if constexpr (Title::template has<Id>) return *this;
+      else return m_body.template withId<Id>();
+    }
 
-    template<int id> using WithId=typename std::conditional<
-      id==Title::getId(),
-      This,
-      typename Body::template WithId<id>
-    >::type;
-
-    template<int id> constexpr const std::enable_if_t<id==Title::getId(),This>& withId() const {return *this;}
-    template<int id> std::enable_if_t<id==Title::getId(),This>& withId() {return *this;}
-
-    template<int id>
-    constexpr const std::enable_if_t<id!=Title::getId()&&HasId<id>::value,WithId<id>>&
-    withId() const {return m_body.template withId<id>();}
-
-    template<int id>
-    std::enable_if_t<id!=Title::getId()&&HasId<id>::value,WithId<id>>&
-    withId() {return m_body.template withId<id>();}
   };
 };
 

@@ -22,6 +22,10 @@
 #include "menu/menu.h"
 #include "menu/nav.h"
 
+// template<typename... TT,typename... OO>
+// constexpr auto item(OO&&... oo)
+//   {return ItemDef<TT...,OO...>(std::move(oo)...);}
+
 template<typename... OO> 
 constexpr StaticBody<OO...> staticBody(OO&&... oo)
   {return StaticBody<OO...>{std::forward<OO>(oo)...};}

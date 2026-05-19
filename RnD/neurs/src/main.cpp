@@ -419,7 +419,7 @@ INavDef<
 
 bool action::op2(Sz) {
   syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  mainMenu.withId<ids::op3>().enable(!mainMenu.withId<ids::op3>().enabled());
+  // mainMenu.template withId<Id<ids::op3>>().enable(!mainMenu.template withId<Id<ids::op3>>().enabled());
   return true;
 }
 
@@ -448,9 +448,9 @@ void setup() {
 
   #ifndef __AVR__
     //populate std container menu
-    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"runtime"});
-    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"populated"});
-    mainMenu.withId<container>().body().push_back(new IItemDef<Text>{"items"});
+    mainMenu.withId<Id<container>>().body().push_back(new IItemDef<Text>{"runtime"});
+    mainMenu.withId<Id<container>>().body().push_back(new IItemDef<Text>{"populated"});
+    mainMenu.withId<Id<container>>().body().push_back(new IItemDef<Text>{"items"});
   #endif
 
   web.lockMode(LockMode::None);

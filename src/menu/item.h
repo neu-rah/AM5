@@ -240,6 +240,8 @@ struct RecallNavPos {
   struct Part:I {
     using Base=I;
     using Base::Base;
+    template<typename... OO>
+    constexpr Part(OO&&... oo):Base{std::forward<OO>(oo)...}{}
     template<typename Out> 
     void print(Out& out,Ctx& ctx) {
       Base::print(out,ctx);
@@ -410,42 +412,44 @@ struct OnFocus {
 };
 
 // compile-time ids --------------
+  template<int id> struct Id {template<typename O> using Part=O;};
+  
   /// @brief typelevel/compile-time id
   /// references to items with this type of Id can be retrieved at compile-time
   /// @tparam id depended type int
-  template<int id>
-  struct Id {
-    template<typename I>
-    struct Part:I {
-      using This=Part<I>;
-      using Base=I;
-      using Base::Base;
-      template<int i> using HasId=std::integral_constant<bool,id==i||Base::template HasId<i>::value>;
-      static constexpr int getId() {return id;}
-      template<int i>
-      using WithId=typename std::conditional<
-        id==i,
-        This,
-        typename Base::template WithId<i>
-      >::type;
+  // template<int id>
+  // struct Id {
+  //   template<typename I>
+  //   struct Part:I {
+  //     using This=Part<I>;
+  //     using Base=I;
+  //     using Base::Base;
+  //     template<int i> using HasId=std::integral_constant<bool,id==i||Base::template HasId<i>::value>;
+  //     static constexpr int getId() {return id;}
+  //     template<int i>
+  //     using WithId=typename std::conditional<
+  //       id==i,
+  //       This,
+  //       typename Base::template WithId<i>
+  //     >::type;
 
-      template<int i> const std::enable_if_t<i==id,This>& withId() const {return *this;}
-      template<int i> std::enable_if_t<i==id,This>& withId() {return *this;}
+  //     template<int i> const std::enable_if_t<i==id,This>& withId() const {return *this;}
+  //     template<int i> std::enable_if_t<i==id,This>& withId() {return *this;}
 
-      template<int i>
-      const std::enable_if_t<
-        Base::template HasId<i>::value,
-        typename Base::template WithId<i>
-      >& withId() const {return Base::template withId<i>();}
+  //     template<int i>
+  //     const std::enable_if_t<
+  //       Base::template HasId<i>::value,
+  //       typename Base::template WithId<i>
+  //     >& withId() const {return Base::template withId<i>();}
 
 
-      template<int i>
-      std::enable_if_t<
-        Base::template HasId<i>::value,
-        typename Base::template WithId<i>
-      >& withId() {return Base::template withId<i>();}
-    };
-  };
+  //     template<int i>
+  //     std::enable_if_t<
+  //       Base::template HasId<i>::value,
+  //       typename Base::template WithId<i>
+  //     >& withId() {return Base::template withId<i>();}
+  //   };
+  // };
 
 #ifdef MENU_DEBUG
 #endif
