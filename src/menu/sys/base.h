@@ -22,6 +22,7 @@ using hapi::data::CText;
 using hapi::data::Default;
 using hapi::data::Watch;
 using hapi::data::NumRange;
+using hapi::data::StaticNumRange;
 
 #ifdef ARDUINO
 #include <Arduino.h>

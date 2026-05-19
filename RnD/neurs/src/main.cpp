@@ -276,7 +276,7 @@ using Power=NumFieldDef<
     AsLabel<StaticText<text::power>>//field label
   >,
   NumField<//use range to change the data
-    StaticNumRange<int,0,100,false>,//valid range
+    hapi::data::StaticNumRange<int,0,100,false>,//valid range
     ItemNav,
     Watch<AsField<Default<int,55>,Int>>//use `int` and `change watch` as field (data)
   >,
@@ -334,10 +334,10 @@ auto dateField(const char*lbl)
         NumField<
           StaticNumRange<int,1900,2150,true>,//static numeric range
           Watch<
-            // AsField<
-              // Default<int,2026>,
+            AsField<
+              Default<int,2026>,
               Int
-            // >
+            >
           >
         >
       >{2026},
