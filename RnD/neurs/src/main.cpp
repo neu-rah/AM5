@@ -34,6 +34,7 @@ InDef<
 
 IOutDef<
   ScrollPrinter,//menu parts to use
+  // FullPrinter,
   ANSIFmt,//add some ANSI colors and format to the output
   // TextFmt,
   ClearFreeFmt,//this can take a lot of burden away from user format
@@ -475,8 +476,10 @@ void setup() {
 }
 
 int main(){
-  cout<<mainMenu.template has<Id<ids::container>><<endl;
+  // cout<<mainMenu.template has<Id<ids::container>><<endl;
   setup();
+  nav.go(6);
+  nav.enter();
   while(run());
   dout<<xy<0,50><<"end."<<endl;
   return 0;

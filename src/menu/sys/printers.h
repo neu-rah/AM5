@@ -100,6 +100,7 @@ struct ScrollBodyPrinter {
 
     template<typename I>
     bool printMenu(I& i,Ctx& ctx) {
+      if(i.size()==0) return false;
       LockMode om=lockMode();
       Sz x=Base::posX();
       Sz y=Base::posY();
