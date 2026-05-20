@@ -13,6 +13,24 @@ _just like that..._
 
 ## Design
 
+**bool nav handlers**
+
+- `ItemAPI` -> false
+- `ItemDef` -> enabled? Base::nav : is enter
+- `IItem`
+- `Action<>` -> enter && act(i)
+- `BodyAction<>` -> enter&&len? f(...) + base nav
+- `EnDis<>` -> enabled?base nav : false
+- `EditField` -> enter=change navMode + base nav
+- `NumField<...>` Up/Down -> up/down
+- `RecallNavPos` -> (Enter: path.len ? store : restore->go(sel) ) + base nav
+- `ParentDraw` -> (Enter: -> len?close:padOpen) | base nav
+- `ItemNav` -> (Enter: len==0 -> open | len==1 -> close) | base nav
+- `ItemRef` ...
+- `Menu` -> len=>walk | (base nav || doNav)
+- `StaticBody` -> i?walk:head nav
+- `ToggleBehave` Enter: go(sel)+doNav(Up)
+
 ### keyboard handling
 
 > On previous versions we passed a `bool kbd` template param, then used metaprogramming to filter cases
