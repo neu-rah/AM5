@@ -1,16 +1,12 @@
 /**
  * @file staticBody.h
  * @author Rui Azevedo (neu-rah) (ruihfazevedo@gmail.com)
- * @brief 
- * @version 5
- * @date 2026-04-18
- * 
- * @copyright Copyright (c) 2026
- * 
+ * @brief static body for tiny menus
 */
 
 #pragma once
 
+#include "menu/sys/base.h"
 #include <oneList.h>
 using hapi::one_list::List;
 
@@ -22,22 +18,26 @@ struct StaticBody:List<O,OO...> {
   using Base::head;
   using Base::tail;
 
-  bool changed() {return head.changed()||tail.changed();}
+  static constexpr Sz size() {return Base::size;}
+
+  static constexpr const Depth depth() {return staticMax<Base::Head::depth(),Tail::depth()>();}
+
+  bool changed() {return head.changed()||((Tail&)tail).changed();}
   
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i)
-    {return i?tail.printMenu(out,ctx,i-1):head.printMenu(out,ctx);}
+    {return i?((Tail&)tail).printMenu(out,ctx,i-1):head.printMenu(out,ctx);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx,Sz bidx=0) {
     bool r=out.printItem(head,ctx);
-    return tail.printBody(out,ctx,bidx+1)||r;
+    return ((Tail&)tail).printBody(out,ctx,bidx+1)||r;
   }
 
   template<typename Out> bool printItem(Out& out,Ctx& ctx,Sz i) 
-    {return i?tail.printItem(out,ctx,i-1):head.print(out,ctx);}
+    {return i?((Tail&)tail).printItem(out,ctx,i-1):head.print(out,ctx);}
 
   template<bool isKbd,typename Nav>
   bool nav(Nav& n,const CKE& cke,Path path,Sz i)
-    {return i?tail.template nav<isKbd>(n,cke,path,i-1):head.template nav<isKbd>(n,cke,path);}
+    {return i?((Tail&)tail).template nav<isKbd>(n,cke,path,i-1):head.template nav<isKbd>(n,cke,path);}
 };
 
 template<typename O>
@@ -45,6 +45,7 @@ struct StaticBody<O>:List<O> {
   using Base=List<O>;
   using Base::Base;
   using Base::head;
+  using Base::size;
 
   static constexpr const Depth depth() {return Base::Head::depth();}
 

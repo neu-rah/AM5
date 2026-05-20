@@ -381,7 +381,7 @@ auto mainMenu=menuDef<WrapNav>(
           AsField<TextField<15>>
         >{"Name"},
         Power{55},
-        ToggleDemo{"Toggle","Maybe"},
+        ToggleDemo{"Toggle",{{},{},"Maybe"}},
         SelectDemo{},
         ChooseDemo{},
         dateField("date"),
@@ -403,9 +403,9 @@ auto mainMenu=menuDef<WrapNav>(
         WrapNav
       >{},
       MenuDef<
-        Title<Id<ids::container>,BodyAction<action::subIdx>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
+        Title<BodyAction<action::subIdx>,StaticText<text::sub_sbody>,Desc<StaticText<desc::sub_sbody>>>,
         StdBody<vector<IItem*>>,
-        WrapNav
+        WrapNav,Id<ids::container>
       >{},
     #endif
     Quit{}
@@ -419,7 +419,7 @@ INavDef<
 
 bool action::op2(Sz) {
   syslog<<"option #2 action called.\ntoggle option #3 enable/disable state"<<endl;
-  // mainMenu.template withId<Id<ids::op3>>().enable(!mainMenu.template withId<Id<ids::op3>>().enabled());
+  mainMenu.template withId<Id<ids::op3>>().enable(!mainMenu.template withId<Id<ids::op3>>().enabled());
   return true;
 }
 
@@ -448,9 +448,9 @@ void setup() {
 
   #ifndef __AVR__
     //populate std container menu
-    mainMenu.withId<Id<container>>().body().push_back(new IItemDef<Text>{"runtime"});
-    mainMenu.withId<Id<container>>().body().push_back(new IItemDef<Text>{"populated"});
-    mainMenu.withId<Id<container>>().body().push_back(new IItemDef<Text>{"items"});
+    // mainMenu.template withId<Id<ids::container>>().body().push_back(new IItemDef<Text>{"runtime"});
+    // mainMenu.template withId<Id<ids::container>>().body().push_back(new IItemDef<Text>{"populated"});
+    // mainMenu.template withId<Id<ids::container>>().body().push_back(new IItemDef<Text>{"items"});
   #endif
 
   web.lockMode(LockMode::None);
@@ -475,8 +475,9 @@ void setup() {
 }
 
 int main(){
+  cout<<mainMenu.template has<Id<ids::container>><<endl;
   setup();
   while(run());
-  // dout<<xy<0,50><<"end."<<endl;
+  dout<<xy<0,50><<"end."<<endl;
   return 0;
 }

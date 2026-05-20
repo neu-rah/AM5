@@ -39,12 +39,15 @@ struct Menu {
     Title m_title{};
     Body m_body;
 
+    constexpr Part():m_title{},m_body{} {}
     constexpr Part(Title&&t,B&&b):m_title{std::forward<Title>(t)},m_body{std::forward<B>(b)}{}
+    constexpr Part(B&&b):m_title{},m_body{std::forward<B>(b)}{}
     template<typename... OO>
-    constexpr Part(Title t,OO&&... oo):m_title{std::move(t)},m_body{std::forward<OO>(oo)...}{}
+    constexpr Part(Title t,OO&&... oo):m_title{std::forward<Title>(t)},m_body{std::forward<OO>(oo)...}{}
+    template<typename... OO>
+    constexpr Part(OO&&... oo):m_title{},m_body{std::forward<OO>(oo)...}{}
 
     static constexpr const Depth depth() {return Body::depth()+1;}
-
     constexpr Sz size() const {return m_body.size();}
 
     bool changed() {//TODO: change this into a "simple" print with `LockMode::Changed` insted!
@@ -92,7 +95,7 @@ struct Menu {
     Body& body() {return m_body;}
 
     template<typename Id>
-    constexpr const auto& withId() const {
+    constexpr auto withId() {
       if constexpr (Title::template has<Id>) return *this;
       else return m_body.template withId<Id>();
     }

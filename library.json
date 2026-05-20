@@ -20,9 +20,10 @@
   "license": "MIT",
   "homepage": "https://github.com/neu-rah/ArduinoMenu",
   "dependencies": {
-    "neu-rah/tinyTimeUtils":"*",
-    "InternetOfPins/HAPI":"0.3",
-    "InternetOfPins/OneData":"0.1"
+    "https://github.com/neu-rah/tinyTimeUtils":"1.1.5",
+    "https://github.com/InternetOfPins/HAPI":"0.3.7",
+    "https://github.com/InternetOfPins/OneData":"0.1.7",
+    "https://github.com/InternetOfPins/OneList":"0.0.8"
   },
   "frameworks": "*",
   "platforms": "*"
