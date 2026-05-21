@@ -478,9 +478,6 @@ void setup() {
 int main(){
   // cout<<mainMenu.template has<Id<ids::op3>><<endl;
   setup();
-  nav.go(6);
-  nav.enter();
-  nav.up();
   while(run());
   dout<<xy<0,50><<"end."<<endl;
   return 0;
