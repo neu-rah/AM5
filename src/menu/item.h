@@ -21,8 +21,8 @@ struct ItemAPI:Def {
   template<typename> using Excludes=std::true_type;
   static constexpr Depth depth() {return 1;}
   static constexpr bool enabled() {return true;}
-  constexpr const bool wraps() {return false;}
-  constexpr const bool isPad() {return false;}
+  static constexpr bool wraps() {return false;}
+  static constexpr bool isPad() {return false;}
   static constexpr void enable(bool=true) {}
   static constexpr bool changed() {return false;}
   static constexpr void sync() {}

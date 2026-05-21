@@ -87,10 +87,10 @@ struct Menu {
     
     template<bool isKbd,typename Nav> 
     bool nav(Nav& n,const CKE& cke,Path p) {
-      if(p.len>0) {//walk the path
-        bool s=m_body.template nav<isKbd>(n,cke,p.next(),p.sel());
-        return s||(p.len==1&&n.doNav(cke,size(),Base::wraps()));
-      }
+      if(p.len>0) 
+        return m_body.template nav<isKbd>(n,cke,p.next(),p.sel())
+        ||Base::template nav<isKbd>(n,cke,p)
+        ||(p.len==1&&n.doNav(cke,size(),Base::wraps()));
       bool r=Base::template nav<isKbd>(n,cke,p);
       return r;
     }

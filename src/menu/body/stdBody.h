@@ -14,7 +14,7 @@ struct StdBody:T {
   }
   template<bool isKbd,typename Nav> 
   bool nav(Nav& n,const CKE& cke,Path path,Sz i) 
-    {return T::operator[](i)->template nav<isKbd>(n,cke,path);}
+    {return i<T::size()&&T::operator[](i)->template nav<isKbd>(n,cke,path);}
 
   template<typename Out> bool printBody(Out& out,Ctx& ctx) {
     for(auto i=T::begin();i<T::end()&&out.freeY();i++) out.printItem(**i,ctx);
