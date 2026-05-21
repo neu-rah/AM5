@@ -378,7 +378,7 @@ auto mainMenu=menuDef<WrapNav>(
           AsEditMode<>,
           EditField,
           ParentDraw,
-          ItemNav,
+          // ItemNav,
           AsField<TextField<15>>
         >{"Name"},
         Power{55},
@@ -426,7 +426,7 @@ bool action::op2(Sz) {
 
 //================================================================================================--
 bool run() {
-  static TinyTimeUtils::FPS<30> fps;
+  static TinyTimeUtils::FPS<60> fps;
   if(fps) {
     fps.reset();
     nav.in(in);
@@ -476,10 +476,12 @@ void setup() {
 }
 
 int main(){
-  // cout<<mainMenu.template has<Id<ids::container>><<endl;
+  // cout<<mainMenu.template has<Id<ids::op3>><<endl;
   setup();
-  nav.go(6);
-  nav.enter();
+  nav.go(3);
+  // nav.enter();
+  // nav.enter();
+  nav.up();
   while(run());
   dout<<xy<0,50><<"end."<<endl;
   return 0;

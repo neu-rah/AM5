@@ -11,7 +11,7 @@ struct TextField {
   template<typename I>
   struct PartEnd:I {
     using Base=I;
-    char text[sz+1]{0};
+    char text[sz+1]{"Rui Azevedo"};
     char chk{0};
     bool edited{false};
     // constexpr Part():text{0} {}
@@ -34,9 +34,9 @@ struct TextField {
 
     template<bool isKbd,typename Nav>
     std::enable_if_t<!isKbd,bool> nav(Nav& n,const CKE& cke,const Path& path)
-      {return Base::template nav<isKbd>(n,cke,path);}
+      {return Base::template nav<isKbd>(n,cke,path)||n.doNav(cke,std::min(sz,ss()+1),false);}
 
-      template<bool isKbd,typename Nav>
+    template<bool isKbd,typename Nav>
     std::enable_if_t<isKbd,bool> nav(Nav& n,const CKE& cke,const Path& path) {
       if(n.navMode()==NavMode::Edit) {
         if(cke.cmd==Cmd::Key) {
@@ -59,7 +59,7 @@ struct TextField {
           }
         }
         return n.doNav(cke,ss()+1,false);
-      }
+      } else dout<<xy<0,1><<colors<RED,BLACK><<"TextField::nav "<<path<<" cmd:"<<cke.cmd<<" |"<<cnt<>++<<padWith<10><<flush;
       return Base::template nav<isKbd>(n,cke,path);
     }
     protected: Sz ss() const {return strnlen(text,sz-1);}

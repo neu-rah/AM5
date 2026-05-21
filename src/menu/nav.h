@@ -108,7 +108,7 @@ struct TreeNav {
     bool printTo(Out& out) {
       ///track scroll top for each level, this is output device specific
       static Sz tops[root().depth()]{0};//TODO: check if ScrollBody is in output part, or store this there with an API call fallback.
-      Ctx ctx{m_path.focusAt(m_level+1),m_navMode,m_print_level,true,tops};
+      Ctx ctx{focus(m_level+1),m_navMode,m_print_level,true,tops};
       // dout<<xy<0,1><<colors<BLACK,RED><<ctx<<padWith<10><<flush;out.resume();
       // dout<<xy<0,2><<" level:"<<level()<<" path:"<<path()<<padWith<10><<flush;
       return root().printMenu(out,ctx);
@@ -123,12 +123,12 @@ struct TreeNav {
     }
 
     bool doNav(CKE cke,Sz len,bool w) {
-      // dout<<xy<0,3><<cke.cmd<<" len:"<<len<<" wraps:"<<w<<padWith<10><<flush;
+      // dout<<colors<GREEN,BLACK><<" len:"<<len<<" wraps:"<<w;
       DataDef<NumRange<Sz>,Data<Sz&>> at(0,len-1,w,m_path.data[(int)level()]);
       switch(cke.cmd) {
         case Cmd::Up: at.up();break;
         case Cmd::Down: at.down();break;
-        default:break;
+        default:return false;//break;
       }
       return true;
     }

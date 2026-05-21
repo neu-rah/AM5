@@ -31,6 +31,26 @@ _just like that..._
 - `StaticBody` -> i?walk:head nav
 - `ToggleBehave` Enter: go(sel)+doNav(Up)
 
+**TextField anatomy:**
+
+```c++
+ItemDef<
+  AsFmt<Fmt::Label, Chain<DataPrint, Data<char const*> > >, 
+  AsFmt<Fmt::EditMode>, 
+  EditField, //toggle NavMode on enter
+  ParentDraw, //padOpen
+  ItemNav, //open/close
+  AsFmt<
+    Fmt::Field, 
+    TextField<15, CharMask::Range<unsigned char, 32, 126> > 
+  > 
+>
+```
+
+principles:
+- deliver all keys to the target (path walk)
+- first menu should call doNav if not handled
+
 ### keyboard handling
 
 > On previous versions we passed a `bool kbd` template param, then used metaprogramming to filter cases
