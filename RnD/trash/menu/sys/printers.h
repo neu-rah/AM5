@@ -258,10 +258,7 @@ struct AsFmt {
       using Base=O;
       using Base::Base;
       template<typename Out>
-      void print(Out& out,Ctx& ctx) {
-        // out.template fmtStop<tag>(ctx);
-        // Base::print(out,ctx);
-      }
+      void print(Out& out,Ctx& ctx) {}
     };
   };
   template<typename O>
@@ -272,6 +269,7 @@ struct AsFmt {
     void print(Out& out,Ctx& ctx) {
       out.template fmtStart<tag>(ctx);
       Base::print(out,ctx);
+      out.template fmtStop<tag>(ctx);
       O::print(out,ctx);
     }
   };

@@ -1,40 +1,24 @@
 /**
  * @file menu.h
  * @author Rui Azevedo (neu-rah) (ruihfazevedo@gmail.com)
- * @brief 
+ * @brief AM5 main include file
  * @version 5
- * 
- * @copyright Copyright (c) 2026
- * 
 */
 
 #pragma once
 
+#include <hapi.h>
+#include <oneData.h>
+using hapi::Chain;
+using hapi::query;
+using hapi::has;
+using hapi::APIOf;
+using hapi::RulesAPI;
+using hapi::SameAs;
+using hapi::CheckRules;
+
+#include "menu/sys/enums.h"
 #include "menu/sys/base.h"
-#include "menu/sys/data.h"
-#include "menu/body/staticBody.h"
-#include "menu/sys/printers.h"
-#include "menu/sys/formats.h"
-#include "menu/sys/fields.h"
-#include "menu/in.h"
-#include "menu/out.h"
+#include "menu/body/static.h"
 #include "menu/item.h"
 #include "menu/menu.h"
-#include "menu/nav.h"
-
-// template<typename... TT,typename... OO>
-// constexpr auto item(OO&&... oo)
-//   {return ItemDef<TT...,OO...>(std::move(oo)...);}
-
-template<typename... OO> 
-constexpr StaticBody<OO...> staticBody(OO&&... oo)
-  {return StaticBody<OO...>{std::forward<OO>(oo)...};}
-
-template<typename... OO,typename T,typename B,typename... PP> 
-constexpr MenuDef<T,B,OO...> menuDef(T&& t,B&& b,PP&&... pp)
-  {return {std::forward<T>(t),std::forward<B>(b),std::forward<PP>(pp)...};}
-
-template<typename... OO,typename T,typename B,typename... PP> 
-constexpr PadMenu<T,B,PadDraw,OO...> padDef(T&& t,B&& b,PP&&... pp)
-  {return {std::forward<T>(t),std::forward<B>(b),std::forward<PP>(pp)...};}
-

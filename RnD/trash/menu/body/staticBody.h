@@ -18,6 +18,9 @@ struct StaticBody:List<O,OO...> {
   using Base::head;
   using Base::tail;
 
+  template<typename T>
+  static constexpr const bool has{has<T,O>||has<T,Tail>};
+
   static constexpr Sz size() {return Base::size;}
 
   static constexpr const Depth depth() {return staticMax<Base::Head::depth(),Tail::depth()>();}
@@ -46,6 +49,9 @@ struct StaticBody<O>:List<O> {
   using Base::Base;
   using Base::head;
   using Base::size;
+
+  template<typename T>
+  static constexpr const bool has{O::template has<T>};
 
   static constexpr const Depth depth() {return Base::Head::depth();}
 

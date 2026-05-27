@@ -2,7 +2,7 @@
 
 template<typename T>
 struct StdBody:T {
-  // T data;
+  template<typename> static constexpr const bool has{false};
   static constexpr Depth depth() {return 1;}
   constexpr Sz size() const {return T::size();}
   constexpr Sz size(Sz i) const {return T::operator[](i).size();}
@@ -24,7 +24,7 @@ struct StdBody:T {
   template<typename Out> bool printMenu(Out& out,Ctx& ctx,Sz i)
     {return T::operator[](i)->printMenu(out,ctx);}
 
-//Id, this is compile-time search/reference, but NOT here, all items are virtual here --
-  template<int> using HasId=std::integral_constant<bool,false>;
-  template<int> using WithId=std::integral_constant<bool,false>;
+// //Id, this is compile-time search/reference, but NOT here, all items are virtual here --
+//   template<int> using HasId=std::integral_constant<bool,false>;
+//   template<int> using WithId=std::integral_constant<bool,false>;
 };

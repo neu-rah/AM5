@@ -4,6 +4,7 @@
 
 template<typename T,T data[],Sz _sz>
 struct CArrayBody {
+  template<typename> static constexpr const bool has{false};
   static constexpr Depth depth() {return 1;}
   static constexpr const Sz size() {return _sz;}
   static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i];}
@@ -27,13 +28,14 @@ struct CArrayBody {
     {return data[i].printMenu(out,ctx);}
 
 
-//Id, this is compile-time search/reference, but NOT here, all items are equal here --
-  template<int> using HasId=std::integral_constant<bool,false>;
-  template<int> using WithId=std::integral_constant<bool,false>;
+// //Id, this is compile-time search/reference, but NOT here, all items are equal here --
+//   template<int> using HasId=std::integral_constant<bool,false>;
+//   template<int> using WithId=std::integral_constant<bool,false>;
 };
 
 template<typename T,T* data[],Sz _sz>
 struct CPtrArrayBody {
+  template<typename> static constexpr const bool has{false};
   static constexpr Depth depth() {return 1;}
   static constexpr const Sz size() {return _sz;}
   static constexpr const Sz size(Sz i) {assert(i<_sz);return data[i]->size();}
@@ -57,7 +59,7 @@ struct CPtrArrayBody {
     {return data[i]->printMenu(out,ctx);}
 
 
-//Id, this is compile-time search/reference, but NOT here, all items are equal here --
-  template<int> using HasId=std::integral_constant<bool,false>;
-  template<int> using WithId=std::integral_constant<bool,false>;
+// //Id, this is compile-time search/reference, but NOT here, all items are equal here --
+//   template<int> using HasId=std::integral_constant<bool,false>;
+//   template<int> using WithId=std::integral_constant<bool,false>;
 };

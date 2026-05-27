@@ -2,14 +2,14 @@ struct ItemDef<
   Menu<
     ItemDef<Chain<DataPrint, Data<const char*> > >, 
     StaticBody<
-      ItemDef<Action<action::op1>, Chain<DataPrint, DataRef<const char* const, text::op1> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::op1> > >::ToOut<OutDef<...>, footer, Clear::yes> > >, 
-      ItemDef<Action<action::op2>, Chain<DataPrint, DataRef<const char* const, text::op2> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::op2> > >::ToOut<OutDef<...>, footer, Clear::yes> > >, 
-      ItemDef<Id<0>, Action<action::op3>, Watch<EnDis<false> >, Chain<DataPrint, DataRef<const char* const, text::op3> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::op3> > >::ToOut<OutDef<...>, footer, Clear::yes> > >, 
+      ItemDef<Action<action::op1>, Chain<DataPrint, DataRef<const char* const, text::op1> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::op1> > >::ToOut<...> > >, 
+      ItemDef<Action<action::op2>, Chain<DataPrint, DataRef<const char* const, text::op2> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::op2> > >::ToOut<...> > >, 
+      ItemDef<Id<0>, Action<action::op3>, Watch<EnDis<false> >, Chain<DataPrint, DataRef<const char* const, text::op3> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::op3> > >::ToOut<...> > >, 
       ItemDef<
         Menu<
-          ItemDef<Chain<DataPrint, DataRef<const char* const, text::fields_menu> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::fields_menu> > >::ToOut<OutDef<...>, footer, Clear::yes> > >, 
+          ItemDef<Chain<DataPrint, DataRef<const char* const, text::fields_menu> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::fields_menu> > >::ToOut<...> > >, 
           StaticBody<
-            ItemDef<AsFmt<Fmt::Label, Chain<DataPrint, Data<const char*> > >, AsFmt<Fmt::EditMode>, EditField, ParentDraw, ItemNav, AsFmt<Fmt::Field, TextField<15, CharMask::Range<unsigned char, 32, 126> > > >, 
+            ItemDef<AsFmt<Fmt::Label, Chain<DataPrint, Data<const char*> > >, AsFmt<Fmt::EditMode>, EditField, ParentDraw, AsFmt<Fmt::Field, TextField<15, CharMask::Range<unsigned char, 32, 126> > > >, 
             ItemDef<Chain<Id<1>, AsFmt<Fmt::Label, Chain<DataPrint, DataRef<const char* const, text::power> > > >, AsFmt<Fmt::EditMode>, EditField, ParentDraw, NumField<StaticNumRange<int, 0, 100, false>, ItemNav, Watch<AsFmt<Fmt::Field, Default<int, 55>, Chain<DataPrint, Data<int> > > > >, AsFmt<Fmt::Unit, Chain<DataPrint, DataRef<const char* const, text::percent> > > >, 
             ItemDef<
               ToggleBehave, 
@@ -58,48 +58,35 @@ struct ItemDef<
                 >, PadDraw, PadDraw
               > 
             >, 
-            ItemDef<Chain<DataPrint, DataRef<const char* const, text::back> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::back> > >::ToOut<OutDef<...>, footer, Clear::yes> > > 
-          >, WrapNav
+            ItemDef<
+              Chain<DataPrint, DataRef<const char* const, text::back> >, 
+              OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::back> > >::ToOut<...> > 
+            > 
+          >, 
+          WrapNav
         > 
       >, 
       ItemDef<
         Menu<
-          ItemDef<BodyAction<action::subIdx>, Chain<DataPrint, DataRef<const char* const, text::array_sub_menu> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::array_sub_menu> > >::ToOut<OutDef<...>, footer, Clear::yes> > >, 
+          ItemDef<BodyAction<action::subIdx>, Chain<DataPrint, DataRef<const char* const, text::array_sub_menu> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::array_sub_menu> > >::ToOut<...> > >, 
           CArrayBody<ItemDef<Chain<DataPrint, Data<const char*> > >, (& cBody), 6> 
         > 
       >, 
       ItemDef<
         Menu<
-          ItemDef<
-            BodyAction<action::subIdx>, 
-            Chain<DataPrint, DataRef<const char* const, text::sub_ibody> >, 
-            OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::sub_ibody> > >::ToOut<OutDef<...>, footer, Clear::yes> > 
-          >, 
+          ItemDef<BodyAction<action::subIdx>, Chain<DataPrint, DataRef<const char* const, text::sub_ibody> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::sub_ibody> > >::ToOut<...> > >, 
           CPtrArrayBody<IItem, (& iBody), 6>, 
           WrapNav
         > 
       >, 
       ItemDef<
         Menu<
-          ItemDef<
-            BodyAction<action::subIdx>, 
-            Chain<DataPrint, DataRef<const char* const, text::sub_sbody> >, 
-            OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::sub_sbody> > >::ToOut<OutDef<...>, footer, Clear::yes> > 
-          >, 
+          ItemDef<BodyAction<action::subIdx>, Chain<DataPrint, DataRef<const char* const, text::sub_sbody> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::sub_sbody> > >::ToOut<...> > >, 
           StdBody<std::vector<IItem*, std::allocator<IItem*> > >, 
-          WrapNav, 
-          Id<2> 
+          WrapNav, Id<2> 
         > 
       >, 
-      ItemDef<
-        Action<action::quit>, 
-        AsFmt<
-          Fmt::Label, 
-          Chain<DataPrint, DataRef<const char* const, text::quit> >, 
-          OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::quit> > >::ToOut<OutDef<...>, footer, Clear::yes> > 
-        > 
-      > 
-    >, 
-    WrapNav
+      ItemDef<Action<action::quit>, AsFmt<Fmt::Label, Chain<DataPrint, DataRef<const char* const, text::quit> >, OnFocus<Put<Chain<DataPrint, DataRef<const char* const, desc::quit> > >::ToOut<...> > > > 
+    >, WrapNav
   > 
 >
