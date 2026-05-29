@@ -12,7 +12,7 @@
 // item API+Def ------------------------------------------------------------------
 
 template<typename Cfg=Nil>
-struct ItemAPI:RulesAPI,Cfg{
+struct ItemAPI:Cfg{
   template<typename Out>
   static constexpr void print(Out& out) {}
 };
@@ -21,10 +21,7 @@ template<typename... OO>
 struct ItemDef:APIOf<ItemAPI<>,OO...>{
   using Base=APIOf<ItemAPI<>,OO...>;
   using Base::Base;
-  using Types=typename Base::Types;
   static constexpr const size_t size{sizeof...(OO)};
-  static constexpr bool rules() {return CheckRules<typename Types::Head,typename Types::Tail,Chain<>>::check();}
-  static_assert(rules(),"fail!");
 };
 
 //stream output for items --
@@ -38,7 +35,7 @@ constexpr const bool query<Q,ItemDef<OO...>>{(query<Q,OO>||...)};
 // data items ----------------------------------------------------------------
 
 template<typename T,T data>
-struct StaticData:RulesAPI {
+struct StaticData {
   template<typename O>
   struct Part:O {
     using Base=O;
@@ -51,17 +48,22 @@ struct StaticData:RulesAPI {
 };
 
 template<typename T>
-struct Data:RulesAPI {
+struct Data {
   template<typename O>
   struct Part:O {
     using Base=O;
     using Base::Base;
     using Type=T;
     Type data;
+
     template<typename... OO> constexpr Part(T&& o,OO&&... oo):Base{std::forward<OO>(oo)...},data{o}{}
+
     constexpr Type& get() {return data;}
     constexpr void set(Type o){data=o;}
-    template<typename Out> void print(Out& out) const {out<<data;Base::print(out);}
+
+    template<typename Out,typename... PP>
+    void print(Out& out,const PP&... pp) const 
+      {out.put(data);Base::print(out,pp...);}
   };
 };
 
@@ -72,12 +74,12 @@ using Char=Data<unsigned char>;
 template<const char*& text> using TextRef=StaticData<const char*,text>;
 
 //some parts ----------------------------------------------------
-template<int id> struct Id:RulesAPI {template<typename O> using Part=O;};
+template<int id> struct Id {template<typename O> using Part=O;};
 
 using ActionFunc=bool(&)(int);
 
 template<ActionFunc action>
-struct Action:RulesAPI {
+struct Action {
   template<typename I>
   struct Part:I {
     using Base=I;
@@ -91,7 +93,7 @@ struct Action:RulesAPI {
 
 //attach an action on enter
 template <ActionFunc f>
-struct BodyAction:RulesAPI {
+struct BodyAction {
   template <typename I>
   struct Part : I {
     using Base=I;

@@ -14,8 +14,9 @@
 #include "menu/sys/enums.h"
 
 // #include "iop.h"
-#include <hapi.h>
+#include <hapi/hapi.h>
 #include <oneData.h>
+#include <oneOut.h>
 using namespace hapi;
 // using namespace hapi::data;
 using hapi::data::DefaultDataDef;
@@ -67,9 +68,9 @@ struct IItem;
 struct IOut;
 struct INav;
 
-struct XY{Sz x;Sz y;};
-using Pos=XY;
-using Area=XY;
+// struct XY{Sz x;Sz y;};
+// using Pos=XY;
+// using Area=XY;
  
 struct CKE {
   Cmd cmd;

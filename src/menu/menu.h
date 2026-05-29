@@ -26,15 +26,15 @@ struct MenuPart:Chain<OO...>::template Part<O> {
 };
 
 template<typename T,typename B,typename... OO>
-struct Menu:RulesAPI {
+struct Menu {
   using Types=Chain<OO...>;
-  template<typename Before,typename After>
-  static constexpr bool rules() {return CheckRules<typename Types::Head,typename Types::Tail,Chain<>>::check();}
+  // template<typename Before,typename After>
+  // static constexpr bool rules() {return CheckRules<typename Types::Head,typename Types::Tail,Chain<>>::check();}
   template<typename P> using Part=MenuPart<T,B,P,OO...>;
 };
 
 template<typename T,typename B>
-struct Menu<T,B>:RulesAPI {
+struct Menu<T,B> {
   using Types=Chain<>;
   template<typename O> using Part=MenuPart<T,B,O>;
 };

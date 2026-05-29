@@ -15,7 +15,7 @@ template<> struct StaticBody<>:Chain<> {
 };
 
 template<typename O,typename... OO>
-struct StaticBody<O,OO...>:Chain<OO...> {
+struct StaticBody<O,OO...>:Chain<O,OO...> {
   using Head=O;
   using Tail=StaticBody<OO...>;
   Head head;
@@ -27,7 +27,7 @@ struct StaticBody<O,OO...>:Chain<OO...> {
   template<typename Out> void printBody(Out& out) const {head.print(out);tail.printBody(out);}
 };
 
-//rules Menu query specialization --
+//rules StaticBody query specialization --
 template<typename Q,typename... OO>
 constexpr const bool query<Q,StaticBody<OO...>>{(query<Q,OO>||...)};
 
