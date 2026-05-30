@@ -4,6 +4,9 @@
  * @brief output API
  * @version 5
  * @date 2026-04-17
+ * 
+ * @copyright Copyright (c) 2026
+ * 
 */
 
 #pragma once
